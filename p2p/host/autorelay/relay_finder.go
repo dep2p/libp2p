@@ -640,12 +640,12 @@ func (rf *relayFinder) maybeConnectToRelay(ctx context.Context) {
 		}
 		rsvp, err := rf.connectToRelay(ctx, cand) // 连接到中继
 		if err != nil {                           // 如果发生错误
-			log.Debugw("连接中继失败", "peer", id, "error", err)
+			log.Debugf("连接中继失败: %v", err)
 			rf.notifyMaybeNeedNewCandidates()                       // 通知可能需要新候选节点
 			rf.metricsTracer.ReservationRequestFinished(false, err) // 更新指标
 			continue                                                // 继续下一个
 		}
-		log.Debugw("添加新中继", "id", id)
+		log.Debugf("添加新中继: %s", id)
 		rf.relayMx.Lock()                 // 加锁
 		rf.relays[id] = rsvp              // 添加中继预约
 		numRelays := len(rf.relays)       // 获取中继数量

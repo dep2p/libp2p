@@ -3,7 +3,6 @@ package rcmgr
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"net"
 	"sync"
 
@@ -94,8 +93,8 @@ func toIPNet(ma multiaddr.Multiaddr) (*net.IPNet, peer.ID, error) {
 		var err error
 		allowedPeer, err = peer.Decode(allowedPeerStr) // 解码对等节点ID
 		if err != nil {
-			log.Errorf("解码允许的对等节点失败: %v", err)
-			return nil, allowedPeer, fmt.Errorf("解码允许的对等节点失败: %w", err)
+			log.Debugf("解码允许的对等节点失败: %v", err)
+			return nil, allowedPeer, err
 		}
 	}
 

@@ -629,7 +629,7 @@ func (mab *memoryAddrBook) GetPeerRecord(p peer.ID) *record.Envelope {
 	defer mab.mu.RUnlock() // 解锁
 
 	if _, ok := mab.addrs.Addrs[p]; !ok { // 如果对等节点不存在
-		log.Errorf("对等节点不存在: %v", p)
+		log.Debugf("尝试访问不存在的对等节点: %s", p)
 		return nil
 	}
 	// 记录可能已过期,但尚未被垃圾回收

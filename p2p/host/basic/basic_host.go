@@ -3,7 +3,6 @@ package basichost
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"net"
 	"slices"
@@ -262,12 +261,12 @@ func NewHost(n network.Network, opts *HostOpts) (*BasicHost, error) {
 		})
 		ev, err := record.Seal(rec, h.signKey)
 		if err != nil {
-			log.Errorf("为自身创建签名记录失败: %v", err)
-			return nil, fmt.Errorf("为自身创建签名记录失败: %w", err)
+			log.Debugf("为自身创建签名记录失败: %v", err)
+			return nil, err
 		}
 		if _, err := cab.ConsumePeerRecord(ev, peerstore.PermanentAddrTTL); err != nil {
-			log.Errorf("将签名记录持久化到peerstore失败: %v", err)
-			return nil, fmt.Errorf("将签名记录持久化到peerstore失败: %w", err)
+			log.Debugf("将签名记录持久化到peerstore失败: %v", err)
+			return nil, err
 		}
 	}
 
@@ -298,8 +297,8 @@ func NewHost(n network.Network, opts *HostOpts) (*BasicHost, error) {
 	// 创建身份识别服务
 	h.ids, err = identify.NewIDService(h, idOpts...)
 	if err != nil {
-		log.Errorf("创建Identify服务失败: %v", err)
-		return nil, fmt.Errorf("创建Identify服务失败: %w", err)
+		log.Debugf("创建Identify服务失败: %v", err)
+		return nil, err
 	}
 
 	// 配置打洞服务
@@ -322,8 +321,8 @@ func NewHost(n network.Network, opts *HostOpts) (*BasicHost, error) {
 			return slices.DeleteFunc(addrs, func(a ma.Multiaddr) bool { return !manet.IsPublicAddr(a) })
 		}, opts.HolePunchingOptions...)
 		if err != nil {
-			log.Errorf("创建打洞服务失败: %v", err)
-			return nil, fmt.Errorf("创建打洞服务失败: %w", err)
+			log.Debugf("创建打洞服务失败: %v", err)
+			return nil, err
 		}
 	}
 
@@ -374,8 +373,8 @@ func NewHost(n network.Network, opts *HostOpts) (*BasicHost, error) {
 		}
 		h.autonatv2, err = autonatv2.New(h, opts.AutoNATv2Dialer, autonatv2.WithMetricsTracer(mt))
 		if err != nil {
-			log.Errorf("创建autonatv2失败: %v", err)
-			return nil, fmt.Errorf("创建autonatv2失败: %w", err)
+			log.Debugf("创建autonatv2失败: %v", err)
+			return nil, err
 		}
 	}
 
@@ -405,19 +404,19 @@ func (h *BasicHost) updateLocalIpAddr() {
 
 	// 尝试使用默认的IPv4/IPv6地址
 	if r, err := netroute.New(); err != nil {
-		log.Debugw("构建路由表失败", "error", err)
+		log.Debugf("构建路由表失败: %v", err)
 	} else {
 		// 获取本地IPv4地址
 		var localIPv4 net.IP
 		var ran bool
 		err, ran = h.updateLocalIPv4Backoff.Run(func() error {
 			_, _, localIPv4, err = r.Route(net.IPv4zero)
-			log.Debugw("获取本地IPv4地址", "error", err)
+			log.Debugf("获取本地IPv4地址: %v", err)
 			return err
 		})
 
 		if ran && err != nil {
-			log.Debugw("获取本地IPv4地址失败", "error", err)
+			log.Debugf("获取本地IPv4地址失败: %v", err)
 		} else if ran && localIPv4.IsGlobalUnicast() {
 			maddr, err := manet.FromIP(localIPv4)
 			if err == nil {
@@ -429,12 +428,12 @@ func (h *BasicHost) updateLocalIpAddr() {
 		var localIPv6 net.IP
 		err, ran = h.updateLocalIPv6Backoff.Run(func() error {
 			_, _, localIPv6, err = r.Route(net.IPv6unspecified)
-			log.Debugw("获取本地IPv6地址", "error", err)
+			log.Debugf("获取本地IPv6地址: %v", err)
 			return err
 		})
 
 		if ran && err != nil {
-			log.Debugw("获取本地IPv6地址失败", "error", err)
+			log.Debugf("获取本地IPv6地址失败: %v", err)
 		} else if ran && localIPv6.IsGlobalUnicast() {
 			maddr, err := manet.FromIP(localIPv6)
 			if err == nil {
@@ -446,7 +445,7 @@ func (h *BasicHost) updateLocalIpAddr() {
 	// 解析接口地址
 	ifaceAddrs, err := manet.InterfaceMultiaddrs()
 	if err != nil {
-		log.Errorw("解析接口地址失败", "error", err)
+		log.Debugf("解析接口地址失败: %v", err)
 		// 添加回环地址作为备选
 		h.filteredInterfaceAddrs = append(h.filteredInterfaceAddrs, manet.IP4Loopback, manet.IP6Loopback)
 		h.allInterfaceAddrs = h.filteredInterfaceAddrs
@@ -613,7 +612,7 @@ func (h *BasicHost) makeUpdatedAddrEvent(prev, current []ma.Multiaddr) *event.Ev
 	if !h.disableSignedPeerRecord {
 		sr, err := h.makeSignedPeerRecord(current)
 		if err != nil {
-			log.Errorf("从当前地址集创建签名对等记录失败, err=%s", err)
+			log.Debugf("从当前地址集创建签名对等记录失败, err=%s", err)
 			return nil
 		}
 		evt.SignedPeerRecord = sr
@@ -661,7 +660,7 @@ func (h *BasicHost) background() {
 		// 如果未禁用签名对等记录,则将其存储在对等存储中
 		if !h.disableSignedPeerRecord {
 			if _, err := h.caBook.ConsumePeerRecord(changeEvt.SignedPeerRecord, peerstore.PermanentAddrTTL); err != nil {
-				log.Errorf("在对等存储中持久化签名对等记录失败, err=%s", err)
+				log.Debugf("在对等存储中持久化签名对等记录失败, err=%s", err)
 				return
 			}
 		}
@@ -675,7 +674,7 @@ func (h *BasicHost) background() {
 
 		// 发出地址变化事件
 		if err := h.emitters.evtLocalAddrsUpdated.Emit(*changeEvt); err != nil {
-			log.Warnf("发出地址更新事件失败: %s", err)
+			log.Debugf("发出地址变更事件失败: %s", err)
 		}
 	}
 
@@ -832,8 +831,8 @@ func (h *BasicHost) NewStream(ctx context.Context, p peer.ID, pids ...protocol.I
 			log.Errorf("连接失败")
 			return nil, errors.New("连接失败")
 		}
-		log.Errorf("打开流失败: %v", err)
-		return nil, fmt.Errorf("打开流失败: %w", err)
+		log.Debugf("打开流失败: %v", err)
+		return nil, err
 	}
 	defer func() {
 		if strErr != nil && s != nil {
@@ -845,8 +844,8 @@ func (h *BasicHost) NewStream(ctx context.Context, p peer.ID, pids ...protocol.I
 	select {
 	case <-h.ids.IdentifyWait(s.Conn()):
 	case <-ctx.Done():
-		log.Errorf("身份识别未能完成: %v", ctx.Err())
-		return nil, fmt.Errorf("身份识别未能完成: %w", ctx.Err())
+		log.Debugf("身份识别未能完成: %v", ctx.Err())
+		return nil, ctx.Err()
 	}
 
 	// 获取首选协议
@@ -879,15 +878,15 @@ func (h *BasicHost) NewStream(ctx context.Context, p peer.ID, pids ...protocol.I
 	select {
 	case err = <-errCh:
 		if err != nil {
-			log.Errorf("协商协议失败: %v", err)
-			return nil, fmt.Errorf("协商协议失败: %w", err)
+			log.Debugf("协商协议失败: %v", err)
+			return nil, err
 		}
 	case <-ctx.Done():
 		s.Reset()
 		// wait for `SelectOneOf` to error out because of resetting the stream.
 		<-errCh
-		log.Errorf("协商协议失败: %v", ctx.Err())
-		return nil, fmt.Errorf("协商协议失败: %w", ctx.Err())
+		log.Debugf("协商协议失败: %v", ctx.Err())
+		return nil, ctx.Err()
 	}
 
 	// 设置选定的协议
@@ -968,8 +967,8 @@ func (h *BasicHost) dialPeer(ctx context.Context, p peer.ID) error {
 	// 拨号连接对等节点
 	c, err := h.Network().DialPeer(ctx, p)
 	if err != nil {
-		log.Errorf("拨号失败: %v", err)
-		return fmt.Errorf("拨号失败: %w", err)
+		log.Debugf("拨号失败: %v", err)
+		return err
 	}
 
 	// TODO: 考虑移除这部分? 一方面,这很好因为我们可以假设当这个返回时像agent版本这样的东西通常已经设置好了。
@@ -979,8 +978,8 @@ func (h *BasicHost) dialPeer(ctx context.Context, p peer.ID) error {
 	select {
 	case <-h.ids.IdentifyWait(c):
 	case <-ctx.Done():
-		log.Errorf("身份识别未能完成: %v", ctx.Err())
-		return fmt.Errorf("身份识别未能完成: %w", ctx.Err())
+		log.Debugf("身份识别未能完成: %v", ctx.Err())
+		return ctx.Err()
 	}
 
 	// 记录拨号完成日志
@@ -1056,7 +1055,7 @@ func (h *BasicHost) AllAddrs() []ma.Multiaddr {
 	finalAddrs := make([]ma.Multiaddr, 0, 8)
 	if resolved, err := manet.ResolveUnspecifiedAddresses(listenAddrs, filteredIfaceAddrs); err != nil {
 		// 如果没有监听任何地址,或者监听 IPv6 地址但只有 IPv4 接口地址,就会发生这种情况
-		log.Debugw("解析监听地址失败", "错误", err)
+		log.Debugf("解析监听地址失败: %v", err)
 	} else {
 		finalAddrs = append(finalAddrs, resolved...)
 	}

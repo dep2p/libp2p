@@ -51,20 +51,20 @@ func (c *client) DialBack(ctx context.Context, p peer.ID) error {
 	// 创建新的流与对等节点通信
 	s, err := c.h.NewStream(ctx, p, AutoNATProto)
 	if err != nil {
-		log.Errorf("创建流与对等节点通信失败: %v", err)
+		log.Debugf("创建流与对等节点通信失败: %v", err)
 		return err
 	}
 
 	// 设置流的服务名称以便识别
 	if err := s.Scope().SetService(ServiceName); err != nil {
-		log.Errorf("设置autonat服务流时出错: %s", err)
+		log.Debugf("设置autonat服务流时出错: %s", err)
 		s.Reset()
 		return err
 	}
 
 	// 为流预留内存以防止内存溢出
 	if err := s.Scope().ReserveMemory(maxMsgSize, network.ReservationPriorityAlways); err != nil {
-		log.Errorf("为autonat流预留内存时出错: %s", err)
+		log.Debugf("为autonat流预留内存时出错: %s", err)
 		s.Reset()
 		return err
 	}

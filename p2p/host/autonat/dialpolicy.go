@@ -28,7 +28,7 @@ func (d *dialPolicy) skipDial(addr ma.Multiaddr) bool {
 	// 跳过中继地址
 	_, err := addr.ValueForProtocol(ma.P_CIRCUIT)
 	if err == nil {
-		log.Errorf("跳过中继地址: %s", addr.String())
+		log.Debugf("跳过中继地址: %s", addr.String())
 		return true
 	}
 
@@ -40,13 +40,13 @@ func (d *dialPolicy) skipDial(addr ma.Multiaddr) bool {
 
 	// 跳过私有网络(不可路由)地址
 	if !manet.IsPublicAddr(addr) {
-		log.Errorf("跳过私有网络地址: %s", addr.String())
+		log.Debugf("跳过私有网络地址: %s", addr.String())
 		return true
 	}
 	// 获取候选IP地址
 	candidateIP, err := manet.ToIP(addr)
 	if err != nil {
-		log.Errorf("获取候选IP地址失败: %s", err.Error())
+		log.Debugf("获取候选IP地址失败: %s", err.Error())
 		return true
 	}
 

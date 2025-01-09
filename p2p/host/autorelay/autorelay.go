@@ -52,7 +52,7 @@ func NewAutoRelay(bhost *basic.BasicHost, opts ...Option) (*AutoRelay, error) {
 	conf := defaultConfig      // 使用默认配置
 	for _, opt := range opts { // 应用所有配置选项
 		if err := opt(&conf); err != nil {
-			log.Errorf("应用配置选项失败: %v", err)
+			log.Debugf("应用配置选项失败: %v", err)
 			return nil, err
 		}
 	}
@@ -111,7 +111,7 @@ func (r *AutoRelay) background() {
 				if errors.Is(err, errAlreadyRunning) {
 					log.Debug("尝试启动已运行的中继查找器")
 				} else if err != nil {
-					log.Errorw("启动中继查找器失败", "error", err)
+					log.Debugf("启动中继查找器失败: %v", err)
 				} else {
 					r.metricsTracer.RelayFinderStatus(true)
 				}

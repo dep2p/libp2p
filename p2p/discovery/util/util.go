@@ -27,7 +27,7 @@ func FindPeers(ctx context.Context, d discovery.Discoverer, ns string, opts ...d
 	// 调用发现者接口查找节点
 	ch, err := d.FindPeers(ctx, ns, opts...)
 	if err != nil {
-		log.Errorf("查找节点失败: %v", err)
+		log.Debugf("查找节点失败: %v", err)
 		return nil, err
 	}
 

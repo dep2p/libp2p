@@ -2,7 +2,6 @@ package rcmgr
 
 import (
 	"encoding/json"
-	"fmt"
 	"math"
 	"strconv"
 
@@ -307,8 +306,8 @@ func (l *LimitVal64) UnmarshalJSON(b []byte) error {
 		// 如果解析字符串失败,尝试解析为整数(向后兼容)
 		var val int
 		if err := json.Unmarshal(b, &val); err != nil {
-			log.Errorf("反序列化限制值失败: %v", err)
-			return fmt.Errorf("反序列化限制值失败: %w", err)
+			log.Debugf("反序列化限制值失败: %v", err)
+			return err
 		}
 
 		// 如果 JSON 中有明确的 0,解释为阻止所有

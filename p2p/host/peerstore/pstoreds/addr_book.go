@@ -449,7 +449,7 @@ func (ab *dsAddrBook) latestPeerRecordSeq(p peer.ID) uint64 {
 	pr, err := ab.loadRecord(p, true, false)
 	if err != nil {
 		// 忽略错误,因为我们不希望在这种情况下存储新记录失败
-		log.Errorf("无法加载记录: %v", err)
+		log.Debugf("无法加载记录: %v", err)
 		return 0
 	}
 	pr.RLock()
@@ -632,7 +632,7 @@ func (ab *dsAddrBook) PeersWithAddrs() peer.IDSlice {
 		return ds.RawKey(result.Key).Name()
 	})
 	if err != nil {
-		log.Errorf("获取有地址的peer时出错: %v", err)
+		log.Debugf("获取有地址的peer时出错: %v", err)
 	}
 	return ids
 }

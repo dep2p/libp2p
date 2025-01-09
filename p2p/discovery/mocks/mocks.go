@@ -148,7 +148,7 @@ func (d *MockDiscoveryClient) Advertise(ctx context.Context, ns string, opts ...
 	var options discovery.Options
 	err := options.Apply(opts...)
 	if err != nil {
-		log.Errorf("应用配置选项失败: %v", err)
+		log.Debugf("应用配置选项失败: %v", err)
 		return 0, err
 	}
 
@@ -168,7 +168,7 @@ func (d *MockDiscoveryClient) FindPeers(ctx context.Context, ns string, opts ...
 	var options discovery.Options
 	err := options.Apply(opts...)
 	if err != nil {
-		log.Errorf("应用配置选项失败: %v", err)
+		log.Debugf("应用配置选项失败: %v", err)
 		return nil, err
 	}
 

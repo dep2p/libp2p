@@ -3,7 +3,6 @@ package pstoreds
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	ds "github.com/ipfs/go-datastore"
 )
@@ -55,13 +54,13 @@ func (cb *cyclicBatch) cycle() (err error) {
 	}
 	// 提交当前批处理
 	if err = cb.Batch.Commit(context.TODO()); err != nil {
-		log.Errorf("提交批处理失败: %v", err)
-		return fmt.Errorf("提交批处理失败: %w", err)
+		log.Debugf("提交批处理失败: %v", err)
+		return err
 	}
 	// 创建新的批处理
 	if cb.Batch, err = cb.ds.Batch(context.TODO()); err != nil {
-		log.Errorf("创建新批处理失败: %v", err)
-		return fmt.Errorf("创建新批处理失败: %w", err)
+		log.Debugf("创建新批处理失败: %v", err)
+		return err
 	}
 	return nil
 }
@@ -77,7 +76,7 @@ func (cb *cyclicBatch) cycle() (err error) {
 func (cb *cyclicBatch) Put(ctx context.Context, key ds.Key, val []byte) error {
 	// 检查是否需要执行批处理循环
 	if err := cb.cycle(); err != nil {
-		log.Errorf("批处理循环失败: %v", err)
+		log.Debugf("批处理循环失败: %v", err)
 		return err
 	}
 	// 增加待处理操作计数
@@ -95,7 +94,7 @@ func (cb *cyclicBatch) Put(ctx context.Context, key ds.Key, val []byte) error {
 func (cb *cyclicBatch) Delete(ctx context.Context, key ds.Key) error {
 	// 检查是否需要执行批处理循环
 	if err := cb.cycle(); err != nil {
-		log.Errorf("批处理循环失败: %v", err)
+		log.Debugf("批处理循环失败: %v", err)
 		return err
 	}
 	// 增加待处理操作计数
@@ -112,12 +111,12 @@ func (cb *cyclicBatch) Delete(ctx context.Context, key ds.Key) error {
 func (cb *cyclicBatch) Commit(ctx context.Context) error {
 	// 检查批处理是否已关闭
 	if cb.Batch == nil {
-		log.Errorf("批处理已关闭")
+		log.Debugf("批处理已关闭")
 		return errors.New("批处理已关闭")
 	}
 	// 提交批处理
 	if err := cb.Batch.Commit(ctx); err != nil {
-		log.Errorf("提交批处理失败: %v", err)
+		log.Debugf("提交批处理失败: %v", err)
 		return err
 	}
 	// 重置状态并关闭批处理

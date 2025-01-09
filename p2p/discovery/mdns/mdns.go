@@ -92,7 +92,7 @@ func NewMdnsService(host host.Host, serviceName string, notifee Notifee) *mdnsSe
 func (s *mdnsService) Start() error {
 	// 启动服务器
 	if err := s.startServer(); err != nil {
-		log.Errorf("启动mDNS服务器失败: %v", err)
+		log.Debugf("启动mDNS服务器失败: %v", err)
 		return err
 	}
 	// 启动解析器
@@ -160,7 +160,7 @@ func (s *mdnsService) startServer() error {
 	// 获取接口监听地址
 	interfaceAddrs, err := s.host.Network().InterfaceListenAddresses()
 	if err != nil {
-		log.Errorf("获取接口监听地址失败: %v", err)
+		log.Debugf("获取接口监听地址失败: %v", err)
 		return err
 	}
 	// 转换为p2p地址
@@ -169,7 +169,7 @@ func (s *mdnsService) startServer() error {
 		Addrs: interfaceAddrs,
 	})
 	if err != nil {
-		log.Errorf("转换为p2p地址失败: %v", err)
+		log.Debugf("转换为p2p地址失败: %v", err)
 		return err
 	}
 	// 构建TXT记录
@@ -183,7 +183,7 @@ func (s *mdnsService) startServer() error {
 	// 获取IP地址
 	ips, err := s.getIPs(addrs)
 	if err != nil {
-		log.Errorf("获取IP地址失败: %v", err)
+		log.Debugf("获取IP地址失败: %v", err)
 		return err
 	}
 
@@ -199,7 +199,7 @@ func (s *mdnsService) startServer() error {
 		nil,
 	)
 	if err != nil {
-		log.Errorf("注册zeroconf服务失败: %v", err)
+		log.Debugf("注册zeroconf服务失败: %v", err)
 		return err
 	}
 	s.server = server

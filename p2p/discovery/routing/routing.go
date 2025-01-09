@@ -45,7 +45,7 @@ func (d *RoutingDiscovery) Advertise(ctx context.Context, ns string, opts ...dis
 	var options discovery.Options
 	err := options.Apply(opts...)
 	if err != nil {
-		log.Errorf("应用配置选项失败: %v", err)
+		log.Debugf("应用配置选项失败: %v", err)
 		return 0, err
 	}
 
@@ -60,7 +60,7 @@ func (d *RoutingDiscovery) Advertise(ctx context.Context, ns string, opts ...dis
 	// 将命名空间转换为CID
 	cid, err := nsToCid(ns)
 	if err != nil {
-		log.Errorf("命名空间转换为CID失败: %v", err)
+		log.Debugf("命名空间转换为CID失败: %v", err)
 		return 0, err
 	}
 
@@ -72,7 +72,7 @@ func (d *RoutingDiscovery) Advertise(ctx context.Context, ns string, opts ...dis
 	// 提供记录
 	err = d.Provide(pctx, cid, true)
 	if err != nil {
-		log.Errorf("提供记录失败: %v", err)
+		log.Debugf("提供记录失败: %v", err)
 		return 0, err
 	}
 
@@ -96,14 +96,14 @@ func (d *RoutingDiscovery) FindPeers(ctx context.Context, ns string, opts ...dis
 	// 应用配置选项
 	err := options.Apply(opts...)
 	if err != nil {
-		log.Errorf("应用配置选项失败: %v", err)
+		log.Debugf("应用配置选项失败: %v", err)
 		return nil, err
 	}
 
 	// 将命名空间转换为CID
 	cid, err := nsToCid(ns)
 	if err != nil {
-		log.Errorf("命名空间转换为CID失败: %v", err)
+		log.Debugf("命名空间转换为CID失败: %v", err)
 		return nil, err
 	}
 
@@ -121,7 +121,7 @@ func nsToCid(ns string) (cid.Cid, error) {
 	// 计算命名空间的SHA256哈希
 	h, err := mh.Sum([]byte(ns), mh.SHA2_256, -1)
 	if err != nil {
-		log.Errorf("计算命名空间的SHA256哈希失败: %v", err)
+		log.Debugf("计算命名空间的SHA256哈希失败: %v", err)
 		return cid.Undef, err
 	}
 
@@ -163,7 +163,7 @@ func (r *DiscoveryRouting) Provide(ctx context.Context, c cid.Cid, bcast bool) e
 	// 发布CID对应的命名空间
 	_, err := r.Advertise(ctx, cidToNs(c), r.opts...)
 	if err != nil {
-		log.Errorf("发布CID对应的命名空间失败: %v", err)
+		log.Debugf("发布CID对应的命名空间失败: %v", err)
 	}
 	return err
 }
@@ -180,7 +180,7 @@ func (r *DiscoveryRouting) FindProvidersAsync(ctx context.Context, c cid.Cid, li
 	// 查找CID对应命名空间的节点
 	ch, err := r.FindPeers(ctx, cidToNs(c), append([]discovery.Option{discovery.Limit(limit)}, r.opts...)...)
 	if err != nil {
-		log.Errorf("查找CID对应的命名空间节点失败: %v", err)
+		log.Debugf("查找CID对应的命名空间节点失败: %v", err)
 	}
 	return ch
 }

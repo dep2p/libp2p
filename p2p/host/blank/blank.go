@@ -3,7 +3,6 @@ package blankhost
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 
 	"github.com/dep2p/libp2p/core/connmgr"
@@ -134,16 +133,16 @@ func (bh *BlankHost) initSignedRecord() error {
 	// 签名记录
 	ev, err := record.Seal(rec, bh.Peerstore().PrivKey(bh.ID()))
 	if err != nil {
-		log.Errorf("为自身创建签名记录失败: %s", err)
-		return fmt.Errorf("为自身创建签名记录失败: %s", err)
+		log.Debugf("为自身创建签名记录失败: %s", err)
+		return err
 	}
 	// 保存记录到对等存储
 	_, err = cab.ConsumePeerRecord(ev, peerstore.PermanentAddrTTL)
 	if err != nil {
-		log.Errorf("将签名记录持久化到对等存储失败: %s", err)
-		return fmt.Errorf("为自身持久化签名记录失败: %s", err)
+		log.Debugf("将签名记录持久化到对等存储失败: %s", err)
+		return err
 	}
-	return err
+	return nil
 }
 
 // 确保 BlankHost 实现了 host.Host 接口
@@ -156,7 +155,7 @@ func (bh *BlankHost) Addrs() []ma.Multiaddr {
 	// 获取网络接口监听地址
 	addrs, err := bh.n.InterfaceListenAddresses()
 	if err != nil {
-		log.Errorf("获取网络接口地址错误: ", err)
+		log.Debugf("获取网络接口地址错误: %v", err)
 		return nil
 	}
 
@@ -191,9 +190,9 @@ func (bh *BlankHost) Connect(ctx context.Context, ai peer.AddrInfo) error {
 	_, err := bh.Network().DialPeer(ctx, ai.ID)
 	if err != nil {
 		log.Errorf("拨号失败: %v", err)
-		return fmt.Errorf("拨号失败: %w", err)
+		return err
 	}
-	return err
+	return nil
 }
 
 // Peerstore 返回对等存储
@@ -223,16 +222,16 @@ func (bh *BlankHost) NewStream(ctx context.Context, p peer.ID, protos ...protoco
 	// 创建新流
 	s, err := bh.n.NewStream(ctx, p)
 	if err != nil {
-		log.Errorf("打开流失败: %v", err)
-		return nil, fmt.Errorf("打开流失败: %w", err)
+		log.Debugf("打开流失败: %v", err)
+		return nil, err
 	}
 
 	// 协商协议
 	selected, err := mstream.SelectOneOf(protos, s)
 	if err != nil {
 		s.Reset()
-		log.Errorf("协议协商失败: %v", err)
-		return nil, fmt.Errorf("协议协商失败: %w", err)
+		log.Debugf("协议协商失败: %v", err)
+		return nil, err
 	}
 
 	// 设置协议

@@ -53,7 +53,7 @@ func NewBackoffDiscovery(disc discovery.Discovery, stratFactory BackoffFactory, 
 	// 应用配置选项
 	for _, opt := range opts {
 		if err := opt(b); err != nil {
-			log.Errorf("应用配置选项失败: %v", err)
+			log.Debugf("应用配置选项失败: %v", err)
 			return nil, err
 		}
 	}
@@ -70,7 +70,7 @@ func NewBackoffDiscovery(disc discovery.Discovery, stratFactory BackoffFactory, 
 func WithBackoffDiscoverySimultaneousQueryBufferSize(size int) BackoffDiscoveryOption {
 	return func(b *BackoffDiscovery) error {
 		if size < 0 {
-			log.Errorf("不能设置小于0的缓冲区大小")
+			log.Debugf("不能设置小于0的缓冲区大小")
 			return fmt.Errorf("不能设置小于0的缓冲区大小")
 		}
 		b.parallelBufSz = size
@@ -88,7 +88,7 @@ func WithBackoffDiscoverySimultaneousQueryBufferSize(size int) BackoffDiscoveryO
 func WithBackoffDiscoveryReturnedChannelSize(size int) BackoffDiscoveryOption {
 	return func(b *BackoffDiscovery) error {
 		if size < 0 {
-			log.Errorf("不能设置小于0的缓冲区大小")
+			log.Debugf("不能设置小于0的缓冲区大小")
 			return fmt.Errorf("不能设置小于0的缓冲区大小")
 		}
 		b.returnedBufSz = size
