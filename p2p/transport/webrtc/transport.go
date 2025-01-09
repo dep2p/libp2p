@@ -132,7 +132,7 @@ func New(privKey ic.PrivKey, psk pnet.PSK, gater connmgr.ConnectionGater, rcmgr 
 	localPeerID, err := peer.IDFromPrivateKey(privKey)
 	if err != nil {
 		log.Errorf("获取本地节点 ID 失败: %s", err)
-		return nil, fmt.Errorf("获取本地节点 ID 失败: %w", err)
+		return nil, err
 	}
 	// 使用椭圆曲线 P-256 因为它被浏览器广泛支持
 	//
@@ -146,12 +146,12 @@ func New(privKey ic.PrivKey, psk pnet.PSK, gater connmgr.ConnectionGater, rcmgr 
 	pk, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
 		log.Errorf("生成证书密钥失败: %s", err)
-		return nil, fmt.Errorf("生成证书密钥失败: %w", err)
+		return nil, err
 	}
 	cert, err := webrtc.GenerateCertificate(pk)
 	if err != nil {
 		log.Errorf("生成证书失败: %s", err)
-		return nil, fmt.Errorf("生成证书失败: %w", err)
+		return nil, err
 	}
 	config := webrtc.Configuration{
 		Certificates: []webrtc.Certificate{*cert},
@@ -159,7 +159,7 @@ func New(privKey ic.PrivKey, psk pnet.PSK, gater connmgr.ConnectionGater, rcmgr 
 	noiseTpt, err := noise.New(noise.ID, privKey, nil)
 	if err != nil {
 		log.Errorf("创建 Noise 传输层失败: %s", err)
-		return nil, fmt.Errorf("创建 Noise 传输层失败: %w", err)
+		return nil, err
 	}
 	transport := &WebRTCTransport{
 		rcmgr:        rcmgr,
@@ -240,25 +240,25 @@ func (t *WebRTCTransport) Listen(addr ma.Multiaddr) (tpt.Listener, error) {
 	nw, host, err := manet.DialArgs(addr)
 	if err != nil {
 		log.Errorf("监听器无法获取拨号参数: %s", err)
-		return nil, fmt.Errorf("监听器无法获取拨号参数: %w", err)
+		return nil, err
 	}
 	udpAddr, err := net.ResolveUDPAddr(nw, host)
 	if err != nil {
 		log.Errorf("监听器无法解析 UDP 地址: %s", err)
-		return nil, fmt.Errorf("监听器无法解析 UDP 地址: %w", err)
+		return nil, err
 	}
 
 	socket, err := t.listenUDP(nw, udpAddr)
 	if err != nil {
 		log.Errorf("监听 UDP 失败: %s", err)
-		return nil, fmt.Errorf("监听 UDP 失败: %w", err)
+		return nil, err
 	}
 
 	listener, err := t.listenSocket(socket)
 	if err != nil {
 		log.Errorf("监听器无法创建: %s", err)
 		socket.Close()
-		return nil, fmt.Errorf("监听器无法创建: %w", err)
+		return nil, err
 	}
 	return listener, nil
 }
@@ -274,25 +274,25 @@ func (t *WebRTCTransport) listenSocket(socket net.PacketConn) (tpt.Listener, err
 	listenerMultiaddr, err := manet.FromNetAddr(socket.LocalAddr())
 	if err != nil {
 		log.Errorf("监听器无法从网络地址创建多地址: %s", err)
-		return nil, fmt.Errorf("监听器无法从网络地址创建多地址: %w", err)
+		return nil, err
 	}
 
 	listenerFingerprint, err := t.getCertificateFingerprint()
 	if err != nil {
 		log.Errorf("监听器无法获取证书指纹: %s", err)
-		return nil, fmt.Errorf("监听器无法获取证书指纹: %w", err)
+		return nil, err
 	}
 
 	encodedLocalFingerprint, err := encodeDTLSFingerprint(listenerFingerprint)
 	if err != nil {
 		log.Errorf("监听器无法编码证书指纹: %s", err)
-		return nil, fmt.Errorf("监听器无法编码证书指纹: %w", err)
+		return nil, err
 	}
 
 	certComp, err := ma.NewComponent(ma.ProtocolWithCode(ma.P_CERTHASH).Name, encodedLocalFingerprint)
 	if err != nil {
 		log.Errorf("监听器无法创建证书组件: %s", err)
-		return nil, fmt.Errorf("监听器无法创建证书组件: %w", err)
+		return nil, err
 	}
 	listenerMultiaddr = listenerMultiaddr.Encapsulate(webrtcComponent).Encapsulate(certComp)
 
@@ -317,18 +317,18 @@ func (t *WebRTCTransport) Dial(ctx context.Context, remoteMultiaddr ma.Multiaddr
 	scope, err := t.rcmgr.OpenConnection(network.DirOutbound, false, remoteMultiaddr)
 	if err != nil {
 		log.Errorf("打开连接失败: %s", err)
-		return nil, fmt.Errorf("打开连接失败: %w", err)
+		return nil, err
 	}
 	if err := scope.SetPeer(p); err != nil {
 		scope.Done()
 		log.Errorf("设置对等节点 ID 失败: %s", err)
-		return nil, fmt.Errorf("设置对等节点 ID 失败: %w", err)
+		return nil, err
 	}
 	conn, err := t.dial(ctx, scope, remoteMultiaddr, p)
 	if err != nil {
 		scope.Done()
 		log.Errorf("拨号失败: %s", err)
-		return nil, fmt.Errorf("拨号失败: %w", err)
+		return nil, err
 	}
 	return conn, nil
 }
@@ -360,24 +360,24 @@ func (t *WebRTCTransport) dial(ctx context.Context, scope network.ConnManagement
 	remoteMultihash, err := decodeRemoteFingerprint(remoteMultiaddr)
 	if err != nil {
 		log.Errorf("解码指纹失败: %s", err)
-		return nil, fmt.Errorf("解码指纹失败: %w", err)
+		return nil, err
 	}
 	remoteHashFunction, ok := getSupportedSDPHash(remoteMultihash.Code)
 	if !ok {
 		log.Errorf("不支持的哈希函数")
-		return nil, fmt.Errorf("不支持的哈希函数")
+		return nil, errors.New("不支持的哈希函数")
 	}
 
 	rnw, rhost, err := manet.DialArgs(remoteMultiaddr)
 	if err != nil {
 		log.Errorf("生成拨号参数失败: %s", err)
-		return nil, fmt.Errorf("生成拨号参数失败: %w", err)
+		return nil, err
 	}
 
 	raddr, err := net.ResolveUDPAddr(rnw, rhost)
 	if err != nil {
 		log.Errorf("解析 UDP 地址失败: %s", err)
-		return nil, fmt.Errorf("解析 UDP 地址失败: %w", err)
+		return nil, err
 	}
 
 	// 不是编码本地指纹，而是生成随机 UUID 作为连接 ufrag
@@ -403,13 +403,13 @@ func (t *WebRTCTransport) dial(ctx context.Context, scope network.ConnManagement
 	settingEngine.SetSCTPMaxReceiveBufferSize(sctpReceiveBufferSize)
 	if err := scope.ReserveMemory(sctpReceiveBufferSize, network.ReservationPriorityMedium); err != nil {
 		log.Errorf("预留内存失败: %s", err)
-		return nil, fmt.Errorf("预留内存失败: %w", err)
+		return nil, err
 	}
 
 	w, err = newWebRTCConnection(settingEngine, t.webrtcConfig)
 	if err != nil {
 		log.Errorf("实例化对等连接失败: %s", err)
-		return nil, fmt.Errorf("实例化对等连接失败: %w", err)
+		return nil, err
 	}
 
 	errC := addOnConnectionStateChangeCallback(w.PeerConnection)
@@ -418,26 +418,26 @@ func (t *WebRTCTransport) dial(ctx context.Context, scope network.ConnManagement
 	offer, err := w.PeerConnection.CreateOffer(nil)
 	if err != nil {
 		log.Errorf("创建提议失败: %s", err)
-		return nil, fmt.Errorf("创建提议失败: %w", err)
+		return nil, err
 	}
 
 	err = w.PeerConnection.SetLocalDescription(offer)
 	if err != nil {
 		log.Errorf("设置本地描述失败: %s", err)
-		return nil, fmt.Errorf("设置本地描述失败: %w", err)
+		return nil, err
 	}
 
 	answerSDPString, err := createServerSDP(raddr, ufrag, *remoteMultihash)
 	if err != nil {
 		log.Errorf("渲染服务器 SDP 失败: %s", err)
-		return nil, fmt.Errorf("渲染服务器 SDP 失败: %w", err)
+		return nil, err
 	}
 
 	answer := webrtc.SessionDescription{SDP: answerSDPString, Type: webrtc.SDPTypeAnswer}
 	err = w.PeerConnection.SetRemoteDescription(answer)
 	if err != nil {
 		log.Errorf("设置远程描述失败: %s", err)
-		return nil, fmt.Errorf("设置远程描述失败: %w", err)
+		return nil, err
 	}
 
 	// 等待对等连接打开
@@ -445,7 +445,7 @@ func (t *WebRTCTransport) dial(ctx context.Context, scope network.ConnManagement
 	case err := <-errC:
 		if err != nil {
 			log.Errorf("对等连接打开失败: %s", err)
-			return nil, fmt.Errorf("对等连接打开失败: %w", err)
+			return nil, err
 		}
 	case <-ctx.Done():
 		log.Errorf("对等连接打开超时")
@@ -456,14 +456,14 @@ func (t *WebRTCTransport) dial(ctx context.Context, scope network.ConnManagement
 	detached, err := detachHandshakeDataChannel(ctx, w.HandshakeDataChannel)
 	if err != nil {
 		log.Errorf("分离握手数据通道失败: %s", err)
-		return nil, fmt.Errorf("分离握手数据通道失败: %w", err)
+		return nil, err
 	}
 	channel := newStream(w.HandshakeDataChannel, detached, func() {})
 
 	remotePubKey, err := t.noiseHandshake(ctx, w.PeerConnection, channel, p, remoteHashFunction, false)
 	if err != nil {
 		log.Errorf("Noise 握手失败: %s", err)
-		return nil, fmt.Errorf("Noise 握手失败: %w", err)
+		return nil, err
 	}
 
 	// 设置连接的本地和远程地址
@@ -474,13 +474,13 @@ func (t *WebRTCTransport) dial(ctx context.Context, scope network.ConnManagement
 	}
 	if err != nil {
 		log.Errorf("ICE 连接没有选定的候选对: 错误: %s", err)
-		return nil, fmt.Errorf("ICE 连接没有选定的候选对: 错误: %w", err)
+		return nil, err
 	}
 	// 选定候选对的本地地址应该是连接的本地地址
 	localAddr, err := manet.FromNetAddr(&net.UDPAddr{IP: net.ParseIP(cp.Local.Address), Port: int(cp.Local.Port)})
 	if err != nil {
 		log.Errorf("从网络地址创建多地址失败: %s", err)
-		return nil, fmt.Errorf("从网络地址创建多地址失败: %w", err)
+		return nil, err
 	}
 	remoteMultiaddrWithoutCerthash, _ := ma.SplitFunc(remoteMultiaddr, func(c ma.Component) bool { return c.Protocol().Code == ma.P_CERTHASH })
 
@@ -499,7 +499,7 @@ func (t *WebRTCTransport) dial(ctx context.Context, scope network.ConnManagement
 	)
 	if err != nil {
 		log.Errorf("创建连接失败: %s", err)
-		return nil, fmt.Errorf("创建连接失败: %w", err)
+		return nil, err
 	}
 
 	if t.gater != nil && !t.gater.InterceptSecured(network.DirOutbound, p, conn) {
@@ -559,37 +559,37 @@ func (t *WebRTCTransport) generateNoisePrologue(pc *webrtc.PeerConnection, hash 
 	cert, err := x509.ParseCertificate(raw)
 	if err != nil {
 		log.Errorf("解析证书失败: %s", err)
-		return nil, fmt.Errorf("解析证书失败: %w", err)
+		return nil, err
 	}
 
 	// 注意: 如果需要，我们可以分叉证书代码以避免由于不必要的字符串插入(hex)导致的额外分配
 	localFp, err := t.getCertificateFingerprint()
 	if err != nil {
 		log.Errorf("获取证书指纹失败: %s", err)
-		return nil, fmt.Errorf("获取证书指纹失败: %w", err)
+		return nil, err
 	}
 
 	remoteFpBytes, err := parseFingerprint(cert, hash)
 	if err != nil {
 		log.Errorf("解析指纹失败: %s", err)
-		return nil, fmt.Errorf("解析指纹失败: %w", err)
+		return nil, err
 	}
 
 	localFpBytes, err := decodeInterspersedHexFromASCIIString(localFp.Value)
 	if err != nil {
 		log.Errorf("解码指纹失败: %s", err)
-		return nil, fmt.Errorf("解码指纹失败: %w", err)
+		return nil, err
 	}
 
 	localEncoded, err := multihash.Encode(localFpBytes, multihash.SHA2_256)
 	if err != nil {
 		log.Debugf("无法为本地指纹编码多重哈希")
-		return nil, fmt.Errorf("无法为本地指纹编码多重哈希: %w", err)
+		return nil, err
 	}
 	remoteEncoded, err := multihash.Encode(remoteFpBytes, multihash.SHA2_256)
 	if err != nil {
 		log.Debugf("无法为远程指纹编码多重哈希")
-		return nil, fmt.Errorf("无法为远程指纹编码多重哈希: %w", err)
+		return nil, err
 	}
 
 	result := []byte("libp2p-webrtc-noise:")
@@ -619,7 +619,7 @@ func (t *WebRTCTransport) noiseHandshake(ctx context.Context, pc *webrtc.PeerCon
 	prologue, err := t.generateNoisePrologue(pc, hash, inbound)
 	if err != nil {
 		log.Errorf("生成前言失败: %s", err)
-		return nil, fmt.Errorf("生成前言失败: %w", err)
+		return nil, err
 	}
 	opts := make([]noise.SessionOption, 0, 2)
 	opts = append(opts, noise.Prologue(prologue))
@@ -629,20 +629,20 @@ func (t *WebRTCTransport) noiseHandshake(ctx context.Context, pc *webrtc.PeerCon
 	sessionTransport, err := t.noiseTpt.WithSessionOptions(opts...)
 	if err != nil {
 		log.Errorf("实例化 Noise 传输层失败: %s", err)
-		return nil, fmt.Errorf("实例化 Noise 传输层失败: %w", err)
+		return nil, err
 	}
 	var secureConn sec.SecureConn
 	if inbound {
 		secureConn, err = sessionTransport.SecureOutbound(ctx, netConnWrapper{s}, peer)
 		if err != nil {
 			log.Errorf("保护入站连接失败: %s", err)
-			return nil, fmt.Errorf("保护入站连接失败: %w", err)
+			return nil, err
 		}
 	} else {
 		secureConn, err = sessionTransport.SecureInbound(ctx, netConnWrapper{s}, peer)
 		if err != nil {
 			log.Errorf("保护出站连接失败: %s", err)
-			return nil, fmt.Errorf("保护出站连接失败: %w", err)
+			return nil, err
 		}
 	}
 	return secureConn.RemotePublicKey(), nil
@@ -740,7 +740,7 @@ func newWebRTCConnection(settings webrtc.SettingEngine, config webrtc.Configurat
 	pc, err := api.NewPeerConnection(config)
 	if err != nil {
 		log.Errorf("创建对等连接失败: %s", err)
-		return webRTCConnection{}, fmt.Errorf("创建对等连接失败: %w", err)
+		return webRTCConnection{}, err
 	}
 
 	// 创建握手数据通道
@@ -752,7 +752,7 @@ func newWebRTCConnection(settings webrtc.SettingEngine, config webrtc.Configurat
 	if err != nil {
 		log.Errorf("创建握手通道失败: %s", err)
 		pc.Close()
-		return webRTCConnection{}, fmt.Errorf("创建握手通道失败: %w", err)
+		return webRTCConnection{}, err
 	}
 
 	// 创建传入数据通道队列

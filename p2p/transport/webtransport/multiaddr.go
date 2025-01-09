@@ -2,7 +2,6 @@ package libp2pwebtransport
 
 import (
 	"errors"
-	"fmt"
 	"net"
 	"strconv"
 
@@ -91,12 +90,12 @@ func extractCertHashes(addr ma.Multiaddr) ([]multihash.DecodedMultihash, error) 
 		_, ch, err := multibase.Decode(s)
 		if err != nil {
 			log.Errorf("证书哈希的 multibase 解码失败: %s", err)
-			return nil, fmt.Errorf("证书哈希的 multibase 解码失败: %w", err)
+			return nil, err
 		}
 		dh, err := multihash.Decode(ch)
 		if err != nil {
 			log.Errorf("证书哈希的 multihash 解码失败: %s", err)
-			return nil, fmt.Errorf("证书哈希的 multihash 解码失败: %w", err)
+			return nil, err
 		}
 		certHashes = append(certHashes, *dh)
 	}

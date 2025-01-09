@@ -349,13 +349,13 @@ func (t *transport) upgrade(ctx context.Context, sess *webtransport.Session, p p
 	local, err := toWebtransportMultiaddr(sess.LocalAddr())
 	if err != nil {
 		log.Errorf("确定本地地址时出错: %s", err)
-		return nil, fmt.Errorf("确定本地地址时出错: %w", err)
+		return nil, err
 	}
 	// 获取远程地址
 	remote, err := toWebtransportMultiaddr(sess.RemoteAddr())
 	if err != nil {
 		log.Errorf("确定远程地址时出错: %s", err)
-		return nil, fmt.Errorf("确定远程地址时出错: %w", err)
+		return nil, err
 	}
 
 	// 打开流
@@ -393,7 +393,7 @@ func (t *transport) upgrade(ctx context.Context, sess *webtransport.Session, p p
 	}), nil))
 	if err != nil {
 		log.Errorf("创建 Noise 传输时失败: %s", err)
-		return nil, fmt.Errorf("创建 Noise 传输时失败: %w", err)
+		return nil, err
 	}
 	// 建立安全出站连接
 	c, err := n.SecureOutbound(ctx, &webtransportStream{Stream: str, wsess: sess}, p)
@@ -427,7 +427,7 @@ func decodeCertHashesFromProtobuf(b [][]byte) ([]multihash.DecodedMultihash, err
 		dh, err := multihash.Decode(h)
 		if err != nil {
 			log.Errorf("解码哈希失败: %s", err)
-			return nil, fmt.Errorf("解码哈希失败: %w", err)
+			return nil, err
 		}
 		hashes = append(hashes, *dh)
 	}

@@ -280,12 +280,12 @@ func NewIDService(h host.Host, opts ...Option) (*idService, error) {
 			h.Addrs, h.Network().InterfaceListenAddresses, normalize)
 		if err != nil {
 			log.Errorf("创建观察地址管理器失败: %s", err)
-			return nil, fmt.Errorf("创建观察地址管理器失败: %s", err)
+			return nil, err
 		}
 		natEmitter, err := newNATEmitter(h, observedAddrs, time.Minute)
 		if err != nil {
-			log.Errorf("创建 NAT 发射器失败: %s", err)
-			return nil, fmt.Errorf("创建 NAT 发射器失败: %s", err)
+			log.Debugf("创建 NAT 发射器失败: %s", err)
+			return nil, err
 		}
 		s.natEmitter = natEmitter
 		s.observedAddrMgr = observedAddrs
@@ -613,9 +613,9 @@ func (ids *idService) handleIdentifyRequest(s network.Stream) {
 func (ids *idService) sendIdentifyResp(s network.Stream, isPush bool) error {
 	// 设置流的服务
 	if err := s.Scope().SetService(ServiceName); err != nil {
-		log.Errorf("将流附加到 identify 服务失败: %w", err)
+		log.Debugf("将流附加到 identify 服务失败: %w", err)
 		s.Reset()
-		return fmt.Errorf("将流附加到 identify 服务失败: %w", err)
+		return err
 	}
 	defer s.Close()
 
@@ -1098,8 +1098,8 @@ func (ids *idService) consumeSignedPeerRecord(p peer.ID, signedPeerRecord *recor
 	}
 	id, err := peer.IDFromPublicKey(signedPeerRecord.PublicKey)
 	if err != nil {
-		log.Errorf("从公钥派生对等节点 ID 失败: %s", err)
-		return nil, fmt.Errorf("从公钥派生对等节点 ID 失败: %s", err)
+		log.Debugf("从公钥派生对等节点 ID 失败: %s", err)
+		return nil, err
 	}
 	if id != p {
 		log.Errorf("收到的签名对等节点记录信封的对等节点 ID 不符。期望 %s, 得到 %s", p, id)

@@ -123,7 +123,7 @@ func (ac *client) GetReachability(ctx context.Context, p peer.ID, reqs []Request
 	if err := w.WriteMsg(&msg); err != nil {
 		s.Reset()
 		log.Errorf("拨号请求写入失败: %v", err)
-		return Result{}, fmt.Errorf("拨号请求写入失败: %w", err)
+		return Result{}, err
 	}
 
 	// 读取响应
@@ -131,7 +131,7 @@ func (ac *client) GetReachability(ctx context.Context, p peer.ID, reqs []Request
 	if err := r.ReadMsg(&msg); err != nil {
 		s.Reset()
 		log.Errorf("拨号消息读取失败: %v", err)
-		return Result{}, fmt.Errorf("拨号消息读取失败: %w", err)
+		return Result{}, err
 	}
 
 	switch {
@@ -142,23 +142,23 @@ func (ac *client) GetReachability(ctx context.Context, p peer.ID, reqs []Request
 		if err := ac.validateDialDataRequest(reqs, &msg); err != nil {
 			s.Reset()
 			log.Errorf("无效的拨号数据请求: %v", err)
-			return Result{}, fmt.Errorf("无效的拨号数据请求: %w", err)
+			return Result{}, err
 		}
 		// 拨号数据请求有效且我们要发送数据
 		if err := sendDialData(ac.dialData, int(msg.GetDialDataRequest().GetNumBytes()), w, &msg); err != nil {
 			s.Reset()
 			log.Errorf("拨号数据发送失败: %v", err)
-			return Result{}, fmt.Errorf("拨号数据发送失败: %w", err)
+			return Result{}, err
 		}
 		if err := r.ReadMsg(&msg); err != nil {
 			s.Reset()
 			log.Errorf("拨号响应读取失败: %v", err)
-			return Result{}, fmt.Errorf("拨号响应读取失败: %w", err)
+			return Result{}, err
 		}
 		if msg.GetDialResponse() == nil {
 			s.Reset()
 			log.Errorf("无效的响应类型: %T", msg.Msg)
-			return Result{}, fmt.Errorf("无效的响应类型: %T", msg.Msg)
+			return Result{}, err
 		}
 	default:
 		s.Reset()
@@ -171,7 +171,7 @@ func (ac *client) GetReachability(ctx context.Context, p peer.ID, reqs []Request
 		// E_DIAL_REFUSED 对决定未来地址验证优先级有影响,包装一个独特的错误以方便使用 errors.Is
 		if resp.GetStatus() == pb.DialResponse_E_DIAL_REFUSED {
 			log.Errorf("拨号请求失败: %w", ErrDialRefused)
-			return Result{}, fmt.Errorf("拨号请求失败: %w", ErrDialRefused)
+			return Result{}, ErrDialRefused
 		}
 		log.Errorf("拨号请求失败: 响应状态 %d %s", resp.GetStatus(),
 			pb.DialResponse_ResponseStatus_name[int32(resp.GetStatus())])
@@ -294,7 +294,7 @@ func sendDialData(dialData []byte, numBytes int, w pbio.Writer, msg *pb.Message)
 		}
 		if err := w.WriteMsg(msg); err != nil {
 			log.Errorf("写入失败: %v", err)
-			return fmt.Errorf("写入失败: %w", err)
+			return err
 		}
 		remain -= len(dialData)
 	}
@@ -363,21 +363,21 @@ func (ac *client) handleDialBack(s network.Stream) {
 	ch := ac.dialBackQueues[nonce]
 	ac.mu.Unlock()
 	if ch == nil {
-		log.Errorf("收到无效 nonce 的回拨: 本地地址: %s 对等点: %s nonce: %d", s.Conn().LocalMultiaddr(), s.Conn().RemotePeer(), nonce)
+		log.Debugf("收到无效 nonce 的回拨: 本地地址: %s 对等点: %s nonce: %d", s.Conn().LocalMultiaddr(), s.Conn().RemotePeer(), nonce)
 		s.Reset()
 		return
 	}
 	select {
 	case ch <- s.Conn().LocalMultiaddr():
 	default:
-		log.Errorf("收到多个回拨: 本地地址: %s 对等点: %s", s.Conn().LocalMultiaddr(), s.Conn().RemotePeer())
+		log.Debugf("收到多个回拨: 本地地址: %s 对等点: %s", s.Conn().LocalMultiaddr(), s.Conn().RemotePeer())
 		s.Reset()
 		return
 	}
 	w := pbio.NewDelimitedWriter(s)
 	res := pb.DialBackResponse{}
 	if err := w.WriteMsg(&res); err != nil {
-		log.Errorf("写入回拨响应失败: %s", err)
+		log.Debugf("写入回拨响应失败: %s", err)
 		s.Reset()
 	}
 }

@@ -27,7 +27,7 @@ func ToQuicMultiaddr(na net.Addr, version quic.Version) (ma.Multiaddr, error) {
 	udpMA, err := manet.FromNetAddr(na)
 	if err != nil {
 		log.Errorf("将网络地址转换为UDP多地址时出错: %s", err)
-		return nil, fmt.Errorf("将网络地址转换为UDP多地址时出错: %w", err)
+		return nil, err
 	}
 	// 根据QUIC版本进行处理
 	switch version {
@@ -78,7 +78,7 @@ func FromQuicMultiaddr(addr ma.Multiaddr) (*net.UDPAddr, quic.Version, error) {
 	netAddr, err := manet.ToNetAddr(ma.Join(partsBeforeQUIC...))
 	if err != nil {
 		log.Errorf("将地址部分转换为网络地址时出错: %s", err)
-		return nil, version, fmt.Errorf("将地址部分转换为网络地址时出错: %w", err)
+		return nil, version, err
 	}
 	// 转换为UDP地址
 	udpAddr, ok := netAddr.(*net.UDPAddr)

@@ -47,8 +47,8 @@ func New(id protocol.ID, key ci.PrivKey, muxers []tptu.StreamMuxer) (*Transport,
 	// 从私钥生成节点ID
 	localPeer, err := peer.IDFromPrivateKey(key)
 	if err != nil {
-		log.Errorf("从私钥生成节点ID时出错: %s", err)
-		return nil, fmt.Errorf("从私钥生成节点ID时出错: %w", err)
+		log.Debugf("从私钥生成节点ID时出错: %s", err)
+		return nil, err
 	}
 	// 提取多路复用器ID
 	muxerIDs := make([]protocol.ID, 0, len(muxers))
@@ -66,8 +66,8 @@ func New(id protocol.ID, key ci.PrivKey, muxers []tptu.StreamMuxer) (*Transport,
 	// 创建身份信息
 	identity, err := NewIdentity(key)
 	if err != nil {
-		log.Errorf("创建TLS身份信息时出错: %s", err)
-		return nil, fmt.Errorf("创建TLS身份信息时出错: %w", err)
+		log.Debugf("创建TLS身份信息时出错: %s", err)
+		return nil, err
 	}
 	t.identity = identity
 	return t, nil
@@ -171,7 +171,7 @@ func (t *Transport) handshake(ctx context.Context, tlsConn *tls.Conn, keyCh <-ch
 	// 执行握手
 	if err := tlsConn.HandshakeContext(ctx); err != nil {
 		log.Errorf("TLS握手失败: %s", err)
-		return nil, fmt.Errorf("TLS握手失败: %w", err)
+		return nil, err
 	}
 
 	// 此时应该准备就绪,不要阻塞
@@ -200,7 +200,7 @@ func (t *Transport) setupConn(tlsConn *tls.Conn, remotePubKey ci.PubKey) (sec.Se
 	remotePeerID, err := peer.IDFromPublicKey(remotePubKey)
 	if err != nil {
 		log.Errorf("从公钥生成节点ID时出错: %s", err)
-		return nil, fmt.Errorf("从公钥生成节点ID时出错: %w", err)
+		return nil, err
 	}
 
 	nextProto := tlsConn.ConnectionState().NegotiatedProtocol

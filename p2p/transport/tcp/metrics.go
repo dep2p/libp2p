@@ -3,7 +3,6 @@
 package tcp
 
 import (
-	"fmt"
 	"strings"
 	"sync"
 	"time"
@@ -280,7 +279,7 @@ func newTracingConn(c manet.Conn, collector *aggregatingCollector, isClient bool
 	conn, err := tcp.NewConn(c)
 	if err != nil {
 		log.Errorf("创建TCP连接时出错: %s", err)
-		return nil, fmt.Errorf("创建TCP连接时出错: %w", err)
+		return nil, err
 	}
 	tc := &tracingConn{
 		startTime: time.Now(),
@@ -328,7 +327,7 @@ func (c *tracingConn) getTCPInfo() (*tcpinfo.Info, error) {
 	i, err := c.tcpConn.Option(o.Level(), o.Name(), b[:])
 	if err != nil {
 		log.Errorf("获取TCP连接信息时出错: %s", err)
-		return nil, fmt.Errorf("获取TCP连接信息时出错: %w", err)
+		return nil, err
 	}
 	info := i.(*tcpinfo.Info)
 	return info, nil
@@ -359,7 +358,7 @@ func (l *tracingListener) Accept() (manet.Conn, error) {
 	conn, err := l.Listener.Accept()
 	if err != nil {
 		log.Errorf("接受新连接时出错: %s", err)
-		return nil, fmt.Errorf("接受新连接时出错: %w", err)
+		return nil, err
 	}
 	return newTracingConn(conn, l.collector, false)
 }

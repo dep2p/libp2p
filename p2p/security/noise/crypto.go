@@ -21,7 +21,7 @@ import (
 func (s *secureSession) encrypt(out, plaintext []byte) ([]byte, error) {
 	// 检查加密器是否已初始化
 	if s.enc == nil {
-		log.Errorf("无法加密,握手未完成")
+		log.Debugf("无法加密,握手未完成")
 		return nil, errors.New("无法加密,握手未完成")
 	}
 	// 调用加密器进行加密
@@ -44,7 +44,7 @@ func (s *secureSession) encrypt(out, plaintext []byte) ([]byte, error) {
 func (s *secureSession) decrypt(out, ciphertext []byte) ([]byte, error) {
 	// 检查解密器是否已初始化
 	if s.dec == nil {
-		log.Errorf("无法解密,握手未完成")
+		log.Debugf("无法解密,握手未完成")
 		return nil, errors.New("无法解密,握手未完成")
 	}
 	// 调用解密器进行解密

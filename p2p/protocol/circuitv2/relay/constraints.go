@@ -91,7 +91,7 @@ func (c *constraints) Reserve(p peer.ID, a ma.Multiaddr, expiry time.Time) error
 	ip, err := manet.ToIP(a)
 	if err != nil {
 		log.Errorf("对等点没有关联的IP地址: %v", err)
-		return errors.New("对等点没有关联的IP地址")
+		return err
 	}
 
 	// 检查IP预约数限制

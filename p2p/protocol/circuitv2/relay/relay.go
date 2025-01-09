@@ -114,7 +114,7 @@ func New(h host.Host, opts ...Option) (*Relay, error) {
 		err := opt(r)
 		if err != nil {
 			log.Errorf("应用中继选项时出错: %v", err)
-			return nil, fmt.Errorf("应用中继选项时出错: %w", err)
+			return nil, err
 		}
 	}
 
@@ -126,7 +126,7 @@ func New(h host.Host, opts ...Option) (*Relay, error) {
 			return err
 		})
 	if err != nil {
-		log.Errorf("获取服务级别的资源作用域失败: %v", err)
+		log.Debugf("获取服务级别的资源作用域失败: %v", err)
 		return nil, err
 	}
 

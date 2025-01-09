@@ -3,7 +3,6 @@ package libp2pwebtransport
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net"
 	"net/http"
 	"time"
@@ -291,12 +290,12 @@ func (l *listener) handshake(ctx context.Context, sess *webtransport.Session) (*
 	local, err := toWebtransportMultiaddr(sess.LocalAddr())
 	if err != nil {
 		log.Errorf("确定本地地址时出错: %s", err)
-		return nil, fmt.Errorf("确定本地地址时出错: %w", err)
+		return nil, err
 	}
 	remote, err := toWebtransportMultiaddr(sess.RemoteAddr())
 	if err != nil {
 		log.Errorf("确定远程地址时出错: %s", err)
-		return nil, fmt.Errorf("确定远程地址时出错: %w", err)
+		return nil, err
 	}
 
 	str, err := sess.AcceptStream(ctx)
@@ -315,7 +314,7 @@ func (l *listener) handshake(ctx context.Context, sess *webtransport.Session) (*
 	))
 	if err != nil {
 		log.Errorf("初始化 Noise 会话失败: %s", err)
-		return nil, fmt.Errorf("初始化 Noise 会话失败: %w", err)
+		return nil, err
 	}
 	c, err := n.SecureInbound(ctx, &webtransportStream{Stream: str, wsess: sess}, "")
 	if err != nil {

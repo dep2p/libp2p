@@ -262,7 +262,7 @@ func (c *connection) OpenStream(ctx context.Context) (network.MuxedStream, error
 	dc, err := c.pc.CreateDataChannel("", &webrtc.DataChannelInit{ID: &streamID})
 	if err != nil {
 		log.Errorf("创建数据通道时出错: %s", err)
-		return nil, fmt.Errorf("创建数据通道时出错: %w", err)
+		return nil, err
 	}
 
 	// 分离数据通道

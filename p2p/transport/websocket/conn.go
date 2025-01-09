@@ -134,16 +134,16 @@ func (c *Conn) prepNextReader() error {
 	if err != nil {
 		if wserr, ok := err.(*ws.CloseError); ok {
 			if wserr.Code == 1000 || wserr.Code == 1005 {
-				log.Errorf("连接已关闭: %s", err)
+				log.Debugf("连接已关闭: %s", err)
 				return io.EOF
 			}
 		}
-		log.Errorf("准备下一个读取器失败: %s", err)
+		log.Debugf("准备下一个读取器失败: %s", err)
 		return err
 	}
 
 	if t == ws.CloseMessage {
-		log.Errorf("连接已关闭: %s", err)
+		log.Debugf("连接已关闭: %s", err)
 		return io.EOF
 	}
 
@@ -163,7 +163,7 @@ func (c *Conn) Write(b []byte) (n int, err error) {
 	defer c.writeLock.Unlock()
 
 	if err := c.Conn.WriteMessage(c.DefaultMessageType, b); err != nil {
-		log.Errorf("写入消息失败: %s", err)
+		log.Debugf("写入消息失败: %s", err)
 		return 0, err
 	}
 
@@ -227,7 +227,7 @@ func (c *Conn) RemoteAddr() net.Addr {
 //   - error: 设置过程中的错误
 func (c *Conn) SetDeadline(t time.Time) error {
 	if err := c.SetReadDeadline(t); err != nil {
-		log.Errorf("设置读取截止时间失败: %s", err)
+		log.Debugf("设置读取截止时间失败: %s", err)
 		return err
 	}
 

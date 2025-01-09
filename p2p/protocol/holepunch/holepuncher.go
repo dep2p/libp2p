@@ -250,13 +250,13 @@ func (hp *holePuncher) initiateHolePunch(rp peer.ID) ([]ma.Multiaddr, []ma.Multi
 //   - error 错误信息
 func (hp *holePuncher) initiateHolePunchImpl(str network.Stream) ([]ma.Multiaddr, []ma.Multiaddr, time.Duration, error) {
 	if err := str.Scope().SetService(ServiceName); err != nil {
-		log.Errorf("将流附加到打洞服务时出错: %s", err)
-		return nil, nil, 0, fmt.Errorf("将流附加到打洞服务时出错: %s", err)
+		log.Debugf("将流附加到打洞服务时出错: %s", err)
+		return nil, nil, 0, err
 	}
 
 	if err := str.Scope().ReserveMemory(maxMsgSize, network.ReservationPriorityAlways); err != nil {
-		log.Errorf("为流预留内存时出错: %s", err)
-		return nil, nil, 0, fmt.Errorf("为流预留内存时出错: %s", err)
+		log.Debugf("为流预留内存时出错: %s", err)
+		return nil, nil, 0, err
 	}
 	defer str.Scope().ReleaseMemory(maxMsgSize)
 
@@ -289,7 +289,7 @@ func (hp *holePuncher) initiateHolePunchImpl(str network.Stream) ([]ma.Multiaddr
 	var msg pb.HolePunch
 	if err := rd.ReadMsg(&msg); err != nil {
 		log.Errorf("读取远程节点的 CONNECT 消息失败: %v", err)
-		return nil, nil, 0, fmt.Errorf("读取远程节点的 CONNECT 消息失败: %w", err)
+		return nil, nil, 0, err
 	}
 	rtt := time.Since(start)
 	if t := msg.GetType(); t != pb.HolePunch_CONNECT {
@@ -309,7 +309,7 @@ func (hp *holePuncher) initiateHolePunchImpl(str network.Stream) ([]ma.Multiaddr
 
 	if err := w.WriteMsg(&pb.HolePunch{Type: pb.HolePunch_SYNC.Enum()}); err != nil {
 		log.Errorf("发送打洞 SYNC 消息失败: %v", err)
-		return nil, nil, 0, fmt.Errorf("发送打洞 SYNC 消息失败: %w", err)
+		return nil, nil, 0, err
 	}
 	return addrs, obsAddrs, rtt, nil
 }

@@ -30,29 +30,29 @@ func AddTransport(h host.Host, upgrader transport.Upgrader) error {
 	// 尝试将主机网络转换为传输网络接口
 	n, ok := h.Network().(transport.TransportNetwork)
 	if !ok {
-		log.Errorf("主机网络 %v 不是传输网络", h.Network())
+		log.Debugf("主机网络 %v 不是传输网络", h.Network())
 		return fmt.Errorf("主机网络 %v 不是传输网络", h.Network())
 	}
 
 	// 创建新的中继客户端
 	c, err := New(h, upgrader)
 	if err != nil {
-		log.Errorf("构造中继客户端时出错: %w", err)
-		return fmt.Errorf("构造中继客户端时出错: %w", err)
+		log.Debugf("构造中继客户端时出错: %w", err)
+		return err
 	}
 
 	// 将中继传输添加到网络中
 	err = n.AddTransport(c)
 	if err != nil {
-		log.Errorf("添加中继传输时出错: %w", err)
-		return fmt.Errorf("添加中继传输时出错: %w", err)
+		log.Debugf("添加中继传输时出错: %w", err)
+		return err
 	}
 
 	// 监听中继地址
 	err = n.Listen(circuitAddr)
 	if err != nil {
-		log.Errorf("监听中继地址时出错: %w", err)
-		return fmt.Errorf("监听中继地址时出错: %w", err)
+		log.Debugf("监听中继地址时出错: %w", err)
+		return err
 	}
 
 	// 启动中继客户端
@@ -146,7 +146,7 @@ func (c *Client) dialAndUpgrade(ctx context.Context, a ma.Multiaddr, p peer.ID, 
 func (c *Client) CanDial(addr ma.Multiaddr) bool {
 	_, err := addr.ValueForProtocol(ma.P_CIRCUIT)
 	if err != nil {
-		log.Errorf("检查中继地址失败: %v", err)
+		log.Debugf("地址 %s 不是中继地址: %s", addr, err)
 	}
 	return err == nil
 }

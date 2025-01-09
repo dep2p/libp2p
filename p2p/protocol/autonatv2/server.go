@@ -333,7 +333,7 @@ func getDialData(w pbio.Writer, s network.Stream, msg *pb.Message, addrIdx int) 
 	}
 	if err := w.WriteMsg(msg); err != nil {
 		log.Errorf("拨号数据写入失败: %v", err)
-		return fmt.Errorf("拨号数据写入: %w", err)
+		return err
 	}
 	// 到目前为止在此流上使用的 pbio.Reader 是带缓冲的。但此时流上没有未读的内容。
 	// 因此使用原始流进行读取是安全的,可以减少分配。
@@ -354,7 +354,7 @@ func readDialData(numBytes int, r io.Reader) error {
 		msg, err := mr.ReadMsg()
 		if err != nil {
 			log.Errorf("拨号数据读取失败: %v", err)
-			return fmt.Errorf("拨号数据读取: %w", err)
+			return err
 		}
 		// protobuf 格式为:
 		// (oneof dialDataResponse:<fieldTag><len varint>)(dial data:<fieldTag><len varint><bytes>)

@@ -3,7 +3,6 @@ package tcp
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net"
 	"os"
 	"runtime"
@@ -111,7 +110,7 @@ func (ll *tcpListener) Accept() (manet.Conn, error) {
 	c, err := ll.Listener.Accept()
 	if err != nil {
 		log.Errorf("接受新连接时出错: %s", err)
-		return nil, fmt.Errorf("接受新连接时出错: %w", err)
+		return nil, err
 	}
 
 	// 设置 linger 和 keepalive
@@ -211,7 +210,7 @@ func NewTCPTransport(upgrader transport.Upgrader, rcmgr network.ResourceManager,
 	for _, o := range opts {
 		if err := o(tr); err != nil {
 			log.Errorf("应用配置选项时出错: %s", err)
-			return nil, fmt.Errorf("应用配置选项时出错: %w", err)
+			return nil, err
 		}
 	}
 	return tr, nil
@@ -289,7 +288,7 @@ func (t *TcpTransport) DialWithUpdates(ctx context.Context, raddr ma.Multiaddr, 
 	connScope, err := t.rcmgr.OpenConnection(network.DirOutbound, true, raddr)
 	if err != nil {
 		log.Debugf("资源管理器阻止了出站连接: %s", err)
-		return nil, fmt.Errorf("资源管理器阻止了出站连接: %w", err)
+		return nil, err
 	}
 
 	// 使用连接作用域拨号
@@ -297,7 +296,7 @@ func (t *TcpTransport) DialWithUpdates(ctx context.Context, raddr ma.Multiaddr, 
 	if err != nil {
 		connScope.Done()
 		log.Errorf("拨号时出错: %s", err)
-		return nil, fmt.Errorf("拨号时出错: %w", err)
+		return nil, err
 	}
 	return c, nil
 }
@@ -317,14 +316,14 @@ func (t *TcpTransport) dialWithScope(ctx context.Context, raddr ma.Multiaddr, p 
 	// 设置对等节点
 	if err := connScope.SetPeer(p); err != nil {
 		log.Debugf("资源管理器阻止了与对等节点的连接: %s", err)
-		return nil, fmt.Errorf("资源管理器阻止了与对等节点的连接: %w", err)
+		return nil, err
 	}
 
 	// 建立连接
 	conn, err := t.maDial(ctx, raddr)
 	if err != nil {
 		log.Errorf("拨号时出错: %s", err)
-		return nil, fmt.Errorf("拨号时出错: %w", err)
+		return nil, err
 	}
 
 	// 设置 linger 为 0,避免卡在 TIME-WAIT 状态
@@ -340,7 +339,7 @@ func (t *TcpTransport) dialWithScope(ctx context.Context, raddr ma.Multiaddr, p 
 		c, err = newTracingConn(conn, t.metricsCollector, true)
 		if err != nil {
 			log.Errorf("启用指标收集时出错: %s", err)
-			return nil, fmt.Errorf("启用指标收集时出错: %w", err)
+			return nil, err
 		}
 	}
 
@@ -403,7 +402,7 @@ func (t *TcpTransport) Listen(laddr ma.Multiaddr) (transport.Listener, error) {
 	}
 	if err != nil {
 		log.Errorf("创建监听器时出错: %s", err)
-		return nil, fmt.Errorf("创建监听器时出错: %w", err)
+		return nil, err
 	}
 
 	// 启用指标收集

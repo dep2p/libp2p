@@ -71,7 +71,7 @@ func newQuicListener(tr refCountedQuicTransport, quicConfig *quic.Config) (*quic
 	a, err := ToQuicMultiaddr(tr.LocalAddr(), quic.Version1)
 	if err != nil {
 		log.Errorf("将网络地址转换为QUIC多地址时出错: %s", err)
-		return nil, fmt.Errorf("将网络地址转换为QUIC多地址时出错: %w", err)
+		return nil, err
 	}
 	localMultiaddrs = append(localMultiaddrs, a)
 
@@ -108,7 +108,7 @@ func newQuicListener(tr refCountedQuicTransport, quicConfig *quic.Config) (*quic
 	ln, err := tr.Listen(tlsConf, quicConf)
 	if err != nil {
 		log.Errorf("创建QUIC监听器时出错: %s", err)
-		return nil, fmt.Errorf("创建QUIC监听器时出错: %w", err)
+		return nil, err
 	}
 	cl.l = ln
 	go cl.Run() // 启动监听循环
@@ -190,7 +190,7 @@ func (l *quicListener) Run() error {
 				return transport.ErrListenerClosed
 			}
 			log.Errorf("接受新连接时出错: %s", err)
-			return fmt.Errorf("接受新连接时出错: %w", err)
+			return err
 		}
 		proto := conn.ConnectionState().TLS.NegotiatedProtocol
 

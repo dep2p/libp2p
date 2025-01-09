@@ -3,7 +3,6 @@ package quicreuse
 import (
 	"context"
 	"crypto/tls"
-	"fmt"
 	"net"
 	"sync"
 	"time"
@@ -349,7 +348,7 @@ func (r *reuse) transportWithAssociationForDial(association any, network string,
 	tr, err := r.transportForDialLocked(association, network, ip)
 	if err != nil {
 		log.Errorf("获取用于拨号的传输时出错: %s", err)
-		return nil, fmt.Errorf("获取用于拨号的传输时出错: %w", err)
+		return nil, err
 	}
 	// 增加引用计数
 	tr.IncreaseCount()
@@ -403,7 +402,7 @@ func (r *reuse) transportForDialLocked(association any, network string, source *
 	conn, err := net.ListenUDP(network, addr)
 	if err != nil {
 		log.Errorf("创建UDP监听器时出错: %s", err)
-		return nil, fmt.Errorf("创建UDP监听器时出错: %w", err)
+		return nil, err
 	}
 	// 创建新的传输
 	tr := &refcountedTransport{Transport: quic.Transport{
@@ -460,7 +459,7 @@ func (r *reuse) TransportForListen(network string, laddr *net.UDPAddr) (*refcoun
 	conn, err := net.ListenUDP(network, laddr)
 	if err != nil {
 		log.Errorf("创建UDP监听器时出错: %s", err)
-		return nil, fmt.Errorf("创建UDP监听器时出错: %w", err)
+		return nil, err
 	}
 	localAddr := conn.LocalAddr().(*net.UDPAddr)
 	// 创建新的传输

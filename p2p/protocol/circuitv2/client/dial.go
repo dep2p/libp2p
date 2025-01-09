@@ -167,7 +167,7 @@ func (c *Client) dialPeer(ctx context.Context, relay, dest peer.AddrInfo) (*Conn
 	s, err := c.host.NewStream(dialCtx, relay.ID, proto.ProtoIDv2Hop)
 	if err != nil {
 		log.Errorf("打开到中继的 hop 流时出错: %v", err)
-		return nil, fmt.Errorf("打开到中继的 hop 流时出错: %w", err)
+		return nil, err
 	}
 	return c.connect(s, dest)
 }

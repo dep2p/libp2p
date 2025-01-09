@@ -120,7 +120,7 @@ func New(host host.Host, dialerHost host.Host, opts ...AutoNATOption) (*AutoNAT,
 	for _, o := range opts {
 		if err := o(s); err != nil {
 			log.Errorf("应用选项失败: %v", err)
-			return nil, fmt.Errorf("应用选项失败: %w", err)
+			return nil, err
 		}
 	}
 
@@ -172,7 +172,7 @@ func (an *AutoNAT) Start() error {
 	})
 	if err != nil {
 		log.Errorf("事件订阅失败: %v", err)
-		return fmt.Errorf("事件订阅失败: %w", err)
+		return err
 	}
 	an.cli.Start()
 	an.srv.Start()

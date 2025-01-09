@@ -2,7 +2,6 @@ package noise
 
 import (
 	"context"
-	"fmt"
 	"net"
 
 	"github.com/dep2p/libp2p/core/canonicallog"
@@ -54,7 +53,7 @@ func New(id protocol.ID, privkey crypto.PrivKey, muxers []tptu.StreamMuxer) (*Tr
 	localID, err := peer.IDFromPrivateKey(privkey)
 	if err != nil {
 		log.Errorf("从私钥生成节点 ID 时出错: %s", err)
-		return nil, fmt.Errorf("从私钥生成节点 ID 时出错: %w", err)
+		return nil, err
 	}
 
 	// 提取多路复用器的协议 ID
@@ -112,7 +111,7 @@ func (t *Transport) SecureOutbound(ctx context.Context, insecure net.Conn, p pee
 	c, err := newSecureSession(t, ctx, insecure, p, nil, initiatorEDH, nil, true, true)
 	if err != nil {
 		log.Errorf("创建安全会话时出错: %s", err)
-		return nil, fmt.Errorf("创建安全会话时出错: %w", err)
+		return nil, err
 	}
 	return SessionWithConnState(c, initiatorEDH.MatchMuxers(true)), err
 }
@@ -129,7 +128,7 @@ func (t *Transport) WithSessionOptions(opts ...SessionOption) (*SessionTransport
 	for _, opt := range opts {
 		if err := opt(st); err != nil {
 			log.Errorf("应用会话选项时出错: %s", err)
-			return nil, fmt.Errorf("应用会话选项时出错: %w", err)
+			return nil, err
 		}
 	}
 	return st, nil

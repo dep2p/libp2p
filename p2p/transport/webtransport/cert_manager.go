@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"crypto/tls"
 	"encoding/binary"
-	"fmt"
 	"sync"
 	"time"
 
@@ -244,7 +243,7 @@ func (m *certManager) cacheSerializedCertHashes() error {
 		h, err := multihash.Encode(certHash[:], multihash.SHA2_256)
 		if err != nil {
 			log.Errorf("编码证书哈希失败: %s", err)
-			return fmt.Errorf("编码证书哈希失败: %w", err)
+			return err
 		}
 		m.serializedCertHashes = append(m.serializedCertHashes, h)
 	}

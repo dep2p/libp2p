@@ -2,7 +2,6 @@ package identify
 
 import (
 	"context"
-	"fmt"
 	"sync"
 	"time"
 
@@ -50,16 +49,16 @@ func newNATEmitter(h host.Host, o *ObservedAddrManager, eventInterval time.Durat
 	// 订阅可达性变更事件
 	reachabilitySub, err := h.EventBus().Subscribe(new(event.EvtLocalReachabilityChanged), eventbus.Name("identify (nat emitter)"))
 	if err != nil {
-		log.Errorf("订阅可达性事件失败: %s", err)
-		return nil, fmt.Errorf("订阅可达性事件失败: %s", err)
+		log.Debugf("订阅可达性事件失败: %s", err)
+		return nil, err
 	}
 	n.reachabilitySub = reachabilitySub
 
 	// 创建 NAT 设备类型变更事件发送器
 	emitter, err := h.EventBus().Emitter(new(event.EvtNATDeviceTypeChanged), eventbus.Stateful)
 	if err != nil {
-		log.Errorf("创建 NAT 设备类型事件发送器失败: %s", err)
-		return nil, fmt.Errorf("创建 NAT 设备类型事件发送器失败: %s", err)
+		log.Debugf("创建 NAT 设备类型事件发送器失败: %s", err)
+		return nil, err
 	}
 	n.emitNATDeviceTypeChanged = emitter
 

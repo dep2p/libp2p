@@ -112,7 +112,7 @@ func (c *Conn) LocalMultiaddr() ma.Multiaddr {
 func (c *Conn) LocalAddr() net.Addr {
 	na, err := manet.ToNetAddr(c.stream.Conn().LocalMultiaddr())
 	if err != nil {
-		log.Errorf("转换本地多地址到网络地址失败: %v", err)
+		log.Debugf("转换本地多地址到网络地址失败: %v", err)
 		return nil
 	}
 	return na

@@ -221,7 +221,7 @@ func (s *Service) incomingHolePunch(str network.Stream) (rtt time.Duration, remo
 
 	if err := rd.ReadMsg(msg); err != nil {
 		log.Errorf("从发起者读取消息失败: %v", err)
-		return 0, nil, nil, fmt.Errorf("从发起者读取消息失败: %w", err)
+		return 0, nil, nil, err
 	}
 	if t := msg.GetType(); t != pb.HolePunch_CONNECT {
 		log.Errorf("期望从发起者收到 CONNECT 消息但收到 %d", t)
@@ -246,14 +246,14 @@ func (s *Service) incomingHolePunch(str network.Stream) (rtt time.Duration, remo
 	tstart := time.Now()
 	if err := wr.WriteMsg(msg); err != nil {
 		log.Errorf("向发起者写入 CONNECT 消息失败: %v", err)
-		return 0, nil, nil, fmt.Errorf("向发起者写入 CONNECT 消息失败: %w", err)
+		return 0, nil, nil, err
 	}
 
 	// 读取 SYNC 消息
 	msg.Reset()
 	if err := rd.ReadMsg(msg); err != nil {
 		log.Errorf("从发起者读取消息失败: %v", err)
-		return 0, nil, nil, fmt.Errorf("从发起者读取消息失败: %w", err)
+		return 0, nil, nil, err
 	}
 	if t := msg.GetType(); t != pb.HolePunch_SYNC {
 		log.Errorf("期望从发起者收到 SYNC 消息但收到 %d", t)
@@ -278,7 +278,7 @@ func (s *Service) handleNewStream(str network.Stream) {
 	}
 
 	if err := str.Scope().SetService(ServiceName); err != nil {
-		log.Errorf("将流附加到打洞服务时出错: %s", err)
+		log.Debugf("将流附加到打洞服务时出错: %s", err)
 		str.Reset()
 		return
 	}

@@ -123,7 +123,7 @@ func (t *ConnMgr) DemultiplexedListen(laddr ma.Multiaddr, connType Demultiplexed
 	laddr, err := getTCPAddr(laddr)
 	if err != nil {
 		log.Errorf("获取TCP地址时出错: %s", err)
-		return nil, fmt.Errorf("获取TCP地址时出错: %w", err)
+		return nil, err
 	}
 
 	t.mx.Lock()
@@ -133,7 +133,7 @@ func (t *ConnMgr) DemultiplexedListen(laddr ma.Multiaddr, connType Demultiplexed
 		dl, err := ml.DemultiplexedListen(connType)
 		if err != nil {
 			log.Errorf("获取连接类型时出错: %s", err)
-			return nil, fmt.Errorf("获取连接类型时出错: %w", err)
+			return nil, err
 		}
 		return dl, nil
 	}
@@ -141,7 +141,7 @@ func (t *ConnMgr) DemultiplexedListen(laddr ma.Multiaddr, connType Demultiplexed
 	l, err := t.maListen(laddr)
 	if err != nil {
 		log.Errorf("创建监听器时出错: %s", err)
-		return nil, fmt.Errorf("创建监听器时出错: %w", err)
+		return nil, err
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -240,7 +240,7 @@ func (m *multiplexedListener) run() error {
 		c, err := m.Listener.Accept()
 		if err != nil {
 			log.Errorf("接受新连接时出错: %s", err)
-			return fmt.Errorf("接受新连接时出错: %w", err)
+			return err
 		}
 
 		// 在此处进行连接的过滤和资源限制

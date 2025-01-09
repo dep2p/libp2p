@@ -78,7 +78,7 @@ func NewConnManager(statelessResetKey quic.StatelessResetKey, tokenKey quic.Toke
 	for _, o := range opts {
 		if err := o(cm); err != nil {
 			log.Errorf("应用配置选项时出错: %s", err)
-			return nil, fmt.Errorf("应用配置选项时出错: %w", err)
+			return nil, err
 		}
 	}
 
@@ -173,12 +173,12 @@ func (c *ConnManager) ListenQUICAndAssociate(association any, addr ma.Multiaddr,
 	netw, host, err := manet.DialArgs(addr)
 	if err != nil {
 		log.Errorf("解析监听地址时出错: %s", err)
-		return nil, fmt.Errorf("解析监听地址时出错: %w", err)
+		return nil, err
 	}
 	laddr, err := net.ResolveUDPAddr(netw, host)
 	if err != nil {
 		log.Errorf("解析监听地址时出错: %s", err)
-		return nil, fmt.Errorf("解析监听地址时出错: %w", err)
+		return nil, err
 	}
 
 	c.quicListenersMu.Lock()
@@ -191,12 +191,12 @@ func (c *ConnManager) ListenQUICAndAssociate(association any, addr ma.Multiaddr,
 		tr, err := c.transportForListen(association, netw, laddr)
 		if err != nil {
 			log.Errorf("创建传输层时出错: %s", err)
-			return nil, fmt.Errorf("创建传输层时出错: %w", err)
+			return nil, err
 		}
 		ln, err := newQuicListener(tr, c.serverConfig)
 		if err != nil {
 			log.Errorf("创建QUIC监听器时出错: %s", err)
-			return nil, fmt.Errorf("创建QUIC监听器时出错: %w", err)
+			return nil, err
 		}
 		key = tr.LocalAddr().String()
 		entry = quicListenerEntry{ln: ln}
@@ -208,7 +208,7 @@ func (c *ConnManager) ListenQUICAndAssociate(association any, addr ma.Multiaddr,
 			entry.ln.Close()
 		}
 		log.Errorf("添加监听器时出错: %s", err)
-		return nil, fmt.Errorf("添加监听器时出错: %w", err)
+		return nil, err
 	}
 	entry.refCount++
 	c.quicListeners[key] = entry
@@ -279,12 +279,12 @@ func (c *ConnManager) transportForListen(association any, network string, laddr 
 		reuse, err := c.getReuse(network)
 		if err != nil {
 			log.Errorf("获取复用器时出错: %s", err)
-			return nil, fmt.Errorf("获取复用器时出错: %w", err)
+			return nil, err
 		}
 		tr, err := reuse.TransportForListen(network, laddr)
 		if err != nil {
 			log.Errorf("获取传输层时出错: %s", err)
-			return nil, fmt.Errorf("获取传输层时出错: %w", err)
+			return nil, err
 		}
 		tr.associate(association)
 		return tr, nil
@@ -293,7 +293,7 @@ func (c *ConnManager) transportForListen(association any, network string, laddr 
 	conn, err := net.ListenUDP(network, laddr)
 	if err != nil {
 		log.Errorf("创建UDP连接时出错: %s", err)
-		return nil, fmt.Errorf("创建UDP连接时出错: %w", err)
+		return nil, err
 	}
 	return &singleOwnerTransport{
 		packetConn: conn,
@@ -332,12 +332,12 @@ func (c *ConnManager) DialQUIC(ctx context.Context, raddr ma.Multiaddr, tlsConf 
 	naddr, v, err := FromQuicMultiaddr(raddr)
 	if err != nil {
 		log.Errorf("从QUIC多地址转换为版本时出错: %s", err)
-		return nil, fmt.Errorf("从QUIC多地址转换为版本时出错: %w", err)
+		return nil, err
 	}
 	netw, _, err := manet.DialArgs(raddr)
 	if err != nil {
 		log.Errorf("解析远程地址时出错: %s", err)
-		return nil, fmt.Errorf("解析远程地址时出错: %w", err)
+		return nil, err
 	}
 
 	quicConf := c.clientConfig.Clone()
@@ -358,13 +358,13 @@ func (c *ConnManager) DialQUIC(ctx context.Context, raddr ma.Multiaddr, tlsConf 
 	}
 	if err != nil {
 		log.Errorf("获取传输层时出错: %s", err)
-		return nil, fmt.Errorf("获取传输层时出错: %w", err)
+		return nil, err
 	}
 	conn, err := tr.Dial(ctx, naddr, tlsConf, quicConf)
 	if err != nil {
 		tr.DecreaseCount()
 		log.Errorf("拨号时出错: %s", err)
-		return nil, fmt.Errorf("拨号时出错: %w", err)
+		return nil, err
 	}
 	return conn, nil
 }
@@ -395,7 +395,7 @@ func (c *ConnManager) TransportWithAssociationForDial(association any, network s
 		reuse, err := c.getReuse(network)
 		if err != nil {
 			log.Errorf("获取复用器时出错: %s", err)
-			return nil, fmt.Errorf("获取复用器时出错: %w", err)
+			return nil, err
 		}
 		return reuse.transportWithAssociationForDial(association, network, raddr)
 	}
@@ -410,7 +410,7 @@ func (c *ConnManager) TransportWithAssociationForDial(association any, network s
 	conn, err := net.ListenUDP(network, laddr)
 	if err != nil {
 		log.Errorf("创建UDP连接时出错: %s", err)
-		return nil, fmt.Errorf("创建UDP连接时出错: %w", err)
+		return nil, err
 	}
 	return &singleOwnerTransport{Transport: quic.Transport{Conn: conn, StatelessResetKey: &c.srk}, packetConn: conn}, nil
 }
@@ -431,7 +431,7 @@ func (c *ConnManager) Close() error {
 	}
 	if err := c.reuseUDP6.Close(); err != nil {
 		log.Errorf("关闭UDP6连接时出错: %s", err)
-		return fmt.Errorf("关闭UDP6连接时出错: %w", err)
+		return err
 	}
 	return c.reuseUDP4.Close()
 }
