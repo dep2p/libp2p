@@ -5,7 +5,6 @@ import (
 	"crypto"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"net"
 	"strings"
 	"sync"
@@ -281,7 +280,7 @@ func (l *listener) setupConnection(
 	w, err = newWebRTCConnection(settingEngine, l.config)
 	if err != nil {
 		log.Errorf("实例化对等连接失败: %s", err)
-		return nil, fmt.Errorf("实例化对等连接失败: %w", err)
+		return nil, err
 	}
 
 	errC := addOnConnectionStateChangeCallback(w.PeerConnection)
@@ -309,7 +308,7 @@ func (l *listener) setupConnection(
 	case err := <-errC:
 		if err != nil {
 			log.Errorf("ufrag 为 %s 的对等连接失败: %s", candidate.Ufrag, err)
-			return nil, fmt.Errorf("ufrag 为 %s 的对等连接失败: %w", candidate.Ufrag, err)
+			return nil, err
 		}
 	}
 
