@@ -223,7 +223,7 @@ func addrsFromProtobuf(addrs []*pb.PeerRecord_AddressInfo) []ma.Multiaddr {
 	for _, addr := range addrs {
 		a, err := ma.NewMultiaddrBytes(addr.Multiaddr)
 		if err != nil {
-			log.Errorf("创建多地址失败: %v", err)
+			log.Debugf("创建多地址失败: %v", err)
 			continue
 		}
 		out = append(out, a)

@@ -144,7 +144,7 @@ func UnmarshalPublicKey(data []byte) (PubKey, error) {
 	pmes := new(pb.PublicKey)
 	err := proto.Unmarshal(data, pmes)
 	if err != nil {
-		log.Errorf("反序列化公钥失败: %v", err)
+		log.Debugf("反序列化公钥失败: %v", err)
 		return nil, err
 	}
 
@@ -161,7 +161,7 @@ func UnmarshalPublicKey(data []byte) (PubKey, error) {
 func PublicKeyFromProto(pmes *pb.PublicKey) (PubKey, error) {
 	um, ok := PubKeyUnmarshallers[pmes.GetType()]
 	if !ok {
-		log.Errorf("无效或不支持的密钥类型: %v", pmes.GetType())
+		log.Debugf("无效或不支持的密钥类型: %v", pmes.GetType())
 		return nil, ErrBadKeyType
 	}
 
@@ -206,7 +206,7 @@ func MarshalPublicKey(k PubKey) ([]byte, error) {
 func PublicKeyToProto(k PubKey) (*pb.PublicKey, error) {
 	data, err := k.Raw()
 	if err != nil {
-		log.Errorf("获取公钥数据失败: %v", err)
+		log.Debugf("获取公钥数据失败: %v", err)
 		return nil, err
 	}
 	return &pb.PublicKey{
@@ -226,13 +226,13 @@ func UnmarshalPrivateKey(data []byte) (PrivKey, error) {
 	pmes := new(pb.PrivateKey)
 	err := proto.Unmarshal(data, pmes)
 	if err != nil {
-		log.Errorf("反序列化私钥失败: %v", err)
+		log.Debugf("反序列化私钥失败: %v", err)
 		return nil, err
 	}
 
 	um, ok := PrivKeyUnmarshallers[pmes.GetType()]
 	if !ok {
-		log.Errorf("无效或不支持的密钥类型: %v", pmes.GetType())
+		log.Debugf("无效或不支持的密钥类型: %v", pmes.GetType())
 		return nil, ErrBadKeyType
 	}
 
@@ -249,7 +249,7 @@ func UnmarshalPrivateKey(data []byte) (PrivKey, error) {
 func MarshalPrivateKey(k PrivKey) ([]byte, error) {
 	data, err := k.Raw()
 	if err != nil {
-		log.Errorf("获取密钥数据失败: %v", err)
+		log.Debugf("获取密钥数据失败: %v", err)
 		return nil, err
 	}
 	return proto.Marshal(&pb.PrivateKey{
@@ -303,18 +303,18 @@ func KeyEqual(k1, k2 Key) bool {
 //   - bool: 如果密钥相等返回true，否则返回false
 func basicEquals(k1, k2 Key) bool {
 	if k1.Type() != k2.Type() {
-		log.Errorf("密钥类型不匹配: %v != %v", k1.Type(), k2.Type())
+		log.Debugf("密钥类型不匹配: %v != %v", k1.Type(), k2.Type())
 		return false
 	}
 
 	a, err := k1.Raw()
 	if err != nil {
-		log.Errorf("获取密钥数据失败: %v", err)
+		log.Debugf("获取密钥数据失败: %v", err)
 		return false
 	}
 	b, err := k2.Raw()
 	if err != nil {
-		log.Errorf("获取密钥数据失败: %v", err)
+		log.Debugf("获取密钥数据失败: %v", err)
 		return false
 	}
 	return subtle.ConstantTimeCompare(a, b) == 1

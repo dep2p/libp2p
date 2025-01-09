@@ -40,7 +40,7 @@ func AddrInfosFromP2pAddrs(maddrs ...ma.Multiaddr) ([]AddrInfo, error) {
 	for _, maddr := range maddrs {
 		transport, id := SplitAddr(maddr)
 		if id == "" {
-			log.Errorf("无效的p2p多地址: %v", maddr)
+			log.Debugf("无效的p2p多地址: %v", maddr)
 			return nil, ErrInvalidAddr
 		}
 		if transport == nil {
@@ -88,7 +88,7 @@ func SplitAddr(m ma.Multiaddr) (transport ma.Multiaddr, id ID) {
 //   - error: 如果地址无效则返回错误
 func IDFromP2PAddr(m ma.Multiaddr) (ID, error) {
 	if m == nil {
-		log.Errorf("无效的p2p多地址: %v", m)
+		log.Debugf("无效的p2p多地址: %v", m)
 		return "", ErrInvalidAddr
 	}
 	var lastComponent ma.Component
@@ -97,7 +97,7 @@ func IDFromP2PAddr(m ma.Multiaddr) (ID, error) {
 		return true
 	})
 	if lastComponent.Protocol().Code != ma.P_P2P {
-		log.Errorf("无效的p2p多地址: %v", m)
+		log.Debugf("无效的p2p多地址: %v", m)
 		return "", ErrInvalidAddr
 	}
 
@@ -115,7 +115,7 @@ func IDFromP2PAddr(m ma.Multiaddr) (ID, error) {
 func AddrInfoFromString(s string) (*AddrInfo, error) {
 	a, err := ma.NewMultiaddr(s)
 	if err != nil {
-		log.Errorf("创建多地址失败: %v", err)
+		log.Debugf("创建多地址失败: %v", err)
 		return nil, err
 	}
 
@@ -132,7 +132,7 @@ func AddrInfoFromString(s string) (*AddrInfo, error) {
 func AddrInfoFromP2pAddr(m ma.Multiaddr) (*AddrInfo, error) {
 	transport, id := SplitAddr(m)
 	if id == "" {
-		log.Errorf("无效的p2p多地址: %v", m)
+		log.Debugf("地址 %s 不是p2p地址: %s", m, ErrInvalidAddr)
 		return nil, ErrInvalidAddr
 	}
 	info := &AddrInfo{ID: id}

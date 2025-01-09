@@ -37,18 +37,18 @@ type RsaPublicKey struct {
 func GenerateRSAKeyPair(bits int, src io.Reader) (PrivKey, PubKey, error) {
 	// 检查密钥位数是否小于最小要求
 	if bits < MinRsaKeyBits {
-		log.Errorf("密钥位数小于最小要求: %d < %d", bits, MinRsaKeyBits)
+		log.Debugf("密钥位数小于最小要求: %d < %d", bits, MinRsaKeyBits)
 		return nil, nil, ErrRsaKeyTooSmall
 	}
 	// 检查密钥位数是否超过最大限制
 	if bits > maxRsaKeyBits {
-		log.Errorf("密钥位数超过最大限制: %d > %d", bits, maxRsaKeyBits)
+		log.Debugf("密钥位数超过最大限制: %d > %d", bits, maxRsaKeyBits)
 		return nil, nil, ErrRsaKeyTooBig
 	}
 	// 生成RSA密钥对
 	priv, err := rsa.GenerateKey(src, bits)
 	if err != nil {
-		log.Errorf("生成RSA密钥对失败: %v", err)
+		log.Debugf("生成RSA密钥对失败: %v", err)
 		return nil, nil, err
 	}
 	pk := priv.PublicKey
@@ -77,7 +77,7 @@ func (pk *RsaPublicKey) Verify(data, sig []byte) (success bool, err error) {
 	// 验证PKCS1v15签名
 	err = rsa.VerifyPKCS1v15(&pk.k, crypto.SHA256, hashed[:], sig)
 	if err != nil {
-		log.Errorf("RSA签名验证失败: %v", err)
+		log.Debugf("RSA签名验证失败: %v", err)
 		return false, err
 	}
 	return true, nil
@@ -110,7 +110,7 @@ func (pk *RsaPublicKey) Equals(k Key) bool {
 	// 检查是否为RSA公钥
 	other, ok := (k).(*RsaPublicKey)
 	if !ok {
-		log.Errorf("密钥类型不匹配: %v != %v", pk.Type(), k.Type())
+		log.Debugf("密钥类型不匹配: %v != %v", pk.Type(), k.Type())
 		return basicEquals(pk, k)
 	}
 
@@ -169,7 +169,7 @@ func (sk *RsaPrivateKey) Equals(k Key) bool {
 	// 检查是否为RSA私钥
 	other, ok := (k).(*RsaPrivateKey)
 	if !ok {
-		log.Errorf("密钥类型不匹配: %v != %v", sk.Type(), k.Type())
+		log.Debugf("密钥类型不匹配: %v != %v", sk.Type(), k.Type())
 		return basicEquals(sk, k)
 	}
 
@@ -193,16 +193,16 @@ func UnmarshalRsaPrivateKey(b []byte) (key PrivKey, err error) {
 	// 解析PKCS1格式的私钥
 	sk, err := x509.ParsePKCS1PrivateKey(b)
 	if err != nil {
-		log.Errorf("RSA私钥反序列化失败: %v", err)
+		log.Debugf("RSA私钥反序列化失败: %v", err)
 		return nil, err
 	}
 	// 检查密钥长度
 	if sk.N.BitLen() < MinRsaKeyBits {
-		log.Errorf("密钥长度小于最小要求: %d < %d", sk.N.BitLen(), MinRsaKeyBits)
+		log.Debugf("密钥长度小于最小要求: %d < %d", sk.N.BitLen(), MinRsaKeyBits)
 		return nil, ErrRsaKeyTooSmall
 	}
 	if sk.N.BitLen() > maxRsaKeyBits {
-		log.Errorf("密钥长度超过最大限制: %d > %d", sk.N.BitLen(), maxRsaKeyBits)
+		log.Debugf("密钥长度超过最大限制: %d > %d", sk.N.BitLen(), maxRsaKeyBits)
 		return nil, ErrRsaKeyTooBig
 	}
 	return &RsaPrivateKey{sk: *sk}, nil
@@ -220,22 +220,22 @@ func UnmarshalRsaPublicKey(b []byte) (key PubKey, err error) {
 	// 解析PKIX格式的公钥
 	pub, err := x509.ParsePKIXPublicKey(b)
 	if err != nil {
-		log.Errorf("RSA公钥反序列化失败: %v", err)
+		log.Debugf("RSA公钥反序列化失败: %v", err)
 		return nil, err
 	}
 	// 类型断言为RSA公钥
 	pk, ok := pub.(*rsa.PublicKey)
 	if !ok {
-		log.Errorf("公钥不是RSA公钥")
+		log.Debugf("公钥不是RSA公钥")
 		return nil, errors.New("不是有效的RSA公钥")
 	}
 	// 检查密钥长度
 	if pk.N.BitLen() < MinRsaKeyBits {
-		log.Errorf("密钥长度小于最小要求: %d < %d", pk.N.BitLen(), MinRsaKeyBits)
+		log.Debugf("密钥长度小于最小要求: %d < %d", pk.N.BitLen(), MinRsaKeyBits)
 		return nil, ErrRsaKeyTooSmall
 	}
 	if pk.N.BitLen() > maxRsaKeyBits {
-		log.Errorf("密钥长度超过最大限制: %d > %d", pk.N.BitLen(), maxRsaKeyBits)
+		log.Debugf("密钥长度超过最大限制: %d > %d", pk.N.BitLen(), maxRsaKeyBits)
 		return nil, ErrRsaKeyTooBig
 	}
 

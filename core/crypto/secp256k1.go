@@ -49,7 +49,7 @@ func GenerateSecp256k1Key(src io.Reader) (PrivKey, PubKey, error) {
 func UnmarshalSecp256k1PrivateKey(data []byte) (k PrivKey, err error) {
 	// 检查输入数据长度是否符合要求
 	if len(data) != secp256k1.PrivKeyBytesLen {
-		log.Errorf("预期secp256k1数据长度为%d, 实际长度为%d", secp256k1.PrivKeyBytesLen, len(data))
+		log.Debugf("预期secp256k1数据长度为%d, 实际长度为%d", secp256k1.PrivKeyBytesLen, len(data))
 		return nil, fmt.Errorf("预期secp256k1数据长度为%d, 实际长度为%d", secp256k1.PrivKeyBytesLen, len(data))
 	}
 	defer func() { catch.HandlePanic(recover(), &err, "secp256k1 private-key unmarshal") }()

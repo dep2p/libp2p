@@ -595,8 +595,7 @@ func (cfg *Config) NewNode() (host.Host, error) {
 	if l, ok := cfg.ResourceManager.(connmgr.GetConnLimiter); ok {
 		err := cfg.ConnManager.CheckLimit(l)
 		if err != nil {
-			log.Errorf("rcmgr 限制与 connmgr 限制冲突: %v", err)
-			log.Warn(fmt.Sprintf("rcmgr 限制与 connmgr 限制冲突: %v", err))
+			log.Warnf("rcmgr 限制与 connmgr 限制冲突: %v", err)
 		}
 	}
 

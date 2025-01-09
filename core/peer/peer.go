@@ -155,14 +155,16 @@ func Decode(s string) (ID, error) {
 		// base58 编码的 sha256 或 identity multihash
 		m, err := mh.FromB58String(s)
 		if err != nil {
-			return "", fmt.Errorf("failed to parse peer ID: %s", err)
+			log.Debugf("解析peer ID失败: %s", err)
+			return "", err
 		}
 		return ID(m), nil
 	}
 
 	c, err := cid.Decode(s)
 	if err != nil {
-		return "", fmt.Errorf("failed to parse peer ID: %s", err)
+		log.Debugf("解析peer ID失败: %s", err)
+		return "", err
 	}
 	return FromCid(c)
 }

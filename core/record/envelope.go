@@ -3,7 +3,6 @@ package record
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"sync"
 
 	"github.com/dep2p/libp2p/core/crypto"
@@ -60,20 +59,20 @@ func Seal(rec Record, privateKey crypto.PrivKey) (*Envelope, error) {
 	// 将记录编组为字节
 	payload, err := rec.MarshalRecord()
 	if err != nil {
-		log.Errorf("序列化失败: %v", err)
-		return nil, fmt.Errorf("序列化失败: %v", err)
+		log.Debugf("序列化失败: %v", err)
+		return nil, err
 	}
 
 	// 获取记录的域和负载类型
 	domain := rec.Domain()
 	payloadType := rec.Codec()
 	if domain == "" {
-		log.Errorf("域不能为空")
+		log.Debugf("域不能为空")
 		return nil, ErrEmptyDomain
 	}
 
 	if len(payloadType) == 0 {
-		log.Errorf("负载类型不能为空")
+		log.Debugf("负载类型不能为空")
 		return nil, ErrEmptyPayloadType
 	}
 
@@ -115,22 +114,22 @@ func ConsumeEnvelope(data []byte, domain string) (envelope *Envelope, rec Record
 	// 反序列化信封
 	e, err := UnmarshalEnvelope(data)
 	if err != nil {
-		log.Errorf("反序列化失败: %v", err)
-		return nil, nil, fmt.Errorf("反序列化失败: %w", err)
+		log.Debugf("反序列化失败: %v", err)
+		return nil, nil, err
 	}
 
 	// 验证信封
 	err = e.validate(domain)
 	if err != nil {
-		log.Errorf("验证失败: %v", err)
-		return nil, nil, fmt.Errorf("验证失败: %w", err)
+		log.Debugf("验证失败: %v", err)
+		return nil, nil, err
 	}
 
 	// 获取记录
 	rec, err = e.Record()
 	if err != nil {
-		log.Errorf("反序列化失败: %v", err)
-		return nil, nil, fmt.Errorf("反序列化失败: %w", err)
+		log.Debugf("反序列化失败: %v", err)
+		return nil, nil, err
 	}
 	return e, rec, nil
 }
@@ -147,22 +146,22 @@ func ConsumeTypedEnvelope(data []byte, destRecord Record) (envelope *Envelope, e
 	// 反序列化信封
 	e, err := UnmarshalEnvelope(data)
 	if err != nil {
-		log.Errorf("反序列化失败: %v", err)
-		return nil, fmt.Errorf("反序列化失败: %w", err)
+		log.Debugf("反序列化失败: %v", err)
+		return nil, err
 	}
 
 	// 验证信封
 	err = e.validate(destRecord.Domain())
 	if err != nil {
-		log.Errorf("验证失败: %v", err)
-		return e, fmt.Errorf("验证失败: %w", err)
+		log.Debugf("验证失败: %v", err)
+		return e, err
 	}
 
 	// 反序列化负载到目标记录
 	err = destRecord.UnmarshalRecord(e.RawPayload)
 	if err != nil {
-		log.Errorf("反序列化失败: %v", err)
-		return e, fmt.Errorf("反序列化失败: %w", err)
+		log.Debugf("反序列化失败: %v", err)
+		return e, err
 	}
 	e.cached = destRecord
 	return e, nil
@@ -276,8 +275,8 @@ func (e *Envelope) validate(domain string) error {
 
 	valid, err := e.PublicKey.Verify(unsigned, e.signature)
 	if err != nil {
-		log.Errorf("验证签名失败: %v", err)
-		return fmt.Errorf("验证签名失败: %w", err)
+		log.Debugf("验证签名失败: %v", err)
+		return err
 	}
 	if !valid {
 		log.Errorf("签名无效")
