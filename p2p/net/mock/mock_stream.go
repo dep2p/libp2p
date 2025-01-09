@@ -312,17 +312,17 @@ func (s *stream) transport() {
 				case s.reset <- struct{}{}:
 				default:
 				}
-				log.Errorf("重置流")
+				log.Debugf("重置流")
 				return network.ErrReset
 			}
 			if err := drainBuf(); err != nil {
-				log.Errorf("清空缓冲区失败: %v", err)
+				log.Debugf("清空缓冲区失败: %v", err)
 				return err
 			}
 			// 写入消息
 			_, err := s.write.Write(o.msg)
 			if err != nil {
-				log.Errorf("写入消息失败: %v", err)
+				log.Debugf("写入消息失败: %v", err)
 				return err
 			}
 		} else {
@@ -346,7 +346,7 @@ func (s *stream) transport() {
 			return
 		case <-s.close:
 			if err := drainBuf(); err != nil {
-				log.Errorf("清空缓冲区失败: %v", err)
+				log.Debugf("清空缓冲区失败: %v", err)
 				s.cancelWrite(err)
 				return
 			}
@@ -357,13 +357,13 @@ func (s *stream) transport() {
 			return
 		case o := <-s.toDeliver:
 			if err := deliverOrWait(o); err != nil {
-				log.Errorf("处理消息失败: %v", err)
+				log.Debugf("处理消息失败: %v", err)
 				s.cancelWrite(err)
 				return
 			}
 		case <-timer.C: // 定时器到期,写出数据
 			if err := drainBuf(); err != nil {
-				log.Errorf("清空缓冲区失败: %v", err)
+				log.Debugf("清空缓冲区失败: %v", err)
 				s.cancelWrite(err)
 				return
 			}

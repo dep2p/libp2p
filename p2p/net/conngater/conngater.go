@@ -70,7 +70,7 @@ func NewBasicConnectionGater(ds datastore.Datastore) (*BasicConnectionGater, err
 		// 从数据存储加载规则
 		err := cg.loadRules(context.Background())
 		if err != nil {
-			log.Errorf("加载规则失败: %v", err)
+			log.Debugf("加载规则失败: %v", err)
 			return nil, err
 		}
 	}
@@ -88,14 +88,14 @@ func (cg *BasicConnectionGater) loadRules(ctx context.Context) error {
 	// 加载被阻止的对等节点
 	res, err := cg.ds.Query(ctx, query.Query{Prefix: keyPeer})
 	if err != nil {
-		log.Errorf("查询数据存储中被阻止的对等节点时出错: %s", err)
+		log.Debugf("查询数据存储中被阻止的对等节点时出错: %s", err)
 		return err
 	}
 
 	// 遍历查询结果
 	for r := range res.Next() {
 		if r.Error != nil {
-			log.Errorf("查询结果错误: %s", r.Error)
+			log.Debugf("查询结果错误: %s", r.Error)
 			return err
 		}
 
@@ -107,14 +107,14 @@ func (cg *BasicConnectionGater) loadRules(ctx context.Context) error {
 	// 加载被阻止的地址
 	res, err = cg.ds.Query(ctx, query.Query{Prefix: keyAddr})
 	if err != nil {
-		log.Errorf("查询数据存储中被阻止的地址时出错: %s", err)
+		log.Debugf("查询数据存储中被阻止的地址时出错: %s", err)
 		return err
 	}
 
 	// 遍历查询结果
 	for r := range res.Next() {
 		if r.Error != nil {
-			log.Errorf("查询结果错误: %s", r.Error)
+			log.Debugf("查询结果错误: %s", r.Error)
 			return err
 		}
 
@@ -126,14 +126,14 @@ func (cg *BasicConnectionGater) loadRules(ctx context.Context) error {
 	// 加载被阻止的子网
 	res, err = cg.ds.Query(ctx, query.Query{Prefix: keySubnet})
 	if err != nil {
-		log.Errorf("查询数据存储中被阻止的子网时出错: %s", err)
+		log.Debugf("查询数据存储中被阻止的子网时出错: %s", err)
 		return err
 	}
 
 	// 遍历查询结果
 	for r := range res.Next() {
 		if r.Error != nil {
-			log.Errorf("查询结果错误: %s", r.Error)
+			log.Debugf("查询结果错误: %s", r.Error)
 			return err
 		}
 
@@ -141,7 +141,7 @@ func (cg *BasicConnectionGater) loadRules(ctx context.Context) error {
 		ipnetStr := string(r.Entry.Value)
 		_, ipnet, err := net.ParseCIDR(ipnetStr)
 		if err != nil {
-			log.Errorf("解析CIDR子网时出错: %s", err)
+			log.Debugf("解析CIDR子网时出错: %s", err)
 			return err
 		}
 		cg.blockedSubnets[ipnetStr] = ipnet

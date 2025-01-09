@@ -69,7 +69,7 @@ func (t *Transport) NewConn(nc net.Conn, isServer bool, scope network.PeerScope)
 	}
 	// 如果发生错误则返回
 	if err != nil {
-		log.Errorf("创建yamux会话失败: %v", err)
+		log.Debugf("创建yamux会话失败: %v", err)
 		return nil, err
 	}
 	// 将yamux会话包装为多路复用连接并返回

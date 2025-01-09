@@ -127,7 +127,7 @@ func (mn *mocknet) GenPeerWithOptions(opts PeerOptions) (host.Host, error) {
 	a, err := ma.NewMultiaddr(fmt.Sprintf("/ip6/%s/tcp/4242", ip))
 	if err != nil {
 		log.Errorf("创建测试多地址失败: %s", err)
-		return nil, fmt.Errorf("创建测试多地址失败: %s", err)
+		return nil, err
 	}
 
 	// 获取或创建 peerstore

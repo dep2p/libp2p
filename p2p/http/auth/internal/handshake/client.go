@@ -3,7 +3,6 @@ package handshake
 import (
 	"encoding/base64"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 
@@ -252,8 +251,8 @@ func (h *PeerIDAuthHandshakeClient) verifySig(clientPubKeyBytes []byte) error {
 	// 解码签名
 	sig, err := base64.URLEncoding.AppendDecode(nil, h.p.sigB64)
 	if err != nil {
-		log.Errorf("解码签名失败: %v", err)
-		return fmt.Errorf("解码签名失败: %w", err)
+		log.Debugf("解码签名失败: %v", err)
+		return err
 	}
 	// 验证签名
 	err = verifySig(h.serverPubKey, PeerIDAuthScheme, []sigParam{
@@ -284,8 +283,8 @@ func (h *PeerIDAuthHandshakeClient) addSigParam() error {
 		{"hostname", []byte(h.Hostname)},
 	})
 	if err != nil {
-		log.Errorf("签名挑战失败: %v", err)
-		return fmt.Errorf("签名挑战失败: %w", err)
+		log.Debugf("签名挑战失败: %v", err)
+		return err
 	}
 	// 添加签名参数
 	h.hb.writeParamB64(nil, "sig", clientSig)

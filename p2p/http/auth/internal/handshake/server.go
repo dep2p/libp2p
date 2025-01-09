@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"hash"
 	"io"
 	"net/http"
@@ -451,8 +450,8 @@ func (h *PeerIDAuthHandshakeServer) addServerSigParam(clientPublicKeyBytes []byt
 		{"hostname", []byte(h.Hostname)},
 	})
 	if err != nil {
-		log.Errorf("生成服务器签名失败: %v", err)
-		return fmt.Errorf("生成服务器签名失败: %w", err)
+		log.Debugf("生成服务器签名失败: %v", err)
+		return err
 	}
 	// 写入签名参数
 	h.hb.writeParamB64(h.buf[:], "sig", serverSig)

@@ -663,15 +663,15 @@ func relativeMultiaddrURIToAbs(original *url.URL, relative *url.URL) (*url.URL, 
 	// 解析原始多地址
 	originalMa, err := ma.NewMultiaddr(originalStr)
 	if err != nil {
-		log.Errorf("原始 URI 不是有效的多地址: %v", err)
-		return nil, errors.New("原始 URI 不是有效的多地址")
+		log.Debugf("原始 URI 不是有效的多地址: %v", err)
+		return nil, err
 	}
 
 	// 创建相对路径的多地址组件
 	relativePathComponent, err := ma.NewComponent("http-path", relative.Path)
 	if err != nil {
-		log.Errorf("相对路径不是有效的 http-path: %v", err)
-		return nil, errors.New("相对路径不是有效的 http-path")
+		log.Debugf("相对路径不是有效的 http-path: %v", err)
+		return nil, err
 	}
 
 	// 移除原始多地址中的路径组件,并添加新的路径组件
@@ -1347,7 +1347,7 @@ func requestPeerMeta(ctx context.Context, roundtripper http.RoundTripper, wellKn
 		N: peerMetadataLimit,
 	}).Decode(&meta)
 	if err != nil {
-		log.Errorf("解析响应失败: %v", err)
+		log.Debugf("解析响应失败: %v", err)
 		return nil, err
 	}
 

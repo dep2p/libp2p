@@ -227,7 +227,7 @@ func (u *upgrader) upgrade(ctx context.Context, t transport.Transport, maconn ma
 		if err != nil {
 			conn.Close()
 			log.Errorf("设置私有网络保护失败: %v", err)
-			return nil, fmt.Errorf("设置私有网络保护失败: %w", err)
+			return nil, err
 		}
 		conn = pconn
 	} else if ipnet.ForcePrivateNetwork {
@@ -242,7 +242,7 @@ func (u *upgrader) upgrade(ctx context.Context, t transport.Transport, maconn ma
 	if err != nil {
 		conn.Close()
 		log.Errorf("协商安全协议失败: %v", err)
-		return nil, fmt.Errorf("协商安全协议失败: %w", err)
+		return nil, err
 	}
 
 	// 调用连接过滤器(如果已注册)
@@ -271,7 +271,7 @@ func (u *upgrader) upgrade(ctx context.Context, t transport.Transport, maconn ma
 	if err != nil {
 		sconn.Close()
 		log.Errorf("协商流多路复用器失败: %v", err)
-		return nil, fmt.Errorf("协商流多路复用器失败: %w", err)
+		return nil, err
 	}
 
 	// 创建传输连接

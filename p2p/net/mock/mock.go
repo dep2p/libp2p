@@ -20,7 +20,7 @@ func WithNPeers(n int) (Mocknet, error) {
 	// 生成n个节点
 	for i := 0; i < n; i++ {
 		if _, err := m.GenPeer(); err != nil {
-			log.Errorf("生成节点失败: %v", err)
+			log.Debugf("生成节点失败: %v", err)
 			return nil, err
 		}
 	}
@@ -40,13 +40,13 @@ func FullMeshLinked(n int) (Mocknet, error) {
 	// 创建包含n个节点的模拟网络
 	m, err := WithNPeers(n)
 	if err != nil {
-		log.Errorf("创建节点失败: %v", err)
+		log.Debugf("创建节点失败: %v", err)
 		return nil, err
 	}
 
 	// 在所有节点间建立链路
 	if err := m.LinkAll(); err != nil {
-		log.Errorf("建立链路失败: %v", err)
+		log.Debugf("建立链路失败: %v", err)
 		return nil, err
 	}
 	return m, nil
@@ -64,13 +64,13 @@ func FullMeshConnected(n int) (Mocknet, error) {
 	// 创建全连接的链路网络
 	m, err := FullMeshLinked(n)
 	if err != nil {
-		log.Errorf("创建全连接链路网络失败: %v", err)
+		log.Debugf("创建全连接链路网络失败: %v", err)
 		return nil, err
 	}
 
 	// 连接所有节点(除了自身)
 	if err := m.ConnectAllButSelf(); err != nil {
-		log.Errorf("连接所有节点失败: %v", err)
+		log.Debugf("连接所有节点失败: %v", err)
 		return nil, err
 	}
 	return m, nil

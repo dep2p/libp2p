@@ -239,8 +239,8 @@ func verifySig(publicKey crypto.PubKey, prefix string, signedParts []sigParam, s
 	defer pool.Put(b)
 	buf, err := genDataToSign(b[:0], prefix, signedParts)
 	if err != nil {
-		log.Errorf("生成签名数据失败: %v", err)
-		return fmt.Errorf("生成签名数据失败: %w", err)
+		log.Debugf("生成签名数据失败: %v", err)
+		return err
 	}
 	ok, err := publicKey.Verify(buf, sig)
 	if err != nil {
@@ -273,8 +273,8 @@ func sign(privKey crypto.PrivKey, prefix string, partsToSign []sigParam) ([]byte
 	defer pool.Put(b)
 	buf, err := genDataToSign(b[:0], prefix, partsToSign)
 	if err != nil {
-		log.Errorf("生成待签名数据失败: %v", err)
-		return nil, fmt.Errorf("生成待签名数据失败: %w", err)
+		log.Debugf("生成待签名数据失败: %v", err)
+		return nil, err
 	}
 	return privKey.Sign(buf)
 }

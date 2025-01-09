@@ -2,7 +2,6 @@ package httppeeridauth
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"sync"
@@ -78,8 +77,8 @@ func (a *ClientPeerIDAuth) AuthenticatedDo(client *http.Client, req *http.Reques
 	// 执行握手
 	serverPeerID, resp, err := a.runHandshake(client, req, clearBody(req), &handshake)
 	if err != nil {
-		log.Errorf("握手失败: %v", err)
-		return "", nil, fmt.Errorf("握手失败: %w", err)
+		log.Debugf("握手失败: %v", err)
+		return "", nil, err
 	}
 	// 保存新的 token
 	a.tm.set(hostname, tokenInfo{

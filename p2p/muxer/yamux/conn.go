@@ -55,7 +55,7 @@ func (c *conn) OpenStream(ctx context.Context) (network.MuxedStream, error) {
 	s, err := c.yamux().OpenStream(ctx)
 	if err != nil {
 		// 如果发生错误,返回 nil 和错误信息
-		log.Errorf("创建多路复用流失败: %v", err)
+		log.Debugf("创建多路复用流失败: %v", err)
 		return nil, err
 	}
 

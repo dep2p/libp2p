@@ -61,7 +61,7 @@ func SendPing(client http.Client) error {
 	// 生成随机数据
 	_, err := io.ReadFull(rand.Reader, body[:])
 	if err != nil {
-		log.Errorf("生成随机数据失败: %v", err)
+		log.Debugf("生成随机数据失败: %v", err)
 		return err
 	}
 	// 创建POST请求
@@ -71,13 +71,13 @@ func SendPing(client http.Client) error {
 	// 设置请求体的长度
 	req.Header.Set("Content-Length", strconv.Itoa(pingSize))
 	if err != nil {
-		log.Errorf("创建HTTP请求失败: %v", err)
+		log.Debugf("创建HTTP请求失败: %v", err)
 		return err
 	}
 	// 发送HTTP请求
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Errorf("发送HTTP请求失败: %v", err)
+		log.Debugf("发送HTTP请求失败: %v", err)
 		return err
 	}
 	// 确保响应体被关闭
@@ -85,7 +85,7 @@ func SendPing(client http.Client) error {
 
 	// 检查响应状态码
 	if resp.StatusCode != http.StatusOK {
-		log.Errorf("意外的状态码: %d", resp.StatusCode)
+		log.Debugf("意外的状态码: %d", resp.StatusCode)
 		return fmt.Errorf("意外的状态码: %d", resp.StatusCode)
 	}
 
@@ -94,13 +94,13 @@ func SendPing(client http.Client) error {
 	// 读取响应体
 	_, err = io.ReadFull(resp.Body, rBody[:])
 	if err != nil {
-		log.Errorf("读取响应体失败: %v", err)
+		log.Debugf("读取响应体失败: %v", err)
 		return err
 	}
 
 	// 比较请求体和响应体是否相同
 	if !bytes.Equal(body[:], rBody[:]) {
-		log.Errorf("ping消息体不匹配")
+		log.Debugf("ping消息体不匹配")
 		return errors.New("ping消息体不匹配")
 	}
 	return nil
