@@ -25,12 +25,12 @@ func toWebtransportMultiaddr(na net.Addr) (ma.Multiaddr, error) {
 	// 将网络地址转换为多地址格式
 	addr, err := manet.FromNetAddr(na)
 	if err != nil {
-		log.Errorf("将网络地址转换为多地址格式失败: %s", err)
+		log.Debugf("将网络地址转换为多地址格式失败: %s", err)
 		return nil, err
 	}
 	// 验证是否为 UDP 地址
 	if _, err := addr.ValueForProtocol(ma.P_UDP); err != nil {
-		log.Errorf("不是一个 UDP 地址: %s", err)
+		log.Debugf("不是一个 UDP 地址: %s", err)
 		return nil, errors.New("不是一个 UDP 地址")
 	}
 	// 封装为 WebTransport 多地址
@@ -48,19 +48,19 @@ func stringToWebtransportMultiaddr(str string) (ma.Multiaddr, error) {
 	// 分割主机和端口
 	host, portStr, err := net.SplitHostPort(str)
 	if err != nil {
-		log.Errorf("分割主机和端口失败: %s", err)
+		log.Debugf("分割主机和端口失败: %s", err)
 		return nil, err
 	}
 	// 解析端口号
 	port, err := strconv.ParseInt(portStr, 10, 32)
 	if err != nil {
-		log.Errorf("解析端口号失败: %s", err)
+		log.Debugf("解析端口号失败: %s", err)
 		return nil, err
 	}
 	// 解析 IP 地址
 	ip := net.ParseIP(host)
 	if ip == nil {
-		log.Errorf("IP 地址解析失败")
+		log.Debugf("IP 地址解析失败")
 		return nil, errors.New("IP 地址解析失败")
 	}
 	// 转换为 WebTransport 多地址
@@ -89,12 +89,12 @@ func extractCertHashes(addr ma.Multiaddr) ([]multihash.DecodedMultihash, error) 
 	for _, s := range certHashesStr {
 		_, ch, err := multibase.Decode(s)
 		if err != nil {
-			log.Errorf("证书哈希的 multibase 解码失败: %s", err)
+			log.Debugf("证书哈希的 multibase 解码失败: %s", err)
 			return nil, err
 		}
 		dh, err := multihash.Decode(ch)
 		if err != nil {
-			log.Errorf("证书哈希的 multihash 解码失败: %s", err)
+			log.Debugf("证书哈希的 multihash 解码失败: %s", err)
 			return nil, err
 		}
 		certHashes = append(certHashes, *dh)
@@ -113,13 +113,13 @@ func addrComponentForCert(hash []byte) (ma.Multiaddr, error) {
 	// 对哈希值进行 multihash 编码
 	mh, err := multihash.Encode(hash, multihash.SHA2_256)
 	if err != nil {
-		log.Errorf("证书哈希的 multihash 编码失败: %s", err)
+		log.Debugf("证书哈希的 multihash 编码失败: %s", err)
 		return nil, err
 	}
 	// 对编码后的哈希值进行 multibase 编码
 	certStr, err := multibase.Encode(multibase.Base58BTC, mh)
 	if err != nil {
-		log.Errorf("证书哈希的 multibase 编码失败: %s", err)
+		log.Debugf("证书哈希的 multibase 编码失败: %s", err)
 		return nil, err
 	}
 	// 创建多地址组件

@@ -40,7 +40,7 @@ func (s *secureSession) runHandshake(ctx context.Context) (err error) {
 		if rerr := recover(); rerr != nil {
 			fmt.Fprintf(os.Stderr, "捕获到 panic: %s\n%s\n", rerr, debug.Stack())
 			err = fmt.Errorf("noise 握手过程中发生 panic: %s", rerr)
-			log.Errorf("noise 握手过程中发生 panic: %s", rerr)
+			log.Debugf("noise 握手过程中发生 panic: %s", rerr)
 		}
 	}()
 
@@ -83,24 +83,24 @@ func (s *secureSession) runHandshake(ctx context.Context) (err error) {
 		// 阶段 0 //
 		// 握手消息长度 = DH 临时密钥的长度
 		if err := s.sendHandshakeMessage(hs, nil, hbuf); err != nil {
-			log.Errorf("发送握手消息时出错: %s", err)
+			log.Debugf("发送握手消息时出错: %s", err)
 			return err
 		}
 
 		// 阶段 1 //
 		plaintext, err := s.readHandshakeMessage(hs)
 		if err != nil {
-			log.Errorf("读取握手消息时出错: %s", err)
+			log.Debugf("读取握手消息时出错: %s", err)
 			return err
 		}
 		rcvdEd, err := s.handleRemoteHandshakePayload(plaintext, hs.PeerStatic())
 		if err != nil {
-			log.Errorf("处理远程握手负载时出错: %s", err)
+			log.Debugf("处理远程握手负载时出错: %s", err)
 			return err
 		}
 		if s.initiatorEarlyDataHandler != nil {
 			if err := s.initiatorEarlyDataHandler.Received(ctx, s.insecureConn, rcvdEd); err != nil {
-				log.Errorf("处理初始化握手负载时出错: %s", err)
+				log.Debugf("处理初始化握手负载时出错: %s", err)
 				return err
 			}
 		}
@@ -113,18 +113,18 @@ func (s *secureSession) runHandshake(ctx context.Context) (err error) {
 		}
 		payload, err := s.generateHandshakePayload(kp, ed)
 		if err != nil {
-			log.Errorf("生成握手负载时出错: %s", err)
+			log.Debugf("生成握手负载时出错: %s", err)
 			return err
 		}
 		if err := s.sendHandshakeMessage(hs, payload, hbuf); err != nil {
-			log.Errorf("发送握手消息时出错: %s", err)
+			log.Debugf("发送握手消息时出错: %s", err)
 			return err
 		}
 		return nil
 	} else {
 		// 阶段 0 //
 		if _, err := s.readHandshakeMessage(hs); err != nil {
-			log.Errorf("读取握手消息时出错: %s", err)
+			log.Debugf("读取握手消息时出错: %s", err)
 			return err
 		}
 
@@ -136,28 +136,28 @@ func (s *secureSession) runHandshake(ctx context.Context) (err error) {
 		}
 		payload, err := s.generateHandshakePayload(kp, ed)
 		if err != nil {
-			log.Errorf("生成握手负载时出错: %s", err)
+			log.Debugf("生成握手负载时出错: %s", err)
 			return err
 		}
 		if err := s.sendHandshakeMessage(hs, payload, hbuf); err != nil {
-			log.Errorf("发送握手消息时出错: %s", err)
+			log.Debugf("发送握手消息时出错: %s", err)
 			return err
 		}
 
 		// 阶段 2 //
 		plaintext, err := s.readHandshakeMessage(hs)
 		if err != nil {
-			log.Errorf("读取握手消息时出错: %s", err)
+			log.Debugf("读取握手消息时出错: %s", err)
 			return err
 		}
 		rcvdEd, err := s.handleRemoteHandshakePayload(plaintext, hs.PeerStatic())
 		if err != nil {
-			log.Errorf("处理远程握手负载时出错: %s", err)
+			log.Debugf("处理远程握手负载时出错: %s", err)
 			return err
 		}
 		if s.responderEarlyDataHandler != nil {
 			if err := s.responderEarlyDataHandler.Received(ctx, s.insecureConn, rcvdEd); err != nil {
-				log.Errorf("处理响应握手负载时出错: %s", err)
+				log.Debugf("处理响应握手负载时出错: %s", err)
 				return err
 			}
 		}
@@ -198,7 +198,7 @@ func (s *secureSession) sendHandshakeMessage(hs *noise.HandshakeState, payload [
 	// 前两个字节将是 noise 握手消息的长度
 	bz, cs1, cs2, err := hs.WriteMessage(hbuf[:LengthPrefixLength], payload)
 	if err != nil {
-		log.Errorf("发送握手消息时出错: %s", err)
+		log.Debugf("发送握手消息时出错: %s", err)
 		return err
 	}
 
@@ -207,7 +207,7 @@ func (s *secureSession) sendHandshakeMessage(hs *noise.HandshakeState, payload [
 
 	_, err = s.writeMsgInsecure(bz)
 	if err != nil {
-		log.Errorf("发送握手消息时出错: %s", err)
+		log.Debugf("发送握手消息时出错: %s", err)
 		return err
 	}
 
@@ -230,7 +230,7 @@ func (s *secureSession) sendHandshakeMessage(hs *noise.HandshakeState, payload [
 func (s *secureSession) readHandshakeMessage(hs *noise.HandshakeState) ([]byte, error) {
 	l, err := s.readNextInsecureMsgLen()
 	if err != nil {
-		log.Errorf("读取握手消息时出错: %s", err)
+		log.Debugf("读取握手消息时出错: %s", err)
 		return nil, err
 	}
 
@@ -238,13 +238,13 @@ func (s *secureSession) readHandshakeMessage(hs *noise.HandshakeState) ([]byte, 
 	defer pool.Put(buf)
 
 	if err := s.readNextMsgInsecure(buf); err != nil {
-		log.Errorf("读取握手消息时出错: %s", err)
+		log.Debugf("读取握手消息时出错: %s", err)
 		return nil, err
 	}
 
 	msg, cs1, cs2, err := hs.ReadMessage(nil, buf)
 	if err != nil {
-		log.Errorf("读取握手消息时出错: %s", err)
+		log.Debugf("读取握手消息时出错: %s", err)
 		return nil, err
 	}
 	if cs1 != nil && cs2 != nil {
@@ -265,7 +265,7 @@ func (s *secureSession) generateHandshakePayload(localStatic noise.DHKey, ext *p
 	// 从握手会话获取公钥,以便我们可以用 libp2p 私钥对其签名
 	localKeyRaw, err := crypto.MarshalPublicKey(s.LocalPublicKey())
 	if err != nil {
-		log.Errorf("序列化 libp2p 身份密钥时出错: %s", err)
+		log.Debugf("序列化 libp2p 身份密钥时出错: %s", err)
 		return nil, err
 	}
 
@@ -273,7 +273,7 @@ func (s *secureSession) generateHandshakePayload(localStatic noise.DHKey, ext *p
 	toSign := append([]byte(payloadSigPrefix), localStatic.Public...)
 	signedPayload, err := s.localKey.Sign(toSign)
 	if err != nil {
-		log.Errorf("签名握手负载时出错: %s", err)
+		log.Debugf("签名握手负载时出错: %s", err)
 		return nil, err
 	}
 
@@ -284,7 +284,7 @@ func (s *secureSession) generateHandshakePayload(localStatic noise.DHKey, ext *p
 		Extensions:  ext,
 	})
 	if err != nil {
-		log.Errorf("序列化握手负载时出错: %s", err)
+		log.Debugf("序列化握手负载时出错: %s", err)
 		return nil, err
 	}
 	return payloadEnc, nil
@@ -303,25 +303,25 @@ func (s *secureSession) handleRemoteHandshakePayload(payload []byte, remoteStati
 	nhp := new(pb.NoiseHandshakePayload)
 	err := proto.Unmarshal(payload, nhp)
 	if err != nil {
-		log.Errorf("解析远程握手负载时出错: %s", err)
+		log.Debugf("解析远程握手负载时出错: %s", err)
 		return nil, err
 	}
 
 	// 解包远程对等节点的公共 libp2p 密钥
 	remotePubKey, err := crypto.UnmarshalPublicKey(nhp.GetIdentityKey())
 	if err != nil {
-		log.Errorf("解包远程对等节点的公共 libp2p 密钥时出错: %s", err)
+		log.Debugf("解包远程对等节点的公共 libp2p 密钥时出错: %s", err)
 		return nil, err
 	}
 	id, err := peer.IDFromPublicKey(remotePubKey)
 	if err != nil {
-		log.Errorf("从公共 libp2p 密钥创建对等节点 ID 时出错: %s", err)
+		log.Debugf("从公共 libp2p 密钥创建对等节点 ID 时出错: %s", err)
 		return nil, err
 	}
 
 	// 如果启用了检查对等节点 ID
 	if s.checkPeerID && s.remoteID != id {
-		log.Errorf("对等节点 ID 不匹配: 期望 %s, 实际 %s", s.remoteID, id)
+		log.Debugf("对等节点 ID 不匹配: 期望 %s, 实际 %s", s.remoteID, id)
 		return nil, sec.ErrPeerIDMismatch{Expected: s.remoteID, Actual: id}
 	}
 
@@ -330,10 +330,10 @@ func (s *secureSession) handleRemoteHandshakePayload(payload []byte, remoteStati
 	msg := append([]byte(payloadSigPrefix), remoteStatic...)
 	ok, err := remotePubKey.Verify(msg, sig)
 	if err != nil {
-		log.Errorf("验证签名时出错: %s", err)
+		log.Debugf("验证签名时出错: %s", err)
 		return nil, err
 	} else if !ok {
-		log.Errorf("握手签名无效")
+		log.Debugf("握手签名无效")
 		return nil, fmt.Errorf("握手签名无效")
 	}
 

@@ -165,14 +165,14 @@ func (r *acceptLoopRunner) innerAccept(l *listener, expectedVersion quic.Version
 
 	if err != nil {
 		r.sendErrAndClose(err)
-		log.Errorf("接受新连接时出错: %s", err)
+		log.Debugf("接受新连接时出错: %s", err)
 		return nil, err
 	}
 
 	_, version, err := quicreuse.FromQuicMultiaddr(conn.RemoteMultiaddr())
 	if err != nil {
 		r.sendErrAndClose(err)
-		log.Errorf("从QUIC多地址转换为版本时出错: %s", err)
+		log.Debugf("从QUIC多地址转换为版本时出错: %s", err)
 		return nil, err
 	}
 
@@ -227,7 +227,7 @@ func (r *acceptLoopRunner) Accept(l *listener, expectedVersion quic.Version, buf
 			}
 		case v, ok := <-bufferedConnChan:
 			if !ok {
-				log.Errorf("接受通道已关闭")
+				log.Debugf("接受通道已关闭")
 				return nil, tpt.ErrListenerClosed
 			}
 			conn = v.conn

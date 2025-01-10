@@ -67,13 +67,13 @@ func newListener(a ma.Multiaddr, tlsConf *tls.Config, sharedTcp *tcpreuse.ConnMg
 	// 解析 WebSocket 多地址
 	parsed, err := parseWebsocketMultiaddr(a)
 	if err != nil {
-		log.Errorf("解析 WebSocket 多地址失败: %s", err)
+		log.Debugf("解析 WebSocket 多地址失败: %s", err)
 		return nil, err
 	}
 
 	// 检查 WSS 地址是否提供了 TLS 配置
 	if parsed.isWSS && tlsConf == nil {
-		log.Errorf("无法在没有 tls.Config 的情况下监听 wss 地址 %s", a)
+		log.Debugf("无法在没有 tls.Config 的情况下监听 wss 地址 %s", a)
 		return nil, fmt.Errorf("无法在没有 tls.Config 的情况下监听 wss 地址 %s", a)
 	}
 
@@ -83,13 +83,13 @@ func newListener(a ma.Multiaddr, tlsConf *tls.Config, sharedTcp *tcpreuse.ConnMg
 		// 获取网络类型和地址
 		lnet, lnaddr, err := manet.DialArgs(parsed.restMultiaddr)
 		if err != nil {
-			log.Errorf("获取网络类型和地址失败: %s", err)
+			log.Debugf("获取网络类型和地址失败: %s", err)
 			return nil, err
 		}
 		// 创建监听器
 		nl, err = net.Listen(lnet, lnaddr)
 		if err != nil {
-			log.Errorf("创建监听器失败: %s", err)
+			log.Debugf("创建监听器失败: %s", err)
 			return nil, err
 		}
 	} else {
@@ -103,7 +103,7 @@ func newListener(a ma.Multiaddr, tlsConf *tls.Config, sharedTcp *tcpreuse.ConnMg
 		// 创建多路复用监听器
 		mal, err := sharedTcp.DemultiplexedListen(parsed.restMultiaddr, connType)
 		if err != nil {
-			log.Errorf("创建多路复用监听器失败: %s", err)
+			log.Debugf("创建多路复用监听器失败: %s", err)
 			return nil, err
 		}
 		nl = manet.NetListener(mal)
@@ -112,7 +112,7 @@ func newListener(a ma.Multiaddr, tlsConf *tls.Config, sharedTcp *tcpreuse.ConnMg
 	// 获取本地地址
 	laddr, err := manet.FromNetAddr(nl.Addr())
 	if err != nil {
-		log.Errorf("获取本地地址失败: %s", err)
+		log.Debugf("获取本地地址失败: %s", err)
 		return nil, err
 	}
 
@@ -186,12 +186,12 @@ func (l *listener) Accept() (manet.Conn, error) {
 	select {
 	case c, ok := <-l.incoming:
 		if !ok {
-			log.Errorf("监听器已关闭")
+			log.Debugf("监听器已关闭")
 			return nil, transport.ErrListenerClosed
 		}
 		return c, nil
 	case <-l.closed:
-		log.Errorf("监听器已关闭")
+		log.Debugf("监听器已关闭")
 		return nil, transport.ErrListenerClosed
 	}
 }
@@ -235,7 +235,7 @@ type transportListener struct {
 func (l *transportListener) Accept() (transport.CapableConn, error) {
 	conn, err := l.Listener.Accept()
 	if err != nil {
-		log.Errorf("接受传输层连接失败: %s", err)
+		log.Debugf("接受传输层连接失败: %s", err)
 		return nil, err
 	}
 	return &capableConn{CapableConn: conn}, nil

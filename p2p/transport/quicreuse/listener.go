@@ -70,7 +70,7 @@ func newQuicListener(tr refCountedQuicTransport, quicConfig *quic.Config) (*quic
 	localMultiaddrs := make([]ma.Multiaddr, 0, 2)
 	a, err := ToQuicMultiaddr(tr.LocalAddr(), quic.Version1)
 	if err != nil {
-		log.Errorf("将网络地址转换为QUIC多地址时出错: %s", err)
+		log.Debugf("将网络地址转换为QUIC多地址时出错: %s", err)
 		return nil, err
 	}
 	localMultiaddrs = append(localMultiaddrs, a)
@@ -107,7 +107,7 @@ func newQuicListener(tr refCountedQuicTransport, quicConfig *quic.Config) (*quic
 	quicConf.AllowConnectionWindowIncrease = cl.allowWindowIncrease
 	ln, err := tr.Listen(tlsConf, quicConf)
 	if err != nil {
-		log.Errorf("创建QUIC监听器时出错: %s", err)
+		log.Debugf("创建QUIC监听器时出错: %s", err)
 		return nil, err
 	}
 	cl.l = ln
@@ -147,13 +147,13 @@ func (l *quicListener) Add(tlsConf *tls.Config, allowWindowIncrease func(conn qu
 	defer l.protocolsMu.Unlock()
 
 	if len(tlsConf.NextProtos) == 0 {
-		log.Errorf("tls.Config 中未找到 ALPN")
+		log.Debugf("tls.Config 中未找到 ALPN")
 		return nil, fmt.Errorf("tls.Config 中未找到 ALPN")
 	}
 
 	for _, proto := range tlsConf.NextProtos {
 		if _, ok := l.protocols[proto]; ok {
-			log.Errorf("已在监听协议 %s", proto)
+			log.Debugf("已在监听协议 %s", proto)
 			return nil, fmt.Errorf("已在监听协议 %s", proto)
 		}
 	}
@@ -186,10 +186,10 @@ func (l *quicListener) Run() error {
 		conn, err := l.l.Accept(context.Background())
 		if err != nil {
 			if errors.Is(err, quic.ErrServerClosed) || strings.Contains(err.Error(), "use of closed network connection") {
-				log.Errorf("QUIC监听器已关闭")
+				log.Debugf("QUIC监听器已关闭")
 				return transport.ErrListenerClosed
 			}
-			log.Errorf("接受新连接时出错: %s", err)
+			log.Debugf("接受新连接时出错: %s", err)
 			return err
 		}
 		proto := conn.ConnectionState().TLS.NegotiatedProtocol
@@ -198,7 +198,7 @@ func (l *quicListener) Run() error {
 		ln, ok := l.protocols[proto]
 		if !ok {
 			l.protocolsMu.Unlock()
-			log.Errorf("协商了未知协议: %s", proto)
+			log.Debugf("协商了未知协议: %s", proto)
 			return fmt.Errorf("协商了未知协议: %s", proto)
 		}
 		ln.ln.add(conn)

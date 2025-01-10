@@ -48,7 +48,7 @@ func (c *certConfig) End() time.Time { return c.tlsConf.Certificates[0].Leaf.Not
 func newCertConfig(key ic.PrivKey, start, end time.Time) (*certConfig, error) {
 	conf, err := getTLSConf(key, start, end)
 	if err != nil {
-		log.Errorf("获取 TLS 配置失败: %s", err)
+		log.Debugf("获取 TLS 配置失败: %s", err)
 		return nil, err
 	}
 	return &certConfig{
@@ -88,7 +88,7 @@ func newCertManager(hostKey ic.PrivKey, clock clock.Clock) (*certManager, error)
 	m := &certManager{clock: clock}
 	m.ctx, m.ctxCancel = context.WithCancel(context.Background())
 	if err := m.init(hostKey); err != nil {
-		log.Errorf("初始化证书管理器失败: %s", err)
+		log.Debugf("初始化证书管理器失败: %s", err)
 		return nil, err
 	}
 
@@ -124,7 +124,7 @@ func (m *certManager) init(hostKey ic.PrivKey) error {
 	start := m.clock.Now()
 	pubkeyBytes, err := hostKey.GetPublic().Raw()
 	if err != nil {
-		log.Errorf("获取公钥失败: %s", err)
+		log.Debugf("获取公钥失败: %s", err)
 		return err
 	}
 
@@ -137,7 +137,7 @@ func (m *certManager) init(hostKey ic.PrivKey) error {
 	startTime := getCurrentBucketStartTime(start, offset)
 	m.nextConfig, err = newCertConfig(hostKey, startTime, startTime.Add(certValidity))
 	if err != nil {
-		log.Errorf("创建下一个证书配置失败: %s", err)
+		log.Debugf("创建下一个证书配置失败: %s", err)
 		return err
 	}
 	return m.rollConfig(hostKey)
@@ -155,14 +155,14 @@ func (m *certManager) rollConfig(hostKey ic.PrivKey) error {
 	nextStart := m.nextConfig.End().Add(-2 * clockSkewAllowance)
 	c, err := newCertConfig(hostKey, nextStart, nextStart.Add(certValidity))
 	if err != nil {
-		log.Errorf("创建下一个证书配置失败: %s", err)
+		log.Debugf("创建下一个证书配置失败: %s", err)
 		return err
 	}
 	m.lastConfig = m.currentConfig
 	m.currentConfig = m.nextConfig
 	m.nextConfig = c
 	if err := m.cacheSerializedCertHashes(); err != nil {
-		log.Errorf("缓存序列化证书哈希失败: %s", err)
+		log.Debugf("缓存序列化证书哈希失败: %s", err)
 		return err
 	}
 	return m.cacheAddrComponent()
@@ -189,7 +189,7 @@ func (m *certManager) background(hostKey ic.PrivKey) {
 				now := m.clock.Now()
 				m.mx.Lock()
 				if err := m.rollConfig(hostKey); err != nil {
-					log.Errorf("轮换配置失败: %s", err)
+					log.Debugf("轮换配置失败: %s", err)
 				}
 				d := m.currentConfig.End().Add(-clockSkewAllowance).Sub(now)
 				log.Debugw("轮换证书", "next", d.String())
@@ -242,7 +242,7 @@ func (m *certManager) cacheSerializedCertHashes() error {
 	for _, certHash := range hashes {
 		h, err := multihash.Encode(certHash[:], multihash.SHA2_256)
 		if err != nil {
-			log.Errorf("编码证书哈希失败: %s", err)
+			log.Debugf("编码证书哈希失败: %s", err)
 			return err
 		}
 		m.serializedCertHashes = append(m.serializedCertHashes, h)
@@ -256,13 +256,13 @@ func (m *certManager) cacheSerializedCertHashes() error {
 func (m *certManager) cacheAddrComponent() error {
 	addr, err := addrComponentForCert(m.currentConfig.sha256[:])
 	if err != nil {
-		log.Errorf("获取地址组件失败: %s", err)
+		log.Debugf("获取地址组件失败: %s", err)
 		return err
 	}
 	if m.nextConfig != nil {
 		comp, err := addrComponentForCert(m.nextConfig.sha256[:])
 		if err != nil {
-			log.Errorf("获取下一个地址组件失败: %s", err)
+			log.Debugf("获取下一个地址组件失败: %s", err)
 			return err
 		}
 		addr = addr.Encapsulate(comp)

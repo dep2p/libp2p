@@ -66,7 +66,7 @@ func tryKeepAlive(conn net.Conn, keepAlive bool) {
 		if errors.Is(err, os.ErrInvalid) || errors.Is(err, syscall.EINVAL) {
 			log.Debugf("启用 TCP keepalive 失败: %s", err)
 		} else {
-			log.Errorf("启用 TCP keepalive 失败: %s", err)
+			log.Debugf("启用 TCP keepalive 失败: %s", err)
 		}
 		return
 	}
@@ -74,7 +74,7 @@ func tryKeepAlive(conn net.Conn, keepAlive bool) {
 	// 在非 OpenBSD 系统上设置 keepalive 周期
 	if runtime.GOOS != "openbsd" {
 		if err := keepAliveConn.SetKeepAlivePeriod(keepAlivePeriod); err != nil {
-			log.Errorf("设置 keepalive 周期失败: %s", err)
+			log.Debugf("设置 keepalive 周期失败: %s", err)
 		}
 	}
 }
@@ -109,7 +109,7 @@ func (ll *tcpListener) Accept() (manet.Conn, error) {
 	// 接受新连接
 	c, err := ll.Listener.Accept()
 	if err != nil {
-		log.Errorf("接受新连接时出错: %s", err)
+		log.Debugf("接受新连接时出错: %s", err)
 		return nil, err
 	}
 
@@ -209,7 +209,7 @@ func NewTCPTransport(upgrader transport.Upgrader, rcmgr network.ResourceManager,
 	// 应用配置选项
 	for _, o := range opts {
 		if err := o(tr); err != nil {
-			log.Errorf("应用配置选项时出错: %s", err)
+			log.Debugf("应用配置选项时出错: %s", err)
 			return nil, err
 		}
 	}
@@ -295,7 +295,7 @@ func (t *TcpTransport) DialWithUpdates(ctx context.Context, raddr ma.Multiaddr, 
 	c, err := t.dialWithScope(ctx, raddr, p, connScope, updateChan)
 	if err != nil {
 		connScope.Done()
-		log.Errorf("拨号时出错: %s", err)
+		log.Debugf("拨号时出错: %s", err)
 		return nil, err
 	}
 	return c, nil
@@ -322,7 +322,7 @@ func (t *TcpTransport) dialWithScope(ctx context.Context, raddr ma.Multiaddr, p 
 	// 建立连接
 	conn, err := t.maDial(ctx, raddr)
 	if err != nil {
-		log.Errorf("拨号时出错: %s", err)
+		log.Debugf("拨号时出错: %s", err)
 		return nil, err
 	}
 
@@ -338,7 +338,7 @@ func (t *TcpTransport) dialWithScope(ctx context.Context, raddr ma.Multiaddr, p 
 		var err error
 		c, err = newTracingConn(conn, t.metricsCollector, true)
 		if err != nil {
-			log.Errorf("启用指标收集时出错: %s", err)
+			log.Debugf("启用指标收集时出错: %s", err)
 			return nil, err
 		}
 	}
@@ -401,7 +401,7 @@ func (t *TcpTransport) Listen(laddr ma.Multiaddr) (transport.Listener, error) {
 		list, err = t.sharedTcp.DemultiplexedListen(laddr, tcpreuse.DemultiplexedConnType_MultistreamSelect)
 	}
 	if err != nil {
-		log.Errorf("创建监听器时出错: %s", err)
+		log.Debugf("创建监听器时出错: %s", err)
 		return nil, err
 	}
 

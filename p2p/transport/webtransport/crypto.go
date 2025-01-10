@@ -39,7 +39,7 @@ func getTLSConf(key ic.PrivKey, start, end time.Time) (*tls.Config, error) {
 	// 生成证书和私钥
 	cert, priv, err := generateCert(key, start, end)
 	if err != nil {
-		log.Errorf("生成证书和私钥失败: %s", err)
+		log.Debugf("生成证书和私钥失败: %s", err)
 		return nil, err
 	}
 	// 返回 TLS 配置
@@ -68,7 +68,7 @@ func generateCert(key ic.PrivKey, start, end time.Time) (*x509.Certificate, *ecd
 	// 获取私钥原始字节
 	keyBytes, err := key.Raw()
 	if err != nil {
-		log.Errorf("获取私钥原始字节失败: %s", err)
+		log.Debugf("获取私钥原始字节失败: %s", err)
 		return nil, nil, err
 	}
 
@@ -80,7 +80,7 @@ func generateCert(key ic.PrivKey, start, end time.Time) (*x509.Certificate, *ecd
 	// 生成序列号
 	b := make([]byte, 8)
 	if _, err := deterministicHKDFReader.Read(b); err != nil {
-		log.Errorf("生成序列号失败: %s", err)
+		log.Debugf("生成序列号失败: %s", err)
 		return nil, nil, err
 	}
 	serial := int64(binary.BigEndian.Uint64(b))
@@ -103,21 +103,21 @@ func generateCert(key ic.PrivKey, start, end time.Time) (*x509.Certificate, *ecd
 	// 生成 CA 私钥
 	caPrivateKey, err := ecdsa.GenerateKey(elliptic.P256(), deterministicHKDFReader)
 	if err != nil {
-		log.Errorf("生成 CA 私钥失败: %s", err)
+		log.Debugf("生成 CA 私钥失败: %s", err)
 		return nil, nil, err
 	}
 
 	// 创建证书
 	caBytes, err := x509.CreateCertificate(deterministicHKDFReader, certTempl, certTempl, caPrivateKey.Public(), caPrivateKey)
 	if err != nil {
-		log.Errorf("创建证书失败: %s", err)
+		log.Debugf("创建证书失败: %s", err)
 		return nil, nil, err
 	}
 
 	// 解析证书
 	ca, err := x509.ParseCertificate(caBytes)
 	if err != nil {
-		log.Errorf("解析证书失败: %s", err)
+		log.Debugf("解析证书失败: %s", err)
 		return nil, nil, err
 	}
 	return ca, caPrivateKey, nil
@@ -133,7 +133,7 @@ func generateCert(key ic.PrivKey, start, end time.Time) (*x509.Certificate, *ecd
 func verifyRawCerts(rawCerts [][]byte, certHashes []multihash.DecodedMultihash) error {
 	// 检查是否有证书
 	if len(rawCerts) < 1 {
-		log.Errorf("没有证书")
+		log.Debugf("没有证书")
 		return errors.New("没有证书")
 	}
 
@@ -161,27 +161,27 @@ func verifyRawCerts(rawCerts [][]byte, certHashes []multihash.DecodedMultihash) 
 	// 解析证书
 	cert, err := x509.ParseCertificate(leaf)
 	if err != nil {
-		log.Errorf("解析证书失败: %s", err)
+		log.Debugf("解析证书失败: %s", err)
 		return err
 	}
 
 	// 检查是否使用 RSA
 	switch cert.SignatureAlgorithm {
 	case x509.SHA1WithRSA, x509.SHA256WithRSA, x509.SHA384WithRSA, x509.SHA512WithRSA, x509.MD2WithRSA, x509.MD5WithRSA:
-		log.Errorf("证书使用了 RSA")
+		log.Debugf("证书使用了 RSA")
 		return errors.New("证书使用了 RSA")
 	}
 
 	// 检查证书有效期
 	if l := cert.NotAfter.Sub(cert.NotBefore); l > 14*24*time.Hour {
-		log.Errorf("证书有效期不能超过14天 (生效时间: %s, 过期时间: %s, 有效期: %s)", cert.NotBefore, cert.NotAfter, l)
+		log.Debugf("证书有效期不能超过14天 (生效时间: %s, 过期时间: %s, 有效期: %s)", cert.NotBefore, cert.NotAfter, l)
 		return fmt.Errorf("证书有效期不能超过14天 (生效时间: %s, 过期时间: %s, 有效期: %s)", cert.NotBefore, cert.NotAfter, l)
 	}
 
 	// 检查当前时间是否在有效期内
 	now := time.Now()
 	if now.Before(cert.NotBefore) || now.After(cert.NotAfter) {
-		log.Errorf("证书无效 (生效时间: %s, 过期时间: %s)", cert.NotBefore, cert.NotAfter)
+		log.Debugf("证书无效 (生效时间: %s, 过期时间: %s)", cert.NotBefore, cert.NotAfter)
 		return fmt.Errorf("证书无效 (生效时间: %s, 过期时间: %s)", cert.NotBefore, cert.NotAfter)
 	}
 	return nil

@@ -154,7 +154,7 @@ func (s *stream) Close() error {
 	closeWriteErr := s.CloseWrite()
 	closeReadErr := s.CloseRead()
 	if closeWriteErr != nil || closeReadErr != nil {
-		log.Errorf("关闭流失败: %s, %s", closeWriteErr, closeReadErr)
+		log.Debugf("关闭流失败: %s, %s", closeWriteErr, closeReadErr)
 		s.Reset()
 		return errors.Join(closeWriteErr, closeReadErr)
 	}
@@ -183,7 +183,7 @@ func (s *stream) Reset() error {
 	cancelWriteErr := s.cancelWrite()
 	closeReadErr := s.CloseRead()
 	s.setDataChannelReadDeadline(time.Now().Add(-1 * time.Hour))
-	log.Errorf("关闭流失败: %s, %s", closeReadErr, cancelWriteErr)
+	log.Debugf("关闭流失败: %s, %s", closeReadErr, cancelWriteErr)
 	return errors.Join(closeReadErr, cancelWriteErr)
 }
 

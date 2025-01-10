@@ -112,7 +112,7 @@ type activeHolePunch struct {
 //   - error 错误信息
 func NewTransport(key ic.PrivKey, connManager *quicreuse.ConnManager, psk pnet.PSK, gater connmgr.ConnectionGater, rcmgr network.ResourceManager) (tpt.Transport, error) {
 	if len(psk) > 0 {
-		log.Error("QUIC 目前不支持私有网络")
+		log.Debugf("QUIC 目前不支持私有网络")
 		return nil, errors.New("QUIC 目前不支持私有网络")
 	}
 	localPeer, err := peer.IDFromPrivateKey(key)

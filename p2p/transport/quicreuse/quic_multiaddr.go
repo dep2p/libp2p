@@ -26,7 +26,7 @@ func ToQuicMultiaddr(na net.Addr, version quic.Version) (ma.Multiaddr, error) {
 	// 将网络地址转换为UDP多地址
 	udpMA, err := manet.FromNetAddr(na)
 	if err != nil {
-		log.Errorf("将网络地址转换为UDP多地址时出错: %s", err)
+		log.Debugf("将网络地址转换为UDP多地址时出错: %s", err)
 		return nil, err
 	}
 	// 根据QUIC版本进行处理
@@ -35,7 +35,7 @@ func ToQuicMultiaddr(na net.Addr, version quic.Version) (ma.Multiaddr, error) {
 		// 封装QUIC v1组件
 		return udpMA.Encapsulate(quicV1MA), nil
 	default:
-		log.Errorf("未知的QUIC版本")
+		log.Debugf("未知的QUIC版本")
 		return nil, fmt.Errorf("未知的QUIC版本")
 	}
 }
@@ -66,24 +66,24 @@ func FromQuicMultiaddr(addr ma.Multiaddr) (*net.UDPAddr, quic.Version, error) {
 		}
 	})
 	if len(partsBeforeQUIC) == 0 {
-		log.Errorf("QUIC组件之前没有地址部分")
+		log.Debugf("QUIC组件之前没有地址部分")
 		return nil, version, fmt.Errorf("QUIC组件之前没有地址部分")
 	}
 	if version == 0 {
 		// 未找到QUIC版本
-		log.Errorf("未知的QUIC版本")
+		log.Debugf("未知的QUIC版本")
 		return nil, version, fmt.Errorf("未知的QUIC版本")
 	}
 	// 将地址部分转换为网络地址
 	netAddr, err := manet.ToNetAddr(ma.Join(partsBeforeQUIC...))
 	if err != nil {
-		log.Errorf("将地址部分转换为网络地址时出错: %s", err)
+		log.Debugf("将地址部分转换为网络地址时出错: %s", err)
 		return nil, version, err
 	}
 	// 转换为UDP地址
 	udpAddr, ok := netAddr.(*net.UDPAddr)
 	if !ok {
-		log.Errorf("不是UDP地址")
+		log.Debugf("不是UDP地址")
 		return nil, 0, fmt.Errorf("不是UDP地址")
 	}
 	return udpAddr, version, nil

@@ -60,20 +60,20 @@ func (s *secureSession) Read(buf []byte) (int, error) {
 	// 读取下一个加密消息的长度
 	nextMsgLen, err := s.readNextInsecureMsgLen()
 	if err != nil {
-		log.Errorf("读取下一个加密消息的长度时出错: %s", err)
+		log.Debugf("读取下一个加密消息的长度时出错: %s", err)
 		return 0, err
 	}
 
 	// 如果缓冲区大小大于等于加密消息大小,可以直接读取并解密
 	if len(buf) >= nextMsgLen {
 		if err := s.readNextMsgInsecure(buf[:nextMsgLen]); err != nil {
-			log.Errorf("读取下一个加密消息时出错: %s", err)
+			log.Debugf("读取下一个加密消息时出错: %s", err)
 			return 0, err
 		}
 
 		dbuf, err := s.decrypt(buf[:0], buf[:nextMsgLen])
 		if err != nil {
-			log.Errorf("解密消息时出错: %s", err)
+			log.Debugf("解密消息时出错: %s", err)
 			return 0, err
 		}
 
@@ -83,12 +83,12 @@ func (s *secureSession) Read(buf []byte) (int, error) {
 	// 否则,从池中获取缓冲区用于读取消息并就地解密
 	cbuf := pool.Get(nextMsgLen)
 	if err := s.readNextMsgInsecure(cbuf); err != nil {
-		log.Errorf("读取下一个加密消息时出错: %s", err)
+		log.Debugf("读取下一个加密消息时出错: %s", err)
 		return 0, err
 	}
 
 	if s.qbuf, err = s.decrypt(cbuf[:0], cbuf); err != nil {
-		log.Errorf("解密消息时出错: %s", err)
+		log.Debugf("解密消息时出错: %s", err)
 		return 0, err
 	}
 
@@ -140,7 +140,7 @@ func (s *secureSession) Write(data []byte) (int, error) {
 		// 加密当前块
 		b, err := s.encrypt(cbuf[:LengthPrefixLength], data[written:end])
 		if err != nil {
-			log.Errorf("加密当前块时出错: %s", err)
+			log.Debugf("加密当前块时出错: %s", err)
 			return 0, err
 		}
 
@@ -150,7 +150,7 @@ func (s *secureSession) Write(data []byte) (int, error) {
 		// 发送加密消息
 		_, err = s.writeMsgInsecure(b)
 		if err != nil {
-			log.Errorf("发送加密消息时出错: %s", err)
+			log.Debugf("发送加密消息时出错: %s", err)
 			return 0, err
 		}
 		written = end
@@ -166,7 +166,7 @@ func (s *secureSession) Write(data []byte) (int, error) {
 func (s *secureSession) readNextInsecureMsgLen() (int, error) {
 	_, err := io.ReadFull(s.insecureReader, s.rlen[:])
 	if err != nil {
-		log.Errorf("读取下一个加密消息的长度时出错: %s", err)
+		log.Debugf("读取下一个加密消息的长度时出错: %s", err)
 		return 0, err
 	}
 
@@ -187,7 +187,7 @@ func (s *secureSession) readNextInsecureMsgLen() (int, error) {
 func (s *secureSession) readNextMsgInsecure(buf []byte) error {
 	_, err := io.ReadFull(s.insecureReader, buf)
 	if err != nil {
-		log.Errorf("读取下一个加密消息时出错: %s", err)
+		log.Debugf("读取下一个加密消息时出错: %s", err)
 		return err
 	}
 	return nil
@@ -207,7 +207,7 @@ func (s *secureSession) readNextMsgInsecure(buf []byte) error {
 func (s *secureSession) writeMsgInsecure(data []byte) (int, error) {
 	n, err := s.insecureConn.Write(data)
 	if err != nil {
-		log.Errorf("发送加密消息时出错: %s", err)
+		log.Debugf("发送加密消息时出错: %s", err)
 		return 0, err
 	}
 	return n, nil

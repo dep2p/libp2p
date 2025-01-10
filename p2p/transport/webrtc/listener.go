@@ -98,23 +98,23 @@ var _ tpt.Listener = &listener{}
 func newListener(transport *WebRTCTransport, laddr ma.Multiaddr, socket net.PacketConn, config webrtc.Configuration) (*listener, error) {
 	localFingerprints, err := config.Certificates[0].GetFingerprints()
 	if err != nil {
-		log.Errorf("获取证书指纹时出错: %s", err)
+		log.Debugf("获取证书指纹时出错: %s", err)
 		return nil, err
 	}
 
 	localMh, err := hex.DecodeString(strings.ReplaceAll(localFingerprints[0].Value, ":", ""))
 	if err != nil {
-		log.Errorf("解码证书指纹时出错: %s", err)
+		log.Debugf("解码证书指纹时出错: %s", err)
 		return nil, err
 	}
 	localMhBuf, err := multihash.Encode(localMh, multihash.SHA2_256)
 	if err != nil {
-		log.Errorf("编码证书指纹时出错: %s", err)
+		log.Debugf("编码证书指纹时出错: %s", err)
 		return nil, err
 	}
 	localFpMultibase, err := multibase.Encode(multibase.Base64url, localMhBuf)
 	if err != nil {
-		log.Errorf("编码证书指纹时出错: %s", err)
+		log.Debugf("编码证书指纹时出错: %s", err)
 		return nil, err
 	}
 
@@ -197,13 +197,13 @@ func (l *listener) listen() {
 func (l *listener) handleCandidate(ctx context.Context, candidate udpmux.Candidate) (tpt.CapableConn, error) {
 	remoteMultiaddr, err := manet.FromNetAddr(candidate.Addr)
 	if err != nil {
-		log.Errorf("从网络地址创建多地址时出错: %s", err)
+		log.Debugf("从网络地址创建多地址时出错: %s", err)
 		return nil, err
 	}
 	if l.transport.gater != nil {
 		localAddr, _ := ma.SplitFunc(l.localMultiaddr, func(c ma.Component) bool { return c.Protocol().Code == ma.P_CERTHASH })
 		if !l.transport.gater.InterceptAccept(&connMultiaddrs{local: localAddr, remote: remoteMultiaddr}) {
-			log.Errorf("连接被拦截")
+			log.Debugf("连接被拦截")
 			// 在我们能够向客户端发送错误之前,连接尝试被拒绝。
 			// 这意味着连接尝试将超时。
 			return nil, errors.New("连接被拦截")
@@ -211,18 +211,18 @@ func (l *listener) handleCandidate(ctx context.Context, candidate udpmux.Candida
 	}
 	scope, err := l.transport.rcmgr.OpenConnection(network.DirInbound, false, remoteMultiaddr)
 	if err != nil {
-		log.Errorf("打开连接时出错: %s", err)
+		log.Debugf("打开连接时出错: %s", err)
 		return nil, err
 	}
 	conn, err := l.setupConnection(ctx, scope, remoteMultiaddr, candidate)
 	if err != nil {
 		scope.Done()
-		log.Errorf("设置连接时出错: %s", err)
+		log.Debugf("设置连接时出错: %s", err)
 		return nil, err
 	}
 	if l.transport.gater != nil && !l.transport.gater.InterceptSecured(network.DirInbound, conn.RemotePeer(), conn) {
 		conn.Close()
-		log.Errorf("连接被拦截")
+		log.Debugf("连接被拦截")
 		return nil, errors.New("连接被拦截")
 	}
 	return conn, nil
@@ -245,7 +245,7 @@ func (l *listener) setupConnection(
 	var w webRTCConnection
 	defer func() {
 		if err != nil {
-			log.Errorf("设置连接时出错: %s", err)
+			log.Debugf("设置连接时出错: %s", err)
 			if w.PeerConnection != nil {
 				_ = w.PeerConnection.Close()
 			}
@@ -273,13 +273,13 @@ func (l *listener) setupConnection(
 	settingEngine.DetachDataChannels()
 	settingEngine.SetSCTPMaxReceiveBufferSize(sctpReceiveBufferSize)
 	if err := scope.ReserveMemory(sctpReceiveBufferSize, network.ReservationPriorityMedium); err != nil {
-		log.Errorf("预留内存时出错: %s", err)
+		log.Debugf("预留内存时出错: %s", err)
 		return nil, err
 	}
 
 	w, err = newWebRTCConnection(settingEngine, l.config)
 	if err != nil {
-		log.Errorf("实例化对等连接失败: %s", err)
+		log.Debugf("实例化对等连接失败: %s", err)
 		return nil, err
 	}
 
@@ -289,16 +289,16 @@ func (l *listener) setupConnection(
 		SDP:  createClientSDP(candidate.Addr, candidate.Ufrag),
 		Type: webrtc.SDPTypeOffer,
 	}); err != nil {
-		log.Errorf("设置远程描述时出错: %s", err)
+		log.Debugf("设置远程描述时出错: %s", err)
 		return nil, err
 	}
 	answer, err := w.PeerConnection.CreateAnswer(nil)
 	if err != nil {
-		log.Errorf("创建答案时出错: %s", err)
+		log.Debugf("创建答案时出错: %s", err)
 		return nil, err
 	}
 	if err := w.PeerConnection.SetLocalDescription(answer); err != nil {
-		log.Errorf("设置本地描述时出错: %s", err)
+		log.Debugf("设置本地描述时出错: %s", err)
 		return nil, err
 	}
 
@@ -307,7 +307,7 @@ func (l *listener) setupConnection(
 		return nil, ctx.Err()
 	case err := <-errC:
 		if err != nil {
-			log.Errorf("ufrag 为 %s 的对等连接失败: %s", candidate.Ufrag, err)
+			log.Debugf("ufrag 为 %s 的对等连接失败: %s", candidate.Ufrag, err)
 			return nil, err
 		}
 	}
@@ -315,24 +315,24 @@ func (l *listener) setupConnection(
 	// 运行噪声握手
 	rwc, err := detachHandshakeDataChannel(ctx, w.HandshakeDataChannel)
 	if err != nil {
-		log.Errorf("分离握手数据通道时出错: %s", err)
+		log.Debugf("分离握手数据通道时出错: %s", err)
 		return nil, err
 	}
 	handshakeChannel := newStream(w.HandshakeDataChannel, rwc, func() {})
 	// 我们还不知道 A 的对等 ID,所以接受任何入站连接
 	remotePubKey, err := l.transport.noiseHandshake(ctx, w.PeerConnection, handshakeChannel, "", crypto.SHA256, true)
 	if err != nil {
-		log.Errorf("噪声握手时出错: %s", err)
+		log.Debugf("噪声握手时出错: %s", err)
 		return nil, err
 	}
 	remotePeer, err := peer.IDFromPublicKey(remotePubKey)
 	if err != nil {
-		log.Errorf("从公钥创建对等 ID 时出错: %s", err)
+		log.Debugf("从公钥创建对等 ID 时出错: %s", err)
 		return nil, err
 	}
 	// 最早知道远程对等 ID 的时间点
 	if err := scope.SetPeer(remotePeer); err != nil {
-		log.Errorf("设置对等 ID 时出错: %s", err)
+		log.Debugf("设置对等 ID 时出错: %s", err)
 		return nil, err
 	}
 
@@ -351,7 +351,7 @@ func (l *listener) setupConnection(
 		w.PeerConnectionClosedCh,
 	)
 	if err != nil {
-		log.Errorf("创建连接时出错: %s", err)
+		log.Debugf("创建连接时出错: %s", err)
 		return nil, err
 	}
 
@@ -365,7 +365,7 @@ func (l *listener) setupConnection(
 func (l *listener) Accept() (tpt.CapableConn, error) {
 	select {
 	case <-l.ctx.Done():
-		log.Errorf("监听器已关闭")
+		log.Debugf("监听器已关闭")
 		return nil, tpt.ErrListenerClosed
 	case conn := <-l.acceptQueue:
 		return conn, nil

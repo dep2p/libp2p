@@ -48,7 +48,7 @@ func NewConn(raw *ws.Conn, secure bool) *Conn {
 	lna := NewAddrWithScheme(raw.LocalAddr().String(), secure)
 	laddr, err := manet.FromNetAddr(lna)
 	if err != nil {
-		log.Errorf("BUG: websocket 连接的本地地址无效", raw.LocalAddr())
+		log.Debugf("BUG: websocket 连接的本地地址无效", raw.LocalAddr())
 		return nil
 	}
 
@@ -56,7 +56,7 @@ func NewConn(raw *ws.Conn, secure bool) *Conn {
 	rna := NewAddrWithScheme(raw.RemoteAddr().String(), secure)
 	raddr, err := manet.FromNetAddr(rna)
 	if err != nil {
-		log.Errorf("BUG: websocket 连接的远程地址无效", raw.RemoteAddr())
+		log.Debugf("BUG: websocket 连接的远程地址无效", raw.RemoteAddr())
 		return nil
 	}
 
@@ -99,7 +99,7 @@ func (c *Conn) Read(b []byte) (int, error) {
 
 	if c.reader == nil {
 		if err := c.prepNextReader(); err != nil {
-			log.Errorf("准备下一个读取器失败: %s", err)
+			log.Debugf("准备下一个读取器失败: %s", err)
 			return 0, err
 		}
 	}
@@ -115,7 +115,7 @@ func (c *Conn) Read(b []byte) (int, error) {
 			}
 
 			if err := c.prepNextReader(); err != nil {
-				log.Errorf("准备下一个读取器失败: %s", err)
+				log.Debugf("准备下一个读取器失败: %s", err)
 				return 0, err
 			}
 

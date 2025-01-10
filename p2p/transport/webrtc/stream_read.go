@@ -26,17 +26,17 @@ func (s *stream) Read(b []byte) (int, error) {
 
 	// 检查是否因关闭而发生错误
 	if s.closeForShutdownErr != nil {
-		log.Errorf("流已关闭: %s", s.closeForShutdownErr)
+		log.Debugf("流已关闭: %s", s.closeForShutdownErr)
 		return 0, s.closeForShutdownErr
 	}
 
 	// 根据接收状态返回相应错误
 	switch s.receiveState {
 	case receiveStateDataRead:
-		log.Errorf("流已读取完毕")
+		log.Debugf("流已读取完毕")
 		return 0, io.EOF
 	case receiveStateReset:
-		log.Errorf("流已重置")
+		log.Debugf("流已重置")
 		return 0, network.ErrReset
 	}
 
@@ -56,13 +56,13 @@ func (s *stream) Read(b []byte) (int, error) {
 			if err != nil {
 				// 连接已关闭
 				if s.closeForShutdownErr != nil {
-					log.Errorf("流已关闭: %s", s.closeForShutdownErr)
+					log.Debugf("流已关闭: %s", s.closeForShutdownErr)
 					return 0, s.closeForShutdownErr
 				}
 				if err == io.EOF {
 					// 如果通道正常关闭,返回EOF
 					if s.receiveState == receiveStateDataRead {
-						log.Errorf("流已读取完毕")
+						log.Debugf("流已读取完毕")
 						return 0, io.EOF
 					}
 					// 当远程端在不写入FIN消息的情况下关闭数据通道时会发生这种情况
@@ -72,11 +72,11 @@ func (s *stream) Read(b []byte) (int, error) {
 					return 0, network.ErrReset
 				}
 				if s.receiveState == receiveStateReset {
-					log.Errorf("流已重置")
+					log.Debugf("流已重置")
 					return 0, network.ErrReset
 				}
 				if s.receiveState == receiveStateDataRead {
-					log.Errorf("流已读取完毕")
+					log.Debugf("流已读取完毕")
 					return 0, io.EOF
 				}
 				return 0, err
@@ -96,7 +96,7 @@ func (s *stream) Read(b []byte) (int, error) {
 		s.processIncomingFlag(s.nextMessage.Flag)
 		s.nextMessage = nil
 		if s.closeForShutdownErr != nil {
-			log.Errorf("流已关闭: %s", s.closeForShutdownErr)
+			log.Debugf("流已关闭: %s", s.closeForShutdownErr)
 			return read, s.closeForShutdownErr
 		}
 		switch s.receiveState {

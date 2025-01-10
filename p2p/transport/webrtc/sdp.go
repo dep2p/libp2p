@@ -93,7 +93,7 @@ func createServerSDP(addr *net.UDPAddr, ufrag string, fingerprint multihash.Deco
 	// 获取支持的SDP字符串
 	sdpString, err := getSupportedSDPString(fingerprint.Code)
 	if err != nil {
-		log.Errorf("获取支持的SDP字符串时出错: %s", err)
+		log.Debugf("获取支持的SDP字符串时出错: %s", err)
 		return "", err
 	}
 

@@ -89,31 +89,31 @@ func (l *qlogger) Close() error {
 	defer os.Remove(l.f.Name())
 	defer l.f.Close()
 	if err := l.Writer.Flush(); err != nil {
-		log.Errorf("刷新qlog缓冲区时出错: %s", err)
+		log.Debugf("刷新qlog缓冲区时出错: %s", err)
 		return err
 	}
 	if _, err := l.f.Seek(0, io.SeekStart); err != nil { // 将读取位置设置到文件开头
-		log.Errorf("将读取位置设置到文件开头时出错: %s", err)
+		log.Debugf("将读取位置设置到文件开头时出错: %s", err)
 		return err
 	}
 	f, err := os.Create(l.filename)
 	if err != nil {
-		log.Errorf("创建qlog文件时出错: %s", err)
+		log.Debugf("创建qlog文件时出错: %s", err)
 		return err
 	}
 	defer f.Close()
 	buf := bufio.NewWriterSize(f, 128<<10)
 	c, err := zstd.NewWriter(buf, zstd.WithEncoderLevel(zstd.SpeedFastest), zstd.WithWindowSize(32*1024))
 	if err != nil {
-		log.Errorf("创建zstd编码器时出错: %s", err)
+		log.Debugf("创建zstd编码器时出错: %s", err)
 		return err
 	}
 	if _, err := io.Copy(c, l.f); err != nil {
-		log.Errorf("复制qlog文件时出错: %s", err)
+		log.Debugf("复制qlog文件时出错: %s", err)
 		return err
 	}
 	if err := c.Close(); err != nil {
-		log.Errorf("关闭zstd编码器时出错: %s", err)
+		log.Debugf("关闭zstd编码器时出错: %s", err)
 		return err
 	}
 	return buf.Flush()

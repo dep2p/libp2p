@@ -88,7 +88,7 @@ func newSecureSession(tpt *Transport, ctx context.Context, insecure net.Conn, re
 	select {
 	case err := <-respCh:
 		if err != nil {
-			log.Errorf("握手过程中出错: %s", err)
+			log.Debugf("握手过程中出错: %s", err)
 			_ = s.insecureConn.Close()
 		}
 		return s, err

@@ -33,7 +33,7 @@ func (s *stream) Read(b []byte) (n int, err error) {
 	n, err = s.Stream.Read(b)
 	// 如果发生 StreamError 错误，转换为 network.ErrReset
 	if err != nil && errors.Is(err, &quic.StreamError{}) {
-		log.Errorf("读取流时发生错误: %s", err)
+		log.Debugf("读取流时发生错误: %s", err)
 		err = network.ErrReset
 	}
 	return n, err
@@ -51,7 +51,7 @@ func (s *stream) Write(b []byte) (n int, err error) {
 	n, err = s.Stream.Write(b)
 	// 如果发生 StreamError 错误，转换为 network.ErrReset
 	if err != nil && errors.Is(err, &quic.StreamError{}) {
-		log.Errorf("写入流时发生错误: %s", err)
+		log.Debugf("写入流时发生错误: %s", err)
 		err = network.ErrReset
 	}
 	return n, err

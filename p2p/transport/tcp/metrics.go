@@ -278,7 +278,7 @@ func newTracingConn(c manet.Conn, collector *aggregatingCollector, isClient bool
 	initMetricsOnce.Do(func() { initMetrics() })
 	conn, err := tcp.NewConn(c)
 	if err != nil {
-		log.Errorf("创建TCP连接时出错: %s", err)
+		log.Debugf("创建TCP连接时出错: %s", err)
 		return nil, err
 	}
 	tc := &tracingConn{
@@ -326,7 +326,7 @@ func (c *tracingConn) getTCPInfo() (*tcpinfo.Info, error) {
 	var b [256]byte
 	i, err := c.tcpConn.Option(o.Level(), o.Name(), b[:])
 	if err != nil {
-		log.Errorf("获取TCP连接信息时出错: %s", err)
+		log.Debugf("获取TCP连接信息时出错: %s", err)
 		return nil, err
 	}
 	info := i.(*tcpinfo.Info)
@@ -357,7 +357,7 @@ func newTracingListener(l manet.Listener, collector *aggregatingCollector) *trac
 func (l *tracingListener) Accept() (manet.Conn, error) {
 	conn, err := l.Listener.Accept()
 	if err != nil {
-		log.Errorf("接受新连接时出错: %s", err)
+		log.Debugf("接受新连接时出错: %s", err)
 		return nil, err
 	}
 	return newTracingConn(conn, l.collector, false)

@@ -170,7 +170,7 @@ func (t *Transport) handshake(ctx context.Context, tlsConn *tls.Conn, keyCh <-ch
 
 	// 执行握手
 	if err := tlsConn.HandshakeContext(ctx); err != nil {
-		log.Errorf("TLS握手失败: %s", err)
+		log.Debugf("TLS握手失败: %s", err)
 		return nil, err
 	}
 
@@ -181,7 +181,7 @@ func (t *Transport) handshake(ctx context.Context, tlsConn *tls.Conn, keyCh <-ch
 	default:
 	}
 	if remotePubKey == nil {
-		log.Errorf("go-libp2p tls错误: 预期远程公钥已设置")
+		log.Debugf("go-libp2p tls错误: 预期远程公钥已设置")
 		return nil, fmt.Errorf("go-libp2p tls错误: 预期远程公钥已设置")
 	}
 
@@ -199,7 +199,7 @@ func (t *Transport) handshake(ctx context.Context, tlsConn *tls.Conn, keyCh <-ch
 func (t *Transport) setupConn(tlsConn *tls.Conn, remotePubKey ci.PubKey) (sec.SecureConn, error) {
 	remotePeerID, err := peer.IDFromPublicKey(remotePubKey)
 	if err != nil {
-		log.Errorf("从公钥生成节点ID时出错: %s", err)
+		log.Debugf("从公钥生成节点ID时出错: %s", err)
 		return nil, err
 	}
 

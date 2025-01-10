@@ -52,7 +52,7 @@ func New(id protocol.ID, privkey crypto.PrivKey, muxers []tptu.StreamMuxer) (*Tr
 	// 从私钥生成节点 ID
 	localID, err := peer.IDFromPrivateKey(privkey)
 	if err != nil {
-		log.Errorf("从私钥生成节点 ID 时出错: %s", err)
+		log.Debugf("从私钥生成节点 ID 时出错: %s", err)
 		return nil, err
 	}
 
@@ -110,7 +110,7 @@ func (t *Transport) SecureOutbound(ctx context.Context, insecure net.Conn, p pee
 	// 创建安全会话
 	c, err := newSecureSession(t, ctx, insecure, p, nil, initiatorEDH, nil, true, true)
 	if err != nil {
-		log.Errorf("创建安全会话时出错: %s", err)
+		log.Debugf("创建安全会话时出错: %s", err)
 		return nil, err
 	}
 	return SessionWithConnState(c, initiatorEDH.MatchMuxers(true)), err
@@ -127,7 +127,7 @@ func (t *Transport) WithSessionOptions(opts ...SessionOption) (*SessionTransport
 	st := &SessionTransport{t: t, protocolID: t.protocolID}
 	for _, opt := range opts {
 		if err := opt(st); err != nil {
-			log.Errorf("应用会话选项时出错: %s", err)
+			log.Debugf("应用会话选项时出错: %s", err)
 			return nil, err
 		}
 	}

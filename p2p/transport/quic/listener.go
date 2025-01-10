@@ -68,7 +68,7 @@ func (l *listener) Accept() (tpt.CapableConn, error) {
 		// 接受新的 QUIC 连接
 		qconn, err := l.reuseListener.Accept(context.Background())
 		if err != nil {
-			log.Errorf("接受新连接时出错: %s", err)
+			log.Debugf("接受新连接时出错: %s", err)
 			return nil, err
 		}
 		// 包装 QUIC 连接
@@ -116,14 +116,14 @@ func (l *listener) wrapConn(qconn quic.Connection) (*conn, error) {
 	// 转换远程地址为多地址格式
 	remoteMultiaddr, err := quicreuse.ToQuicMultiaddr(qconn.RemoteAddr(), qconn.ConnectionState().Version)
 	if err != nil {
-		log.Errorf("转换远程地址为多地址格式时出错: %s", err)
+		log.Debugf("转换远程地址为多地址格式时出错: %s", err)
 		return nil, err
 	}
 
 	// 打开入站连接资源
 	connScope, err := l.rcmgr.OpenConnection(network.DirInbound, false, remoteMultiaddr)
 	if err != nil {
-		log.Errorf("资源管理器阻止了入站连接", "addr", qconn.RemoteAddr(), "error", err)
+		log.Debugf("资源管理器阻止了入站连接", "addr", qconn.RemoteAddr(), "error", err)
 		return nil, err
 	}
 	// 使用资源范围包装连接
@@ -149,25 +149,25 @@ func (l *listener) wrapConnWithScope(qconn quic.Connection, connScope network.Co
 	// 从 TLS 证书链中提取远程公钥
 	remotePubKey, err := p2ptls.PubKeyFromCertChain(qconn.ConnectionState().TLS.PeerCertificates)
 	if err != nil {
-		log.Errorf("从TLS证书链中提取远程公钥时出错: %s", err)
+		log.Debugf("从TLS证书链中提取远程公钥时出错: %s", err)
 		return nil, err
 	}
 	// 从公钥生成节点 ID
 	remotePeerID, err := peer.IDFromPublicKey(remotePubKey)
 	if err != nil {
-		log.Errorf("从公钥生成节点ID时出错: %s", err)
+		log.Debugf("从公钥生成节点ID时出错: %s", err)
 		return nil, err
 	}
 	// 设置连接的对等节点
 	if err := connScope.SetPeer(remotePeerID); err != nil {
-		log.Errorf("资源管理器阻止了与对等节点的入站连接", "peer", remotePeerID, "addr", qconn.RemoteAddr(), "error", err)
+		log.Debugf("资源管理器阻止了与对等节点的入站连接", "peer", remotePeerID, "addr", qconn.RemoteAddr(), "error", err)
 		return nil, err
 	}
 
 	// 获取对应 QUIC 版本的本地多地址
 	localMultiaddr, found := l.localMultiaddrs[qconn.ConnectionState().Version]
 	if !found {
-		log.Errorf("未知的 QUIC 版本: %s", qconn.ConnectionState().Version.String())
+		log.Debugf("未知的 QUIC 版本: %s", qconn.ConnectionState().Version.String())
 		return nil, fmt.Errorf("未知的 QUIC 版本: %s", qconn.ConnectionState().Version.String())
 	}
 

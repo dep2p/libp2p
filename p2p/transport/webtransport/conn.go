@@ -77,7 +77,7 @@ func newConn(tr *transport, sess *webtransport.Session, sconn *connSecurityMulti
 func (c *conn) OpenStream(ctx context.Context) (network.MuxedStream, error) {
 	str, err := c.session.OpenStreamSync(ctx)
 	if err != nil {
-		log.Errorf("打开流失败: %s", err)
+		log.Debugf("打开流失败: %s", err)
 		return nil, err
 	}
 	return &stream{str}, nil
@@ -90,7 +90,7 @@ func (c *conn) OpenStream(ctx context.Context) (network.MuxedStream, error) {
 func (c *conn) AcceptStream() (network.MuxedStream, error) {
 	str, err := c.session.AcceptStream(context.Background())
 	if err != nil {
-		log.Errorf("接受流失败: %s", err)
+		log.Debugf("接受流失败: %s", err)
 		return nil, err
 	}
 	return &stream{str}, nil

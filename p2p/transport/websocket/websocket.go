@@ -138,7 +138,7 @@ func New(u transport.Upgrader, rcmgr network.ResourceManager, sharedTCP *tcpreus
 	}
 	for _, opt := range opts {
 		if err := opt(t); err != nil {
-			log.Errorf("配置 WebsocketTransport 失败: %s", err)
+			log.Debugf("配置 WebsocketTransport 失败: %s", err)
 			return nil, err
 		}
 	}
@@ -184,7 +184,7 @@ func (t *WebsocketTransport) Proxy() bool {
 func (t *WebsocketTransport) Resolve(_ context.Context, maddr ma.Multiaddr) ([]ma.Multiaddr, error) {
 	parsed, err := parseWebsocketMultiaddr(maddr)
 	if err != nil {
-		log.Errorf("解析 WebSocket 多地址失败: %s", err)
+		log.Debugf("解析 WebSocket 多地址失败: %s", err)
 		return nil, err
 	}
 
@@ -205,7 +205,7 @@ func (t *WebsocketTransport) Resolve(_ context.Context, maddr ma.Multiaddr) ([]m
 			return true
 		})
 		if err != nil {
-			log.Errorf("解析 WebSocket 多地址失败: %s", err)
+			log.Debugf("解析 WebSocket 多地址失败: %s", err)
 			return nil, err
 		}
 	}
@@ -231,13 +231,13 @@ func (t *WebsocketTransport) Resolve(_ context.Context, maddr ma.Multiaddr) ([]m
 func (t *WebsocketTransport) Dial(ctx context.Context, raddr ma.Multiaddr, p peer.ID) (transport.CapableConn, error) {
 	connScope, err := t.rcmgr.OpenConnection(network.DirOutbound, true, raddr)
 	if err != nil {
-		log.Errorf("打开连接失败: %s", err)
+		log.Debugf("打开连接失败: %s", err)
 		return nil, err
 	}
 	c, err := t.dialWithScope(ctx, raddr, p, connScope)
 	if err != nil {
 		connScope.Done()
-		log.Errorf("拨号失败: %s", err)
+		log.Debugf("拨号失败: %s", err)
 		return nil, err
 	}
 	return c, nil
@@ -257,12 +257,12 @@ func (t *WebsocketTransport) Dial(ctx context.Context, raddr ma.Multiaddr, p pee
 func (t *WebsocketTransport) dialWithScope(ctx context.Context, raddr ma.Multiaddr, p peer.ID, connScope network.ConnManagementScope) (transport.CapableConn, error) {
 	macon, err := t.maDial(ctx, raddr)
 	if err != nil {
-		log.Errorf("拨号失败: %s", err)
+		log.Debugf("拨号失败: %s", err)
 		return nil, err
 	}
 	conn, err := t.upgrader.Upgrade(ctx, t, macon, network.DirOutbound, p, connScope)
 	if err != nil {
-		log.Errorf("升级连接失败: %s", err)
+		log.Debugf("升级连接失败: %s", err)
 		return nil, err
 	}
 	return &capableConn{CapableConn: conn}, nil
@@ -280,7 +280,7 @@ func (t *WebsocketTransport) dialWithScope(ctx context.Context, raddr ma.Multiad
 func (t *WebsocketTransport) maDial(ctx context.Context, raddr ma.Multiaddr) (manet.Conn, error) {
 	wsurl, err := parseMultiaddr(raddr)
 	if err != nil {
-		log.Errorf("解析 WebSocket 多地址失败: %s", err)
+		log.Debugf("解析 WebSocket 多地址失败: %s", err)
 		return nil, err
 	}
 	isWss := wsurl.Scheme == "wss"
@@ -302,7 +302,7 @@ func (t *WebsocketTransport) maDial(ctx context.Context, raddr ma.Multiaddr) (ma
 			dialer.NetDial = func(network, address string) (net.Conn, error) {
 				tcpAddr, err := net.ResolveTCPAddr(network, ipAddr)
 				if err != nil {
-					log.Errorf("解析 TCP 地址失败: %s", err)
+					log.Debugf("解析 TCP 地址失败: %s", err)
 					return nil, err
 				}
 				return net.DialTCP("tcp", nil, tcpAddr)
@@ -315,14 +315,14 @@ func (t *WebsocketTransport) maDial(ctx context.Context, raddr ma.Multiaddr) (ma
 
 	wscon, _, err := dialer.DialContext(ctx, wsurl.String(), nil)
 	if err != nil {
-		log.Errorf("拨号失败: %s", err)
+		log.Debugf("拨号失败: %s", err)
 		return nil, err
 	}
 
 	mnc, err := manet.WrapNetConn(NewConn(wscon, isWss))
 	if err != nil {
 		wscon.Close()
-		log.Errorf("包装网络连接失败: %s", err)
+		log.Debugf("包装网络连接失败: %s", err)
 		return nil, err
 	}
 	return mnc, nil
@@ -343,7 +343,7 @@ func (t *WebsocketTransport) maListen(a ma.Multiaddr) (manet.Listener, error) {
 	}
 	l, err := newListener(a, tlsConf, t.sharedTcp)
 	if err != nil {
-		log.Errorf("创建监听器失败: %s", err)
+		log.Debugf("创建监听器失败: %s", err)
 		return nil, err
 	}
 	go l.serve()
@@ -361,7 +361,7 @@ func (t *WebsocketTransport) maListen(a ma.Multiaddr) (manet.Listener, error) {
 func (t *WebsocketTransport) Listen(a ma.Multiaddr) (transport.Listener, error) {
 	malist, err := t.maListen(a)
 	if err != nil {
-		log.Errorf("创建监听器失败: %s", err)
+		log.Debugf("创建监听器失败: %s", err)
 		return nil, err
 	}
 	return &transportListener{Listener: t.upgrader.UpgradeListener(t, malist)}, nil

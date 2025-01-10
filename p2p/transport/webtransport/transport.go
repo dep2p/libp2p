@@ -133,7 +133,7 @@ var _ io.Closer = &transport{}
 //   - error 错误信息
 func New(key ic.PrivKey, psk pnet.PSK, connManager *quicreuse.ConnManager, gater connmgr.ConnectionGater, rcmgr network.ResourceManager, opts ...Option) (tpt.Transport, error) {
 	if len(psk) > 0 {
-		log.Error("WebTransport 暂不支持私有网络")
+		log.Debugf("WebTransport 暂不支持私有网络")
 		return nil, errors.New("WebTransport 暂不支持私有网络")
 	}
 	if rcmgr == nil {
@@ -141,7 +141,7 @@ func New(key ic.PrivKey, psk pnet.PSK, connManager *quicreuse.ConnManager, gater
 	}
 	id, err := peer.IDFromPrivateKey(key)
 	if err != nil {
-		log.Errorf("从私钥创建 peer.ID 失败: %s", err)
+		log.Debugf("从私钥创建 peer.ID 失败: %s", err)
 		return nil, err
 	}
 	t := &transport{
@@ -156,13 +156,13 @@ func New(key ic.PrivKey, psk pnet.PSK, connManager *quicreuse.ConnManager, gater
 	}
 	for _, opt := range opts {
 		if err := opt(t); err != nil {
-			log.Errorf("配置选项失败: %s", err)
+			log.Debugf("配置选项失败: %s", err)
 			return nil, err
 		}
 	}
 	n, err := noise.New(noise.ID, key, nil)
 	if err != nil {
-		log.Errorf("创建 Noise 传输层失败: %s", err)
+		log.Debugf("创建 Noise 传输层失败: %s", err)
 		return nil, err
 	}
 	t.noise = n
@@ -182,7 +182,7 @@ func (t *transport) Dial(ctx context.Context, raddr ma.Multiaddr, p peer.ID) (tp
 	// 打开出站连接资源
 	scope, err := t.rcmgr.OpenConnection(network.DirOutbound, false, raddr)
 	if err != nil {
-		log.Errorf("资源管理器阻止了出站连接: %s", err)
+		log.Debugf("资源管理器阻止了出站连接: %s", err)
 		return nil, err
 	}
 
@@ -190,7 +190,7 @@ func (t *transport) Dial(ctx context.Context, raddr ma.Multiaddr, p peer.ID) (tp
 	c, err := t.dialWithScope(ctx, raddr, p, scope)
 	if err != nil {
 		scope.Done()
-		log.Errorf("建立连接失败: %s", err)
+		log.Debugf("建立连接失败: %s", err)
 		return nil, err
 	}
 
@@ -211,7 +211,7 @@ func (t *transport) dialWithScope(ctx context.Context, raddr ma.Multiaddr, p pee
 	// 解析拨号参数
 	_, addr, err := manet.DialArgs(raddr)
 	if err != nil {
-		log.Errorf("解析拨号参数失败: %s", err)
+		log.Debugf("解析拨号参数失败: %s", err)
 		return nil, err
 	}
 	// 构造 WebTransport URL
@@ -219,13 +219,13 @@ func (t *transport) dialWithScope(ctx context.Context, raddr ma.Multiaddr, p pee
 	// 提取证书哈希
 	certHashes, err := extractCertHashes(raddr)
 	if err != nil {
-		log.Errorf("提取证书哈希失败: %s", err)
+		log.Debugf("提取证书哈希失败: %s", err)
 		return nil, err
 	}
 
 	// 检查证书哈希是否存在
 	if len(certHashes) == 0 {
-		log.Errorf("无法在没有证书哈希的情况下建立 WebTransport 连接")
+		log.Debugf("无法在没有证书哈希的情况下建立 WebTransport 连接")
 		return nil, errors.New("无法在没有证书哈希的情况下建立 WebTransport 连接")
 	}
 
@@ -234,7 +234,7 @@ func (t *transport) dialWithScope(ctx context.Context, raddr ma.Multiaddr, p pee
 
 	// 设置对等节点
 	if err := scope.SetPeer(p); err != nil {
-		log.Errorf("资源管理器阻止了对等节点的出站连接: %s", err)
+		log.Debugf("资源管理器阻止了对等节点的出站连接: %s", err)
 		return nil, err
 	}
 
@@ -243,20 +243,20 @@ func (t *transport) dialWithScope(ctx context.Context, raddr ma.Multiaddr, p pee
 	// 建立 WebTransport 会话
 	sess, qconn, err := t.dial(ctx, maddr, url, sni, certHashes)
 	if err != nil {
-		log.Errorf("建立 WebTransport 会话失败: %s", err)
+		log.Debugf("建立 WebTransport 会话失败: %s", err)
 		return nil, err
 	}
 	// 升级连接
 	sconn, err := t.upgrade(ctx, sess, p, certHashes)
 	if err != nil {
-		log.Errorf("升级连接失败: %s", err)
+		log.Debugf("升级连接失败: %s", err)
 		sess.CloseWithError(1, "")
 		qconn.CloseWithError(1, "")
 		return nil, err
 	}
 	// 检查连接网关
 	if t.gater != nil && !t.gater.InterceptSecured(network.DirOutbound, p, sconn) {
-		log.Errorf("安全连接被网关拦截")
+		log.Debugf("安全连接被网关拦截")
 		sess.CloseWithError(errorCodeConnectionGating, "")
 		qconn.CloseWithError(errorCodeConnectionGating, "")
 		return nil, fmt.Errorf("安全连接被网关拦截")
@@ -308,7 +308,7 @@ func (t *transport) dial(ctx context.Context, addr ma.Multiaddr, url, sni string
 	// 建立 QUIC 连接
 	conn, err := t.connManager.DialQUIC(ctx, addr, tlsConf, t.allowWindowIncrease)
 	if err != nil {
-		log.Errorf("建立 QUIC 连接失败: %s", err)
+		log.Debugf("建立 QUIC 连接失败: %s", err)
 		return nil, nil, err
 	}
 	// 配置 WebTransport 拨号器
@@ -322,13 +322,13 @@ func (t *transport) dial(ctx context.Context, addr ma.Multiaddr, url, sni string
 	rsp, sess, err := dialer.Dial(ctx, url, nil)
 	if err != nil {
 		conn.CloseWithError(1, "")
-		log.Errorf("建立 WebTransport 会话失败: %s", err)
+		log.Debugf("建立 WebTransport 会话失败: %s", err)
 		return nil, nil, err
 	}
 	// 检查响应状态码
 	if rsp.StatusCode < 200 || rsp.StatusCode > 299 {
 		conn.CloseWithError(1, "")
-		log.Errorf("无效的响应状态码: %d", rsp.StatusCode)
+		log.Debugf("无效的响应状态码: %d", rsp.StatusCode)
 		return nil, nil, fmt.Errorf("无效的响应状态码: %d", rsp.StatusCode)
 	}
 	return sess, conn, err
@@ -348,20 +348,20 @@ func (t *transport) upgrade(ctx context.Context, sess *webtransport.Session, p p
 	// 获取本地地址
 	local, err := toWebtransportMultiaddr(sess.LocalAddr())
 	if err != nil {
-		log.Errorf("确定本地地址时出错: %s", err)
+		log.Debugf("确定本地地址时出错: %s", err)
 		return nil, err
 	}
 	// 获取远程地址
 	remote, err := toWebtransportMultiaddr(sess.RemoteAddr())
 	if err != nil {
-		log.Errorf("确定远程地址时出错: %s", err)
+		log.Debugf("确定远程地址时出错: %s", err)
 		return nil, err
 	}
 
 	// 打开流
 	str, err := sess.OpenStreamSync(ctx)
 	if err != nil {
-		log.Errorf("打开流失败: %s", err)
+		log.Debugf("打开流失败: %s", err)
 		return nil, err
 	}
 	defer str.Close()
@@ -372,7 +372,7 @@ func (t *transport) upgrade(ctx context.Context, sess *webtransport.Session, p p
 	n, err := t.noise.WithSessionOptions(noise.EarlyData(newEarlyDataReceiver(func(b *pb.NoiseExtensions) error {
 		decodedCertHashes, err := decodeCertHashesFromProtobuf(b.WebtransportCerthashes)
 		if err != nil {
-			log.Errorf("解码证书哈希失败: %s", err)
+			log.Debugf("解码证书哈希失败: %s", err)
 			return err
 		}
 		for _, sent := range certHashes {
@@ -384,7 +384,7 @@ func (t *transport) upgrade(ctx context.Context, sess *webtransport.Session, p p
 				}
 			}
 			if !found {
-				log.Errorf("缺少证书哈希: %v", sent)
+				log.Debugf("缺少证书哈希: %v", sent)
 				return fmt.Errorf("缺少证书哈希: %v", sent)
 			}
 		}
@@ -392,20 +392,20 @@ func (t *transport) upgrade(ctx context.Context, sess *webtransport.Session, p p
 		return nil
 	}), nil))
 	if err != nil {
-		log.Errorf("创建 Noise 传输时失败: %s", err)
+		log.Debugf("创建 Noise 传输时失败: %s", err)
 		return nil, err
 	}
 	// 建立安全出站连接
 	c, err := n.SecureOutbound(ctx, &webtransportStream{Stream: str, wsess: sess}, p)
 	if err != nil {
-		log.Errorf("创建安全出站连接失败: %s", err)
+		log.Debugf("创建安全出站连接失败: %s", err)
 		return nil, err
 	}
 	defer c.Close()
 	// Noise 握手应该保证我们的验证回调被调用
 	// 以防万一再次检查
 	if !verified {
-		log.Errorf("未验证")
+		log.Debugf("未验证")
 		return nil, errors.New("未验证")
 	}
 	return &connSecurityMultiaddrs{
@@ -426,7 +426,7 @@ func decodeCertHashesFromProtobuf(b [][]byte) ([]multihash.DecodedMultihash, err
 	for _, h := range b {
 		dh, err := multihash.Decode(h)
 		if err != nil {
-			log.Errorf("解码哈希失败: %s", err)
+			log.Debugf("解码哈希失败: %s", err)
 			return nil, err
 		}
 		hashes = append(hashes, *dh)
@@ -455,11 +455,11 @@ func (t *transport) CanDial(addr ma.Multiaddr) bool {
 func (t *transport) Listen(laddr ma.Multiaddr) (tpt.Listener, error) {
 	isWebTransport, certhashCount := IsWebtransportMultiaddr(laddr)
 	if !isWebTransport {
-		log.Errorf("无法在非 WebTransport 地址上监听: %s", laddr)
+		log.Debugf("无法在非 WebTransport 地址上监听: %s", laddr)
 		return nil, fmt.Errorf("无法在非 WebTransport 地址上监听: %s", laddr)
 	}
 	if certhashCount > 0 {
-		log.Errorf("无法在指定证书哈希的非 WebTransport 地址上监听: %s", laddr)
+		log.Debugf("无法在指定证书哈希的非 WebTransport 地址上监听: %s", laddr)
 		return nil, fmt.Errorf("无法在指定证书哈希的非 WebTransport 地址上监听: %s", laddr)
 	}
 	if t.staticTLSConf == nil {
@@ -468,11 +468,11 @@ func (t *transport) Listen(laddr ma.Multiaddr) (tpt.Listener, error) {
 			t.hasCertManager.Store(true)
 		})
 		if t.listenOnceErr != nil {
-			log.Errorf("监听失败: %s", t.listenOnceErr)
+			log.Debugf("监听失败: %s", t.listenOnceErr)
 			return nil, t.listenOnceErr
 		}
 	} else {
-		log.Errorf("WebTransport 不支持静态 TLS 配置")
+		log.Debugf("WebTransport 不支持静态 TLS 配置")
 		return nil, errors.New("WebTransport 不支持静态 TLS 配置")
 	}
 	tlsConf := t.staticTLSConf.Clone()
@@ -485,7 +485,7 @@ func (t *transport) Listen(laddr ma.Multiaddr) (tpt.Listener, error) {
 
 	ln, err := t.connManager.ListenQUICAndAssociate(t, laddr, tlsConf, t.allowWindowIncrease)
 	if err != nil {
-		log.Errorf("监听失败: %s", err)
+		log.Debugf("监听失败: %s", err)
 		return nil, err
 	}
 	return newListener(ln, t, t.staticTLSConf != nil)
@@ -511,7 +511,7 @@ func (t *transport) Proxy() bool {
 func (t *transport) Close() error {
 	t.listenOnce.Do(func() {})
 	if t.certManager != nil {
-		log.Errorf("关闭证书管理器: %s", t.certManager.Close())
+		log.Debugf("关闭证书管理器: %s", t.certManager.Close())
 		return t.certManager.Close()
 	}
 	return nil
@@ -602,7 +602,7 @@ func (t *transport) Resolve(_ context.Context, maddr ma.Multiaddr) ([]ma.Multiad
 	quicComponent, afterQuicMA := ma.SplitFirst(afterIncludingQuicMA)
 	sniComponent, err := ma.NewComponent(ma.ProtocolWithCode(ma.P_SNI).Name, sni)
 	if err != nil {
-		log.Errorf("创建 SNI 组件失败: %s", err)
+		log.Debugf("创建 SNI 组件失败: %s", err)
 		return nil, err
 	}
 	return []ma.Multiaddr{beforeQuicMA.Encapsulate(quicComponent).Encapsulate(sniComponent).Encapsulate(afterQuicMA)}, nil

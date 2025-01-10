@@ -55,7 +55,7 @@ var _ network.MuxedStream = &stream{}
 func (s *stream) Read(b []byte) (n int, err error) {
 	n, err = s.Stream.Read(b)
 	if err != nil && errors.Is(err, &webtransport.StreamError{}) {
-		log.Errorf("读取流失败: %s", err)
+		log.Debugf("读取流失败: %s", err)
 		err = network.ErrReset // 将 WebTransport 流错误转换为重置错误
 	}
 	return n, err
@@ -71,7 +71,7 @@ func (s *stream) Read(b []byte) (n int, err error) {
 func (s *stream) Write(b []byte) (n int, err error) {
 	n, err = s.Stream.Write(b)
 	if err != nil && errors.Is(err, &webtransport.StreamError{}) {
-		log.Errorf("写入流失败: %s", err)
+		log.Debugf("写入流失败: %s", err)
 		err = network.ErrReset // 将 WebTransport 流错误转换为重置错误
 	}
 	return n, err

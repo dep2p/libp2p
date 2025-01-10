@@ -77,7 +77,7 @@ func NewConnManager(statelessResetKey quic.StatelessResetKey, tokenKey quic.Toke
 	// 应用配置选项
 	for _, o := range opts {
 		if err := o(cm); err != nil {
-			log.Errorf("应用配置选项时出错: %s", err)
+			log.Debugf("应用配置选项时出错: %s", err)
 			return nil, err
 		}
 	}
@@ -111,7 +111,7 @@ func (c *ConnManager) getTracer() func(context.Context, quiclogging.Perspective,
 			case quiclogging.PerspectiveServer:
 				promTracer = quicmetrics.NewServerConnectionTracerWithRegisterer(c.registerer)
 			default:
-				log.Error("无效的日志视角: %s", p)
+				log.Debugf("无效的日志视角: %s", p)
 			}
 		}
 		var tracer *quiclogging.ConnectionTracer
@@ -172,12 +172,12 @@ func (c *ConnManager) ListenQUICAndAssociate(association any, addr ma.Multiaddr,
 	// 解析监听地址
 	netw, host, err := manet.DialArgs(addr)
 	if err != nil {
-		log.Errorf("解析监听地址时出错: %s", err)
+		log.Debugf("解析监听地址时出错: %s", err)
 		return nil, err
 	}
 	laddr, err := net.ResolveUDPAddr(netw, host)
 	if err != nil {
-		log.Errorf("解析监听地址时出错: %s", err)
+		log.Debugf("解析监听地址时出错: %s", err)
 		return nil, err
 	}
 
@@ -190,12 +190,12 @@ func (c *ConnManager) ListenQUICAndAssociate(association any, addr ma.Multiaddr,
 	if !ok {
 		tr, err := c.transportForListen(association, netw, laddr)
 		if err != nil {
-			log.Errorf("创建传输层时出错: %s", err)
+			log.Debugf("创建传输层时出错: %s", err)
 			return nil, err
 		}
 		ln, err := newQuicListener(tr, c.serverConfig)
 		if err != nil {
-			log.Errorf("创建QUIC监听器时出错: %s", err)
+			log.Debugf("创建QUIC监听器时出错: %s", err)
 			return nil, err
 		}
 		key = tr.LocalAddr().String()
@@ -207,7 +207,7 @@ func (c *ConnManager) ListenQUICAndAssociate(association any, addr ma.Multiaddr,
 		if entry.refCount <= 0 {
 			entry.ln.Close()
 		}
-		log.Errorf("添加监听器时出错: %s", err)
+		log.Debugf("添加监听器时出错: %s", err)
 		return nil, err
 	}
 	entry.refCount++
@@ -247,7 +247,7 @@ func (c *ConnManager) SharedNonQUICPacketConn(network string, laddr *net.UDPAddr
 	key := laddr.String()
 	entry, ok := c.quicListeners[key]
 	if !ok {
-		log.Errorf("期望能够与 QUIC 监听器共享，但未找到 QUIC 监听器。QUIC 监听器应该先启动")
+		log.Debugf("期望能够与 QUIC 监听器共享，但未找到 QUIC 监听器。QUIC 监听器应该先启动")
 		return nil, fmt.Errorf("期望能够与 QUIC 监听器共享，但未找到 QUIC 监听器。QUIC 监听器应该先启动")
 	}
 	t := entry.ln.transport
@@ -261,7 +261,7 @@ func (c *ConnManager) SharedNonQUICPacketConn(network string, laddr *net.UDPAddr
 			tr:              &t.Transport,
 		}, nil
 	}
-	log.Errorf("期望能够与 QUIC 监听器共享，但 QUIC 监听器未使用 refcountedTransport。不应设置 `DisableReuseport`")
+	log.Debugf("期望能够与 QUIC 监听器共享，但 QUIC 监听器未使用 refcountedTransport。不应设置 `DisableReuseport`")
 	return nil, fmt.Errorf("期望能够与 QUIC 监听器共享，但 QUIC 监听器未使用 refcountedTransport。不应设置 `DisableReuseport`")
 }
 
@@ -278,12 +278,12 @@ func (c *ConnManager) transportForListen(association any, network string, laddr 
 	if c.enableReuseport {
 		reuse, err := c.getReuse(network)
 		if err != nil {
-			log.Errorf("获取复用器时出错: %s", err)
+			log.Debugf("获取复用器时出错: %s", err)
 			return nil, err
 		}
 		tr, err := reuse.TransportForListen(network, laddr)
 		if err != nil {
-			log.Errorf("获取传输层时出错: %s", err)
+			log.Debugf("获取传输层时出错: %s", err)
 			return nil, err
 		}
 		tr.associate(association)
@@ -292,7 +292,7 @@ func (c *ConnManager) transportForListen(association any, network string, laddr 
 
 	conn, err := net.ListenUDP(network, laddr)
 	if err != nil {
-		log.Errorf("创建UDP连接时出错: %s", err)
+		log.Debugf("创建UDP连接时出错: %s", err)
 		return nil, err
 	}
 	return &singleOwnerTransport{
@@ -331,12 +331,12 @@ func WithAssociation(ctx context.Context, association any) context.Context {
 func (c *ConnManager) DialQUIC(ctx context.Context, raddr ma.Multiaddr, tlsConf *tls.Config, allowWindowIncrease func(conn quic.Connection, delta uint64) bool) (quic.Connection, error) {
 	naddr, v, err := FromQuicMultiaddr(raddr)
 	if err != nil {
-		log.Errorf("从QUIC多地址转换为版本时出错: %s", err)
+		log.Debugf("从QUIC多地址转换为版本时出错: %s", err)
 		return nil, err
 	}
 	netw, _, err := manet.DialArgs(raddr)
 	if err != nil {
-		log.Errorf("解析远程地址时出错: %s", err)
+		log.Debugf("解析远程地址时出错: %s", err)
 		return nil, err
 	}
 
@@ -357,13 +357,13 @@ func (c *ConnManager) DialQUIC(ctx context.Context, raddr ma.Multiaddr, tlsConf 
 		tr, err = c.TransportForDial(netw, naddr)
 	}
 	if err != nil {
-		log.Errorf("获取传输层时出错: %s", err)
+		log.Debugf("获取传输层时出错: %s", err)
 		return nil, err
 	}
 	conn, err := tr.Dial(ctx, naddr, tlsConf, quicConf)
 	if err != nil {
 		tr.DecreaseCount()
-		log.Errorf("拨号时出错: %s", err)
+		log.Debugf("拨号时出错: %s", err)
 		return nil, err
 	}
 	return conn, nil
@@ -394,7 +394,7 @@ func (c *ConnManager) TransportWithAssociationForDial(association any, network s
 	if c.enableReuseport {
 		reuse, err := c.getReuse(network)
 		if err != nil {
-			log.Errorf("获取复用器时出错: %s", err)
+			log.Debugf("获取复用器时出错: %s", err)
 			return nil, err
 		}
 		return reuse.transportWithAssociationForDial(association, network, raddr)
@@ -409,7 +409,7 @@ func (c *ConnManager) TransportWithAssociationForDial(association any, network s
 	}
 	conn, err := net.ListenUDP(network, laddr)
 	if err != nil {
-		log.Errorf("创建UDP连接时出错: %s", err)
+		log.Debugf("创建UDP连接时出错: %s", err)
 		return nil, err
 	}
 	return &singleOwnerTransport{Transport: quic.Transport{Conn: conn, StatelessResetKey: &c.srk}, packetConn: conn}, nil
@@ -430,7 +430,7 @@ func (c *ConnManager) Close() error {
 		return nil
 	}
 	if err := c.reuseUDP6.Close(); err != nil {
-		log.Errorf("关闭UDP6连接时出错: %s", err)
+		log.Debugf("关闭UDP6连接时出错: %s", err)
 		return err
 	}
 	return c.reuseUDP4.Close()

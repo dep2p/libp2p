@@ -347,7 +347,7 @@ func (r *reuse) transportWithAssociationForDial(association any, network string,
 	// 获取用于拨号的传输
 	tr, err := r.transportForDialLocked(association, network, ip)
 	if err != nil {
-		log.Errorf("获取用于拨号的传输时出错: %s", err)
+		log.Debugf("获取用于拨号的传输时出错: %s", err)
 		return nil, err
 	}
 	// 增加引用计数
@@ -401,7 +401,7 @@ func (r *reuse) transportForDialLocked(association any, network string, source *
 	// 创建新的 UDP 监听器
 	conn, err := net.ListenUDP(network, addr)
 	if err != nil {
-		log.Errorf("创建UDP监听器时出错: %s", err)
+		log.Debugf("创建UDP监听器时出错: %s", err)
 		return nil, err
 	}
 	// 创建新的传输
@@ -458,7 +458,7 @@ func (r *reuse) TransportForListen(network string, laddr *net.UDPAddr) (*refcoun
 	// 创建新的 UDP 监听器
 	conn, err := net.ListenUDP(network, laddr)
 	if err != nil {
-		log.Errorf("创建UDP监听器时出错: %s", err)
+		log.Debugf("创建UDP监听器时出错: %s", err)
 		return nil, err
 	}
 	localAddr := conn.LocalAddr().(*net.UDPAddr)

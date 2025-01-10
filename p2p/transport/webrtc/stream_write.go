@@ -34,22 +34,22 @@ func (s *stream) Write(b []byte) (int, error) {
 
 	// 检查是否因关闭而终止
 	if s.closeForShutdownErr != nil {
-		log.Errorf("流已关闭: %s", s.closeForShutdownErr)
+		log.Debugf("流已关闭: %s", s.closeForShutdownErr)
 		return 0, s.closeForShutdownErr
 	}
 	// 检查发送状态
 	switch s.sendState {
 	case sendStateReset:
-		log.Errorf("流已重置")
+		log.Debugf("流已重置")
 		return 0, network.ErrReset
 	case sendStateDataSent, sendStateDataReceived:
-		log.Errorf("流已关闭")
+		log.Debugf("流已关闭")
 		return 0, errWriteAfterClose
 	}
 
 	// 检查写入截止时间
 	if !s.writeDeadline.IsZero() && time.Now().After(s.writeDeadline) {
-		log.Errorf("写入截止时间已过")
+		log.Debugf("写入截止时间已过")
 		return 0, os.ErrDeadlineExceeded
 	}
 
@@ -67,16 +67,16 @@ func (s *stream) Write(b []byte) (int, error) {
 	for len(b) > 0 {
 		// 检查是否因关闭而终止
 		if s.closeForShutdownErr != nil {
-			log.Errorf("流已关闭: %s", s.closeForShutdownErr)
+			log.Debugf("流已关闭: %s", s.closeForShutdownErr)
 			return n, s.closeForShutdownErr
 		}
 		// 检查发送状态
 		switch s.sendState {
 		case sendStateReset:
-			log.Errorf("流已重置")
+			log.Debugf("流已重置")
 			return n, network.ErrReset
 		case sendStateDataSent, sendStateDataReceived:
-			log.Errorf("流已关闭")
+			log.Debugf("流已关闭")
 			return n, errWriteAfterClose
 		}
 
@@ -102,11 +102,11 @@ func (s *stream) Write(b []byte) (int, error) {
 		// 检查可用空间
 		availableSpace := s.availableSendSpace()
 		if availableSpace < minMessageSize {
-			log.Errorf("可用空间小于最小消息大小: %d < %d", availableSpace, minMessageSize)
+			log.Debugf("可用空间小于最小消息大小: %d < %d", availableSpace, minMessageSize)
 			s.mx.Unlock()
 			select {
 			case <-writeDeadlineChan:
-				log.Errorf("写入截止时间已过")
+				log.Debugf("写入截止时间已过")
 				s.mx.Lock()
 				return n, os.ErrDeadlineExceeded
 			case <-s.writeStateChanged:
@@ -126,7 +126,7 @@ func (s *stream) Write(b []byte) (int, error) {
 		// 构造并发送消息
 		msg = pb.Message{Message: b[:end]}
 		if err := s.writer.WriteMsg(&msg); err != nil {
-			log.Errorf("写入消息失败: %s", err)
+			log.Debugf("写入消息失败: %s", err)
 			return n, err
 		}
 		n += end
@@ -157,7 +157,7 @@ func (s *stream) availableSendSpace() int {
 	buffered := int(s.dataChannel.BufferedAmount())
 	availableSpace := maxSendBuffer - buffered
 	if availableSpace+maxTotalControlMessagesSize < 0 { // 这种情况不应该发生,但最好检查一下
-		log.Errorw("数据通道缓冲的数据超过最大限制", "最大值", maxSendBuffer, "已缓冲", buffered)
+		log.Debugf("数据通道缓冲的数据超过最大限制", "最大值", maxSendBuffer, "已缓冲", buffered)
 	}
 	return availableSpace
 }

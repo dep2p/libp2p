@@ -70,12 +70,12 @@ func decodeInterspersedHexFromASCIIString(s string) ([]byte, error) {
 	for i := 0; i < n; i++ {
 		if i%3 == 2 {
 			if s[i] != ':' {
-				log.Errorf("分隔十六进制字符串中出现意外字符: %s", s[i])
+				log.Debugf("分隔十六进制字符串中出现意外字符: %s", s[i])
 				return nil, errUnexpectedIntersperseHexChar
 			}
 		} else {
 			if s[i] == ':' {
-				log.Errorf("分隔十六进制字符串中出现意外字符: %s", s[i])
+				log.Debugf("分隔十六进制字符串中出现意外字符: %s", s[i])
 				return nil, errUnexpectedIntersperseHexChar
 			}
 			buffer[j] = s[i]
@@ -85,7 +85,7 @@ func decodeInterspersedHexFromASCIIString(s string) ([]byte, error) {
 	// 创建目标缓冲区并解码十六进制字符
 	dst := make([]byte, hex.DecodedLen(len(buffer)))
 	if _, err := hex.Decode(dst, buffer); err != nil {
-		log.Errorf("解码十六进制字符串时出错: %s", err)
+		log.Debugf("解码十六进制字符串时出错: %s", err)
 		return nil, err
 	}
 	return dst, nil

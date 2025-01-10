@@ -55,7 +55,7 @@ func (c *negotiatingConn) Unwrap() (quic.Connection, error) {
 		c.stopClose = nil
 	}
 	if c.err != nil {
-		log.Errorf("解包装失败: %s", c.err)
+		log.Debugf("解包装失败: %s", c.err)
 		return nil, c.err
 	}
 	return c.Connection, nil
@@ -120,7 +120,7 @@ var _ tpt.Listener = &listener{}
 func newListener(reuseListener quicreuse.Listener, t *transport, isStaticTLSConf bool) (tpt.Listener, error) {
 	localMultiaddr, err := toWebtransportMultiaddr(reuseListener.Addr())
 	if err != nil {
-		log.Errorf("转换本地地址失败: %s", err)
+		log.Debugf("转换本地地址失败: %s", err)
 		return nil, err
 	}
 
@@ -173,7 +173,7 @@ func (l *listener) httpHandler(w http.ResponseWriter, r *http.Request) {
 	remoteMultiaddr, err := stringToWebtransportMultiaddr(r.RemoteAddr)
 	if err != nil {
 		// 这种情况不应该发生
-		log.Errorw("转换远程地址失败", "remote", r.RemoteAddr, "error", err)
+		log.Debugf("转换远程地址失败", "remote", r.RemoteAddr, "error", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -205,7 +205,7 @@ func (l *listener) httpHandler(w http.ResponseWriter, r *http.Request) {
 func (l *listener) httpHandlerWithConnScope(w http.ResponseWriter, r *http.Request, connScope network.ConnManagementScope) error {
 	sess, err := l.server.Upgrade(w, r)
 	if err != nil {
-		log.Errorf("升级失败: %s", err)
+		log.Debugf("升级失败: %s", err)
 		// TODO: 考虑使用合适的状态码
 		w.WriteHeader(500)
 		return err
@@ -214,21 +214,21 @@ func (l *listener) httpHandlerWithConnScope(w http.ResponseWriter, r *http.Reque
 	sconn, err := l.handshake(ctx, sess)
 	if err != nil {
 		cancel()
-		log.Errorf("握手失败: %s", err)
+		log.Debugf("握手失败: %s", err)
 		sess.CloseWithError(1, "")
 		return err
 	}
 	cancel()
 
 	if l.transport.gater != nil && !l.transport.gater.InterceptSecured(network.DirInbound, sconn.RemotePeer(), sconn) {
-		log.Errorf("gater 阻止了连接")
+		log.Debugf("gater 阻止了连接")
 		// TODO: 是否可以使用特定错误码关闭
 		sess.CloseWithError(errorCodeConnectionGating, "")
 		return errors.New("gater 阻止了连接")
 	}
 
 	if err := connScope.SetPeer(sconn.RemotePeer()); err != nil {
-		log.Errorf("资源管理器阻止了对等点的入站连接: %s", err)
+		log.Debugf("资源管理器阻止了对等点的入站连接: %s", err)
 		sess.CloseWithError(1, "")
 		return err
 	}
@@ -247,7 +247,7 @@ func (l *listener) httpHandlerWithConnScope(w http.ResponseWriter, r *http.Reque
 	}
 	qconn, err := nconn.Unwrap()
 	if err != nil {
-		log.Errorf("握手超时: %s", r.RemoteAddr)
+		log.Debugf("握手超时: %s", r.RemoteAddr)
 		sess.CloseWithError(1, "")
 		return err
 	}
@@ -257,7 +257,7 @@ func (l *listener) httpHandlerWithConnScope(w http.ResponseWriter, r *http.Reque
 	select {
 	case l.queue <- conn:
 	default:
-		log.Errorf("接受队列已满,丢弃入站连接: %s", err)
+		log.Debugf("接受队列已满,丢弃入站连接: %s", err)
 		conn.Close()
 		return errors.New("接受队列已满")
 	}
@@ -289,18 +289,18 @@ func (l *listener) Accept() (tpt.CapableConn, error) {
 func (l *listener) handshake(ctx context.Context, sess *webtransport.Session) (*connSecurityMultiaddrs, error) {
 	local, err := toWebtransportMultiaddr(sess.LocalAddr())
 	if err != nil {
-		log.Errorf("确定本地地址时出错: %s", err)
+		log.Debugf("确定本地地址时出错: %s", err)
 		return nil, err
 	}
 	remote, err := toWebtransportMultiaddr(sess.RemoteAddr())
 	if err != nil {
-		log.Errorf("确定远程地址时出错: %s", err)
+		log.Debugf("确定远程地址时出错: %s", err)
 		return nil, err
 	}
 
 	str, err := sess.AcceptStream(ctx)
 	if err != nil {
-		log.Errorf("接受流失败: %s", err)
+		log.Debugf("接受流失败: %s", err)
 		return nil, err
 	}
 	var earlyData [][]byte
@@ -313,12 +313,12 @@ func (l *listener) handshake(ctx context.Context, sess *webtransport.Session) (*
 		newEarlyDataSender(&pb.NoiseExtensions{WebtransportCerthashes: earlyData}),
 	))
 	if err != nil {
-		log.Errorf("初始化 Noise 会话失败: %s", err)
+		log.Debugf("初始化 Noise 会话失败: %s", err)
 		return nil, err
 	}
 	c, err := n.SecureInbound(ctx, &webtransportStream{Stream: str, wsess: sess}, "")
 	if err != nil {
-		log.Errorf("安全入站失败: %s", err)
+		log.Debugf("安全入站失败: %s", err)
 		return nil, err
 	}
 

@@ -36,6 +36,6 @@ func manetConnWithScope(c manet.Conn, scope network.ConnManagementScope) (manet.
 		return &connWithScope{tcpconn, scope}, nil
 	}
 
-	log.Errorf("传入的连接不是TCP连接")
+	log.Debugf("传入的连接不是TCP连接")
 	return nil, fmt.Errorf("传入的连接不是TCP连接")
 }

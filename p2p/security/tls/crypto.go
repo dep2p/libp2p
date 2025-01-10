@@ -111,14 +111,14 @@ func NewIdentity(privKey ic.PrivKey, opts ...IdentityOption) (*Identity, error) 
 	if config.CertTemplate == nil {
 		config.CertTemplate, err = certTemplate()
 		if err != nil {
-			log.Errorf("生成证书模板时出错: %s", err)
+			log.Debugf("生成证书模板时出错: %s", err)
 			return nil, err
 		}
 	}
 
 	cert, err := keyToCertificate(privKey, config.CertTemplate)
 	if err != nil {
-		log.Errorf("生成证书时出错: %s", err)
+		log.Debugf("生成证书时出错: %s", err)
 		return nil, err
 	}
 	return &Identity{
@@ -171,7 +171,7 @@ func (i *Identity) ConfigForPeer(remote peer.ID) (*tls.Config, <-chan ic.PubKey)
 		for i := 0; i < len(rawCerts); i++ {
 			cert, err := x509.ParseCertificate(rawCerts[i])
 			if err != nil {
-				log.Errorf("解析证书时出错: %s", err)
+				log.Debugf("解析证书时出错: %s", err)
 				return err
 			}
 			chain[i] = cert
@@ -179,7 +179,7 @@ func (i *Identity) ConfigForPeer(remote peer.ID) (*tls.Config, <-chan ic.PubKey)
 
 		pubKey, err := PubKeyFromCertChain(chain)
 		if err != nil {
-			log.Errorf("从证书链中提取公钥时出错: %s", err)
+			log.Debugf("从证书链中提取公钥时出错: %s", err)
 			return err
 		}
 		if remote != "" && !remote.MatchesPublicKey(pubKey) {
@@ -204,7 +204,7 @@ func (i *Identity) ConfigForPeer(remote peer.ID) (*tls.Config, <-chan ic.PubKey)
 //   - error 错误信息
 func PubKeyFromCertChain(chain []*x509.Certificate) (ic.PubKey, error) {
 	if len(chain) != 1 {
-		log.Errorf("证书链中应该只有一个证书")
+		log.Debugf("证书链中应该只有一个证书")
 		return nil, errors.New("证书链中应该只有一个证书")
 	}
 	cert := chain[0]
@@ -228,38 +228,38 @@ func PubKeyFromCertChain(chain []*x509.Certificate) (ic.PubKey, error) {
 		}
 	}
 	if !found {
-		log.Errorf("证书应包含密钥扩展")
+		log.Debugf("证书应包含密钥扩展")
 		return nil, errors.New("证书应包含密钥扩展")
 	}
 	if _, err := cert.Verify(x509.VerifyOptions{Roots: pool}); err != nil {
 		// 如果我们在这里返回x509错误,它将被发送到网络上
 		// 包装错误以避免这种情况
-		log.Errorf("证书验证失败: %s", err)
+		log.Debugf("证书验证失败: %s", err)
 		return nil, err
 	}
 
 	var sk signedKey
 	if _, err := asn1.Unmarshal(keyExt.Value, &sk); err != nil {
-		log.Errorf("解析签名证书失败: %s", err)
+		log.Debugf("解析签名证书失败: %s", err)
 		return nil, err
 	}
 	pubKey, err := ic.UnmarshalPublicKey(sk.PubKey)
 	if err != nil {
-		log.Errorf("解析公钥失败: %s", err)
+		log.Debugf("解析公钥失败: %s", err)
 		return nil, err
 	}
 	certKeyPub, err := x509.MarshalPKIXPublicKey(cert.PublicKey)
 	if err != nil {
-		log.Errorf("解析公钥失败: %s", err)
+		log.Debugf("解析公钥失败: %s", err)
 		return nil, err
 	}
 	valid, err := pubKey.Verify(append([]byte(certificatePrefix), certKeyPub...), sk.Signature)
 	if err != nil {
-		log.Errorf("签名验证失败: %s", err)
+		log.Debugf("签名验证失败: %s", err)
 		return nil, err
 	}
 	if !valid {
-		log.Errorf("签名无效")
+		log.Debugf("签名无效")
 		return nil, errors.New("签名无效")
 	}
 	return pubKey, nil
@@ -279,17 +279,17 @@ func PubKeyFromCertChain(chain []*x509.Certificate) (ic.PubKey, error) {
 func GenerateSignedExtension(sk ic.PrivKey, pubKey crypto.PublicKey) (pkix.Extension, error) {
 	keyBytes, err := ic.MarshalPublicKey(sk.GetPublic())
 	if err != nil {
-		log.Errorf("序列化公钥失败: %s", err)
+		log.Debugf("序列化公钥失败: %s", err)
 		return pkix.Extension{}, err
 	}
 	certKeyPub, err := x509.MarshalPKIXPublicKey(pubKey)
 	if err != nil {
-		log.Errorf("序列化公钥失败: %s", err)
+		log.Debugf("序列化公钥失败: %s", err)
 		return pkix.Extension{}, err
 	}
 	signature, err := sk.Sign(append([]byte(certificatePrefix), certKeyPub...))
 	if err != nil {
-		log.Errorf("签名失败: %s", err)
+		log.Debugf("签名失败: %s", err)
 		return pkix.Extension{}, err
 	}
 	value, err := asn1.Marshal(signedKey{
@@ -297,7 +297,7 @@ func GenerateSignedExtension(sk ic.PrivKey, pubKey crypto.PublicKey) (pkix.Exten
 		Signature: signature,
 	})
 	if err != nil {
-		log.Errorf("序列化签名证书失败: %s", err)
+		log.Debugf("序列化签名证书失败: %s", err)
 		return pkix.Extension{}, err
 	}
 
@@ -349,13 +349,13 @@ func certTemplate() (*x509.Certificate, error) {
 	bigNum := big.NewInt(1 << 62)
 	sn, err := rand.Int(rand.Reader, bigNum)
 	if err != nil {
-		log.Errorf("生成证书时出错: %s", err)
+		log.Debugf("生成证书时出错: %s", err)
 		return nil, err
 	}
 
 	subjectSN, err := rand.Int(rand.Reader, bigNum)
 	if err != nil {
-		log.Errorf("生成证书时出错: %s", err)
+		log.Debugf("生成证书时出错: %s", err)
 		return nil, err
 	}
 

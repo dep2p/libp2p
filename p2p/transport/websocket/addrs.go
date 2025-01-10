@@ -68,7 +68,7 @@ func NewAddrWithScheme(host string, isSecure bool) *Addr {
 func ConvertWebsocketMultiaddrToNetAddr(maddr ma.Multiaddr) (net.Addr, error) {
 	url, err := parseMultiaddr(maddr)
 	if err != nil {
-		log.Errorf("解析多地址失败: %s", err)
+		log.Debugf("解析多地址失败: %s", err)
 		return nil, err
 	}
 	return &Addr{URL: url}, nil

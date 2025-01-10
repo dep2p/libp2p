@@ -27,7 +27,7 @@ var errHashUnavailable = errors.New("指纹: 哈希算法未链接到二进制�
 func parseFingerprint(cert *x509.Certificate, algo crypto.Hash) ([]byte, error) {
 	// 检查哈希算法是否可用
 	if !algo.Available() {
-		log.Errorf("哈希算法未链接到二进制文件中")
+		log.Debugf("哈希算法未链接到二进制文件中")
 		return nil, errHashUnavailable
 	}
 	// 创建新的哈希对象
@@ -50,13 +50,13 @@ func decodeRemoteFingerprint(maddr ma.Multiaddr) (*mh.DecodedMultihash, error) {
 	// 从多地址中获取证书哈希值
 	remoteFingerprintMultibase, err := maddr.ValueForProtocol(ma.P_CERTHASH)
 	if err != nil {
-		log.Errorf("获取证书哈希值时出错: %s", err)
+		log.Debugf("获取证书哈希值时出错: %s", err)
 		return nil, err
 	}
 	// 解码多重基编码的数据
 	_, data, err := multibase.Decode(remoteFingerprintMultibase)
 	if err != nil {
-		log.Errorf("解码多重基编码的数据时出错: %s", err)
+		log.Debugf("解码多重基编码的数据时出错: %s", err)
 		return nil, err
 	}
 	// 解码多重哈希数据
@@ -74,13 +74,13 @@ func encodeDTLSFingerprint(fp webrtc.DTLSFingerprint) (string, error) {
 	// 从 ASCII 字符串解码交错的十六进制数据
 	digest, err := decodeInterspersedHexFromASCIIString(fp.Value)
 	if err != nil {
-		log.Errorf("解码交错的十六进制数据时出错: %s", err)
+		log.Debugf("解码交错的十六进制数据时出错: %s", err)
 		return "", err
 	}
 	// 使用 SHA-256 算法编码摘要
 	encoded, err := mh.Encode(digest, mh.SHA2_256)
 	if err != nil {
-		log.Errorf("编码摘要时出错: %s", err)
+		log.Debugf("编码摘要时出错: %s", err)
 		return "", err
 	}
 	// 使用 Base64URL 编码结果

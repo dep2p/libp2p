@@ -246,14 +246,14 @@ func (c *connection) IsClosed() bool {
 func (c *connection) OpenStream(ctx context.Context) (network.MuxedStream, error) {
 	// 检查连接是否已关闭
 	if c.IsClosed() {
-		log.Errorf("连接已关闭: %s", c.closeErr)
+		log.Debugf("连接已关闭: %s", c.closeErr)
 		return nil, c.closeErr
 	}
 
 	// 获取新的流 ID
 	id := c.nextStreamID.Add(2) - 2
 	if id > math.MaxUint16 {
-		log.Errorf("流 ID 空间已耗尽")
+		log.Debugf("流 ID 空间已耗尽")
 		return nil, errors.New("流 ID 空间已耗尽")
 	}
 	streamID := uint16(id)
@@ -261,7 +261,7 @@ func (c *connection) OpenStream(ctx context.Context) (network.MuxedStream, error
 	// 创建数据通道
 	dc, err := c.pc.CreateDataChannel("", &webrtc.DataChannelInit{ID: &streamID})
 	if err != nil {
-		log.Errorf("创建数据通道时出错: %s", err)
+		log.Debugf("创建数据通道时出错: %s", err)
 		return nil, err
 	}
 
@@ -270,19 +270,19 @@ func (c *connection) OpenStream(ctx context.Context) (network.MuxedStream, error
 	if err != nil {
 		// 在 webrtc.SCTP.OnClose 回调和底层关联关闭之间存在竞争。在这里关闭连接更好
 		if errors.Is(err, sctp.ErrStreamClosed) {
-			log.Errorf("SCTP 流已关闭: %s", err)
+			log.Debugf("SCTP 流已关闭: %s", err)
 			c.closeWithError(errConnClosed)
 			return nil, c.closeErr
 		}
 		dc.Close()
-		log.Errorf("分离流(%d)的通道失败: %s", streamID, err)
+		log.Debugf("分离流(%d)的通道失败: %s", streamID, err)
 		return nil, fmt.Errorf("分离流(%d)的通道失败: %w", streamID, err)
 	}
 
 	// 创建新流
 	str := newStream(dc, rwc, func() { c.removeStream(streamID) })
 	if err := c.addStream(str); err != nil {
-		log.Errorf("将流(%d)添加到连接失败: %s", streamID, err)
+		log.Debugf("将流(%d)添加到连接失败: %s", streamID, err)
 		str.Reset()
 		return nil, fmt.Errorf("将流(%d)添加到连接失败: %w", streamID, err)
 	}
@@ -296,12 +296,12 @@ func (c *connection) OpenStream(ctx context.Context) (network.MuxedStream, error
 func (c *connection) AcceptStream() (network.MuxedStream, error) {
 	select {
 	case <-c.ctx.Done():
-		log.Errorf("连接已关闭: %s", c.closeErr)
+		log.Debugf("连接已关闭: %s", c.closeErr)
 		return nil, c.closeErr
 	case dc := <-c.acceptQueue:
 		str := newStream(dc.channel, dc.stream, func() { c.removeStream(*dc.channel.ID()) })
 		if err := c.addStream(str); err != nil {
-			log.Errorf("将流(%d)添加到连接失败: %s", *dc.channel.ID(), err)
+			log.Debugf("将流(%d)添加到连接失败: %s", *dc.channel.ID(), err)
 			str.Reset()
 			return nil, fmt.Errorf("将流(%d)添加到连接失败: %w", *dc.channel.ID(), err)
 		}
@@ -357,7 +357,7 @@ func (c *connection) addStream(str *stream) error {
 		return c.closeErr
 	}
 	if _, ok := c.streams[str.id]; ok {
-		log.Errorf("流 ID 已存在")
+		log.Debugf("流 ID 已存在")
 		return errors.New("流 ID 已存在")
 	}
 	c.streams[str.id] = str

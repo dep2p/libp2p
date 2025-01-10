@@ -67,7 +67,7 @@ func (t DemultiplexedConnType) IsKnown() bool {
 func identifyConnType(c manet.Conn) (DemultiplexedConnType, manet.Conn, error) {
 	// 设置读取超时时间
 	if err := c.SetReadDeadline(time.Now().Add(identifyConnTimeout)); err != nil {
-		log.Errorf("设置读取超时时间时出错: %s", err)
+		log.Debugf("设置读取超时时间时出错: %s", err)
 		closeErr := c.Close()
 		return 0, nil, errors.Join(err, closeErr)
 	}
@@ -75,14 +75,14 @@ func identifyConnType(c manet.Conn) (DemultiplexedConnType, manet.Conn, error) {
 	// 读取前几个字节用于识别
 	s, peekedConn, err := sampledconn.PeekBytes(c)
 	if err != nil {
-		log.Errorf("读取前几个字节用于识别时出错: %s", err)
+		log.Debugf("读取前几个字节用于识别时出错: %s", err)
 		closeErr := c.Close()
 		return 0, nil, errors.Join(err, closeErr)
 	}
 
 	// 清除读取超时时间
 	if err := peekedConn.SetReadDeadline(time.Time{}); err != nil {
-		log.Errorf("清除读取超时时间时出错: %s", err)
+		log.Debugf("清除读取超时时间时出错: %s", err)
 		closeErr := peekedConn.Close()
 		return 0, nil, errors.Join(err, closeErr)
 	}

@@ -99,7 +99,7 @@ func getTCPAddr(listenAddr ma.Multiaddr) (ma.Multiaddr, error) {
 		return false
 	})
 	if !haveTCP {
-		log.Errorf("无效的监听地址 %s，需要TCP地址", listenAddr)
+		log.Debugf("无效的监听地址 %s，需要TCP地址", listenAddr)
 		return nil, fmt.Errorf("无效的监听地址 %s，需要TCP地址", listenAddr)
 	}
 	return addr, nil
@@ -117,12 +117,12 @@ func getTCPAddr(listenAddr ma.Multiaddr) (ma.Multiaddr, error) {
 //   - error 可能的错误
 func (t *ConnMgr) DemultiplexedListen(laddr ma.Multiaddr, connType DemultiplexedConnType) (manet.Listener, error) {
 	if !connType.IsKnown() {
-		log.Errorf("未知的连接类型: %s", connType)
+		log.Debugf("未知的连接类型: %s", connType)
 		return nil, fmt.Errorf("未知的连接类型: %s", connType)
 	}
 	laddr, err := getTCPAddr(laddr)
 	if err != nil {
-		log.Errorf("获取TCP地址时出错: %s", err)
+		log.Debugf("获取TCP地址时出错: %s", err)
 		return nil, err
 	}
 
@@ -132,7 +132,7 @@ func (t *ConnMgr) DemultiplexedListen(laddr ma.Multiaddr, connType Demultiplexed
 	if ok {
 		dl, err := ml.DemultiplexedListen(connType)
 		if err != nil {
-			log.Errorf("获取连接类型时出错: %s", err)
+			log.Debugf("获取连接类型时出错: %s", err)
 			return nil, err
 		}
 		return dl, nil
@@ -140,7 +140,7 @@ func (t *ConnMgr) DemultiplexedListen(laddr ma.Multiaddr, connType Demultiplexed
 
 	l, err := t.maListen(laddr)
 	if err != nil {
-		log.Errorf("创建监听器时出错: %s", err)
+		log.Debugf("创建监听器时出错: %s", err)
 		return nil, err
 	}
 
@@ -167,7 +167,7 @@ func (t *ConnMgr) DemultiplexedListen(laddr ma.Multiaddr, connType Demultiplexed
 	dl, err := ml.DemultiplexedListen(connType)
 	if err != nil {
 		cerr := ml.Close()
-		log.Errorf("获取连接类型时出错: %s", err)
+		log.Debugf("获取连接类型时出错: %s", err)
 		return nil, errors.Join(err, cerr)
 	}
 
@@ -204,14 +204,14 @@ var ErrListenerExists = errors.New("此地址上已存在此连接类型的监�
 //   - error 可能的错误
 func (m *multiplexedListener) DemultiplexedListen(connType DemultiplexedConnType) (manet.Listener, error) {
 	if !connType.IsKnown() {
-		log.Errorf("未知的连接类型: %s", connType)
+		log.Debugf("未知的连接类型: %s", connType)
 		return nil, fmt.Errorf("未知的连接类型: %s", connType)
 	}
 
 	m.mx.Lock()
 	defer m.mx.Unlock()
 	if _, ok := m.listeners[connType]; ok {
-		log.Errorf("此地址上已存在此连接类型的监听器: %s", connType)
+		log.Debugf("此地址上已存在此连接类型的监听器: %s", connType)
 		return nil, ErrListenerExists
 	}
 
@@ -239,7 +239,7 @@ func (m *multiplexedListener) run() error {
 	for {
 		c, err := m.Listener.Accept()
 		if err != nil {
-			log.Errorf("接受新连接时出错: %s", err)
+			log.Debugf("接受新连接时出错: %s", err)
 			return err
 		}
 
