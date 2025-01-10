@@ -256,7 +256,7 @@ func (s *Swarm) DialPeer(ctx context.Context, p peer.ID) (network.Conn, error) {
 	// 避免类型化nil问题
 	c, err := s.dialPeer(ctx, p)
 	if err != nil {
-		log.Errorf("拨号失败: %v", err)
+		log.Debugf("拨号失败: %v", err)
 		return nil, err
 	}
 	return c, nil
@@ -279,12 +279,12 @@ func (s *Swarm) dialPeer(ctx context.Context, p peer.ID) (*Conn, error) {
 	log.Debugw("正在拨号对等点", "从", s.local, "到", p)
 	err := p.Validate()
 	if err != nil {
-		log.Errorf("验证peer失败: %v", err)
+		log.Debugf("验证peer失败: %v", err)
 		return nil, err
 	}
 
 	if p == s.local {
-		log.Errorf("拨号到自己")
+		log.Debugf("拨号到自己")
 		return nil, ErrDialToSelf
 	}
 
@@ -295,7 +295,7 @@ func (s *Swarm) dialPeer(ctx context.Context, p peer.ID) (*Conn, error) {
 	}
 
 	if s.gater != nil && !s.gater.InterceptPeerDial(p) {
-		log.Errorf("gater禁止拨号到peer %s", p)
+		log.Debugf("gater禁止拨号到peer %s", p)
 		return nil, &DialError{Peer: p, Cause: ErrGaterDisallowedConnection}
 	}
 
@@ -309,7 +309,7 @@ func (s *Swarm) dialPeer(ctx context.Context, p peer.ID) (*Conn, error) {
 		// 这很可能已经由安全协议检查过,但在这里再次检查也无妨
 		if conn.RemotePeer() != p {
 			conn.Close()
-			log.Errorf("握手未能正确认证peer", "已认证", conn.RemotePeer(), "预期", p)
+			log.Debugf("握手未能正确认证peer", "已认证", conn.RemotePeer(), "预期", p)
 			return nil, fmt.Errorf("意外的peer")
 		}
 		return conn, nil
@@ -353,7 +353,7 @@ func (s *Swarm) dialWorkerLoop(p peer.ID, reqch <-chan dialRequest) {
 func (s *Swarm) addrsForDial(ctx context.Context, p peer.ID) (goodAddrs []ma.Multiaddr, addrErrs []TransportError, err error) {
 	peerAddrs := s.peers.Addrs(p)
 	if len(peerAddrs) == 0 {
-		log.Errorf("没有可用的地址")
+		log.Debugf("没有可用的地址")
 		return nil, nil, ErrNoAddresses
 	}
 
@@ -367,7 +367,7 @@ func (s *Swarm) addrsForDial(ctx context.Context, p peer.ID) (goodAddrs []ma.Mul
 	}
 
 	if len(goodAddrs) == 0 {
-		log.Errorf("没有可用的地址")
+		log.Debugf("没有可用的地址")
 		return nil, addrErrs, ErrNoGoodAddresses
 	}
 
@@ -530,7 +530,7 @@ func (s *Swarm) resolveAddrs(ctx context.Context, pi peer.AddrInfo) []ma.Multiad
 			}
 			addrs, err := resolver.Resolve(ctx, addr)
 			if err != nil {
-				log.Errorf("解析地址失败: %v", err)
+				log.Debugf("解析地址失败: %v", err)
 				return nil, err
 			}
 			if len(addrs) > outputLimit {
@@ -573,7 +573,7 @@ func (s *Swarm) dialNextAddr(ctx context.Context, p peer.ID, addr ma.Multiaddr, 
 	// 检查拨号退避
 	if forceDirect, _ := network.GetForceDirectDial(ctx); !forceDirect {
 		if s.backf.Backoff(p, addr) {
-			log.Errorf("拨号退避: %v", ErrDialBackoff)
+			log.Debugf("拨号退避: %v", ErrDialBackoff)
 			return ErrDialBackoff
 		}
 	}
@@ -742,7 +742,7 @@ func (s *Swarm) limitedDial(ctx context.Context, p peer.ID, a ma.Multiaddr, resp
 func (s *Swarm) dialAddr(ctx context.Context, p peer.ID, addr ma.Multiaddr, updCh chan<- transport.DialUpdate) (transport.CapableConn, error) {
 	// 仅作双重检查。不花费任何代价。
 	if s.local == p {
-		log.Errorf("拨号到自己")
+		log.Debugf("拨号到自己")
 		return nil, ErrDialToSelf
 	}
 	// 在我们开始工作之前检查
@@ -754,7 +754,7 @@ func (s *Swarm) dialAddr(ctx context.Context, p peer.ID, addr ma.Multiaddr, updC
 
 	tpt := s.TransportForDialing(addr)
 	if tpt == nil {
-		log.Errorf("没有可用的传输")
+		log.Debugf("没有可用的传输")
 		return nil, ErrNoTransport
 	}
 
@@ -776,7 +776,7 @@ func (s *Swarm) dialAddr(ctx context.Context, p peer.ID, addr ma.Multiaddr, updC
 		if s.metricsTracer != nil {
 			s.metricsTracer.FailedDialing(addr, err, context.Cause(ctx))
 		}
-		log.Errorf("拨号失败: %v", err)
+		log.Debugf("拨号失败: %v", err)
 		return nil, err
 	}
 	canonicallog.LogPeerStatus(100, connC.RemotePeer(), connC.RemoteMultiaddr(), "connection_status", "established", "dir", "outbound")
@@ -790,7 +790,7 @@ func (s *Swarm) dialAddr(ctx context.Context, p peer.ID, addr ma.Multiaddr, updC
 	if connC.RemotePeer() != p {
 		connC.Close()
 		err = fmt.Errorf("传输%T中的BUG:尝试拨号%s,拨号到%s", tpt, p, connC.RemotePeer())
-		log.Errorf(err.Error())
+		log.Debugf(err.Error())
 		return nil, err
 	}
 
@@ -860,7 +860,7 @@ func filterLowPriorityAddresses(addrs []ma.Multiaddr) []ma.Multiaddr {
 		case isProtocolAddr(a, ma.P_QUIC_V1):
 			ap, err := addrPort(a, ma.P_UDP)
 			if err != nil {
-				log.Errorf("解析地址失败: %v", err)
+				log.Debugf("解析地址失败: %v", err)
 				continue
 			}
 			quicV1Addr[ap] = struct{}{}
@@ -868,7 +868,7 @@ func filterLowPriorityAddresses(addrs []ma.Multiaddr) []ma.Multiaddr {
 		case isProtocolAddr(a, ma.P_TCP):
 			ap, err := addrPort(a, ma.P_TCP)
 			if err != nil {
-				log.Errorf("解析地址失败: %v", err)
+				log.Debugf("解析地址失败: %v", err)
 				continue
 			}
 			tcpAddr[ap] = struct{}{}
@@ -881,7 +881,7 @@ func filterLowPriorityAddresses(addrs []ma.Multiaddr) []ma.Multiaddr {
 		case isProtocolAddr(a, ma.P_WEBTRANSPORT) || isProtocolAddr(a, ma.P_QUIC):
 			ap, err := addrPort(a, ma.P_UDP)
 			if err != nil {
-				log.Errorf("解析地址失败: %v", err)
+				log.Debugf("解析地址失败: %v", err)
 				break
 			}
 			if _, ok := quicV1Addr[ap]; ok {
@@ -890,7 +890,7 @@ func filterLowPriorityAddresses(addrs []ma.Multiaddr) []ma.Multiaddr {
 		case isProtocolAddr(a, ma.P_WS) || isProtocolAddr(a, ma.P_WSS):
 			ap, err := addrPort(a, ma.P_TCP)
 			if err != nil {
-				log.Errorf("解析地址失败: %v", err)
+				log.Debugf("解析地址失败: %v", err)
 				break
 			}
 			if _, ok := tcpAddr[ap]; ok {
@@ -918,22 +918,22 @@ func filterLowPriorityAddresses(addrs []ma.Multiaddr) []ma.Multiaddr {
 func addrPort(a ma.Multiaddr, p int) (netip.AddrPort, error) {
 	ip, err := manet.ToIP(a)
 	if err != nil {
-		log.Errorf("解析地址失败: %v", err)
+		log.Debugf("解析地址失败: %v", err)
 		return netip.AddrPort{}, err
 	}
 	port, err := a.ValueForProtocol(p)
 	if err != nil {
-		log.Errorf("解析地址失败: %v", err)
+		log.Debugf("解析地址失败: %v", err)
 		return netip.AddrPort{}, err
 	}
 	pi, err := strconv.Atoi(port)
 	if err != nil {
-		log.Errorf("解析地址失败: %v", err)
+		log.Debugf("解析地址失败: %v", err)
 		return netip.AddrPort{}, err
 	}
 	addr, ok := netip.AddrFromSlice(ip)
 	if !ok {
-		log.Errorf("解析IP %s 失败", ip)
+		log.Debugf("解析IP %s 失败", ip)
 		return netip.AddrPort{}, fmt.Errorf("解析IP %s 失败", ip)
 	}
 	return netip.AddrPortFrom(addr, uint16(pi)), nil

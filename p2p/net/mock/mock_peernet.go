@@ -55,7 +55,7 @@ func newPeernet(m *mocknet, p peer.ID, opts PeerOptions, bus event.Bus) (*peerne
 	// 创建事件发射器
 	emitter, err := bus.Emitter(&event.EvtPeerConnectednessChanged{})
 	if err != nil {
-		log.Errorf("创建事件发射器失败: %v", err)
+		log.Debugf("创建事件发射器失败: %v", err)
 		return nil, err
 	}
 
@@ -151,7 +151,7 @@ func (pn *peernet) DialPeer(ctx context.Context, p peer.ID) (network.Conn, error
 //   - error: 错误信息
 func (pn *peernet) connect(p peer.ID) (*conn, error) {
 	if p == pn.peer {
-		log.Errorf("尝试连接到自身 %s", p)
+		log.Debugf("尝试连接到自身 %s", p)
 		return nil, fmt.Errorf("尝试连接到自身 %s", p)
 	}
 
@@ -170,7 +170,7 @@ func (pn *peernet) connect(p peer.ID) (*conn, error) {
 	pn.RUnlock()
 
 	if pn.gater != nil && !pn.gater.InterceptPeerDial(p) {
-		log.Errorf("连接过滤器禁止了到节点 %s 的出站连接", p)
+		log.Debugf("连接过滤器禁止了到节点 %s 的出站连接", p)
 		return nil, fmt.Errorf("%v 连接过滤器禁止了到 %v 的连接", pn.peer, p)
 	}
 	log.Debugf("%s (新建) 正在拨号 %s", pn.peer, p)
@@ -178,7 +178,7 @@ func (pn *peernet) connect(p peer.ID) (*conn, error) {
 	// 需要创建新连接,我们需要一个链路
 	links := pn.mocknet.LinksBetweenPeers(pn.peer, p)
 	if len(links) < 1 {
-		log.Errorf("%s 无法连接到 %s", pn.peer, p)
+		log.Debugf("%s 无法连接到 %s", pn.peer, p)
 		return nil, fmt.Errorf("%s 无法连接到 %s", pn.peer, p)
 	}
 
@@ -208,22 +208,22 @@ func (pn *peernet) openConn(r peer.ID, l *link) (*conn, error) {
 		_ = rc.Close()
 	}
 	if pn.gater != nil && !pn.gater.InterceptAddrDial(lc.remote, lc.remoteAddr) {
-		log.Errorf("%s 拒绝了到 %s 在地址 %s 的拨号", lc.local, lc.remote, lc.remoteAddr)
+		log.Debugf("%s 拒绝了到 %s 在地址 %s 的拨号", lc.local, lc.remote, lc.remoteAddr)
 		abort()
 		return nil, fmt.Errorf("%v 拒绝了到 %v 在地址 %v 的拨号", lc.local, lc.remote, lc.remoteAddr)
 	}
 	if rc.net.gater != nil && !rc.net.gater.InterceptAccept(rc) {
-		log.Errorf("%s 拒绝了来自 %s 的连接", rc.local, rc.remote)
+		log.Debugf("%s 拒绝了来自 %s 的连接", rc.local, rc.remote)
 		abort()
 		return nil, fmt.Errorf("%v 拒绝了来自 %v 的连接", rc.local, rc.remote)
 	}
 	if err := checkSecureAndUpgrade(network.DirOutbound, pn.gater, lc); err != nil {
-		log.Errorf("安全检查失败: %v", err)
+		log.Debugf("安全检查失败: %v", err)
 		abort()
 		return nil, err
 	}
 	if err := checkSecureAndUpgrade(network.DirInbound, rc.net.gater, rc); err != nil {
-		log.Errorf("安全检查失败: %v", err)
+		log.Debugf("安全检查失败: %v", err)
 		abort()
 		return nil, err
 	}
@@ -246,12 +246,12 @@ func checkSecureAndUpgrade(dir network.Direction, gater connmgr.ConnectionGater,
 		return nil
 	}
 	if !gater.InterceptSecured(dir, c.remote, c) {
-		log.Errorf("%v 拒绝了与 %v 的安全握手", c.local, c.remote)
+		log.Debugf("%v 拒绝了与 %v 的安全握手", c.local, c.remote)
 		return fmt.Errorf("%v 拒绝了与 %v 的安全握手", c.local, c.remote)
 	}
 	allow, _ := gater.InterceptUpgraded(c)
 	if !allow {
-		log.Errorf("%v 拒绝了与 %v 的升级", c.local, c.remote)
+		log.Debugf("%v 拒绝了与 %v 的升级", c.local, c.remote)
 		return fmt.Errorf("%v 拒绝了与 %v 的升级", c.local, c.remote)
 	}
 	return nil

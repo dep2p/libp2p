@@ -60,14 +60,14 @@ func NewPingService(h host.Host) *PingService {
 func (p *PingService) PingHandler(s network.Stream) {
 	// 设置流的服务名称
 	if err := s.Scope().SetService(ServiceName); err != nil {
-		log.Errorf("为 ping 流设置服务时出错: %s", err)
+		log.Debugf("为 ping 流设置服务时出错: %s", err)
 		s.Reset()
 		return
 	}
 
 	// 为 ping 流预留内存
 	if err := s.Scope().ReserveMemory(PingSize, network.ReservationPriorityAlways); err != nil {
-		log.Errorf("为 ping 流预留内存时出错: %s", err)
+		log.Debugf("为 ping 流预留内存时出错: %s", err)
 		s.Reset()
 		return
 	}
@@ -90,12 +90,12 @@ func (p *PingService) PingHandler(s network.Stream) {
 	go func() {
 		select {
 		case <-timer.C:
-			log.Errorf("ping 超时")
+			log.Debugf("ping 超时")
 		case err, ok := <-errCh:
 			if ok {
-				log.Errorf("ping 循环失败: %s", err)
+				log.Debugf("ping 循环失败: %s", err)
 			} else {
-				log.Errorf("ping 循环失败且无错误")
+				log.Debugf("ping 循环失败且无错误")
 			}
 		}
 		s.Close()
@@ -166,13 +166,13 @@ func Ping(ctx context.Context, h host.Host, p peer.ID) <-chan Result {
 	// 创建新的流
 	s, err := h.NewStream(network.WithAllowLimitedConn(ctx, "ping"), p, ID)
 	if err != nil {
-		log.Errorf("创建 ping 流失败: %s", err)
+		log.Debugf("创建 ping 流失败: %s", err)
 		return pingError(err)
 	}
 
 	// 设置流的服务名称
 	if err := s.Scope().SetService(ServiceName); err != nil {
-		log.Errorf("为 ping 流设置服务时出错: %s", err)
+		log.Debugf("为 ping 流设置服务时出错: %s", err)
 		s.Reset()
 		return pingError(err)
 	}
@@ -234,7 +234,7 @@ func Ping(ctx context.Context, h host.Host, p peer.ID) <-chan Result {
 func ping(s network.Stream, randReader io.Reader) (time.Duration, error) {
 	// 为 ping 流预留内存
 	if err := s.Scope().ReserveMemory(2*PingSize, network.ReservationPriorityAlways); err != nil {
-		log.Errorf("为 ping 流预留内存时出错: %s", err)
+		log.Debugf("为 ping 流预留内存时出错: %s", err)
 		s.Reset()
 		return 0, err
 	}
@@ -246,7 +246,7 @@ func ping(s network.Stream, randReader io.Reader) (time.Duration, error) {
 
 	// 生成随机数据
 	if _, err := io.ReadFull(randReader, buf); err != nil {
-		log.Errorf("生成随机数据失败: %s", err)
+		log.Debugf("生成随机数据失败: %s", err)
 		s.Reset()
 		return 0, err
 	}
@@ -254,7 +254,7 @@ func ping(s network.Stream, randReader io.Reader) (time.Duration, error) {
 	// 记录发送时间并发送数据
 	before := time.Now()
 	if _, err := s.Write(buf); err != nil {
-		log.Errorf("发送 ping 数据失败: %s", err)
+		log.Debugf("发送 ping 数据失败: %s", err)
 		s.Reset()
 		return 0, err
 	}
@@ -265,14 +265,14 @@ func ping(s network.Stream, randReader io.Reader) (time.Duration, error) {
 
 	// 读取响应数据
 	if _, err := io.ReadFull(s, rbuf); err != nil {
-		log.Errorf("读取 ping 响应数据失败: %s", err)
+		log.Debugf("读取 ping 响应数据失败: %s", err)
 		s.Reset()
 		return 0, err
 	}
 
 	// 验证响应数据是否正确
 	if !bytes.Equal(buf, rbuf) {
-		log.Errorf("ping 数据包不正确")
+		log.Debugf("ping 数据包不正确")
 		s.Reset()
 		return 0, errors.New("ping 数据包不正确")
 	}

@@ -199,7 +199,7 @@ func (s *Stream) Protocol() protocol.ID {
 //   - 协议协商通常由 Host 完成
 func (s *Stream) SetProtocol(p protocol.ID) error {
 	if err := s.scope.SetProtocol(p); err != nil {
-		log.Errorf("设置协议失败: %v", err)
+		log.Debugf("设置协议失败: %v", err)
 		return err
 	}
 

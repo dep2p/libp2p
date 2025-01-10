@@ -100,19 +100,19 @@ func (mn *mocknet) GenPeer() (host.Host, error) {
 func (mn *mocknet) GenPeerWithOptions(opts PeerOptions) (host.Host, error) {
 	// 添加默认配置
 	if err := mn.addDefaults(&opts); err != nil {
-		log.Errorf("添加默认配置失败: %v", err)
+		log.Debugf("添加默认配置失败: %v", err)
 		return nil, err
 	}
 	// 生成 ECDSA 密钥对
 	sk, _, err := ic.GenerateECDSAKeyPair(rand.Reader)
 	if err != nil {
-		log.Errorf("生成ECDSA密钥对失败: %v", err)
+		log.Debugf("生成ECDSA密钥对失败: %v", err)
 		return nil, err
 	}
 	// 从私钥生成 peer ID
 	id, err := peer.IDFromPrivateKey(sk)
 	if err != nil {
-		log.Errorf("生成peer ID失败: %v", err)
+		log.Debugf("生成peer ID失败: %v", err)
 		return nil, err
 	}
 	// 获取 peer ID 的后缀
@@ -126,7 +126,7 @@ func (mn *mocknet) GenPeerWithOptions(opts PeerOptions) (host.Host, error) {
 	// 创建多地址
 	a, err := ma.NewMultiaddr(fmt.Sprintf("/ip6/%s/tcp/4242", ip))
 	if err != nil {
-		log.Errorf("创建测试多地址失败: %s", err)
+		log.Debugf("创建测试多地址失败: %s", err)
 		return nil, err
 	}
 
@@ -135,7 +135,7 @@ func (mn *mocknet) GenPeerWithOptions(opts PeerOptions) (host.Host, error) {
 	if opts.ps == nil {
 		ps, err = pstoremem.NewPeerstore()
 		if err != nil {
-			log.Errorf("创建peerstore失败: %v", err)
+			log.Debugf("创建peerstore失败: %v", err)
 			return nil, err
 		}
 	} else {
@@ -144,13 +144,13 @@ func (mn *mocknet) GenPeerWithOptions(opts PeerOptions) (host.Host, error) {
 	// 更新 peerstore
 	p, err := mn.updatePeerstore(sk, a, ps)
 	if err != nil {
-		log.Errorf("更新peerstore失败: %v", err)
+		log.Debugf("更新peerstore失败: %v", err)
 		return nil, err
 	}
 	// 添加对等节点
 	h, err := mn.AddPeerWithOptions(p, opts)
 	if err != nil {
-		log.Errorf("添加对等节点失败: %v", err)
+		log.Debugf("添加对等节点失败: %v", err)
 		return nil, err
 	}
 
@@ -170,13 +170,13 @@ func (mn *mocknet) AddPeer(k ic.PrivKey, a ma.Multiaddr) (host.Host, error) {
 	// 创建新的 peerstore
 	ps, err := pstoremem.NewPeerstore()
 	if err != nil {
-		log.Errorf("创建peerstore失败: %v", err)
+		log.Debugf("创建peerstore失败: %v", err)
 		return nil, err
 	}
 	// 更新 peerstore
 	p, err := mn.updatePeerstore(k, a, ps)
 	if err != nil {
-		log.Errorf("更新peerstore失败: %v", err)
+		log.Debugf("更新peerstore失败: %v", err)
 		return nil, err
 	}
 
@@ -210,13 +210,13 @@ func (mn *mocknet) AddPeerWithOptions(p peer.ID, opts PeerOptions) (host.Host, e
 	bus := eventbus.NewBus()
 	// 添加默认配置
 	if err := mn.addDefaults(&opts); err != nil {
-		log.Errorf("添加默认配置失败: %v", err)
+		log.Debugf("添加默认配置失败: %v", err)
 		return nil, err
 	}
 	// 创建新的对等网络
 	n, err := newPeernet(mn, p, opts, bus)
 	if err != nil {
-		log.Errorf("创建新的对等网络失败: %v", err)
+		log.Debugf("创建新的对等网络失败: %v", err)
 		return nil, err
 	}
 
@@ -230,7 +230,7 @@ func (mn *mocknet) AddPeerWithOptions(p peer.ID, opts PeerOptions) (host.Host, e
 	// 创建新主机
 	h, err := bhost.NewHost(n, hostOpts)
 	if err != nil {
-		log.Errorf("创建新主机失败: %v", err)
+		log.Debugf("创建新主机失败: %v", err)
 		return nil, err
 	}
 	// 启动主机
@@ -255,7 +255,7 @@ func (mn *mocknet) addDefaults(opts *PeerOptions) error {
 	if opts.ps == nil {
 		ps, err := pstoremem.NewPeerstore()
 		if err != nil {
-			log.Errorf("创建peerstore失败: %v", err)
+			log.Debugf("创建peerstore失败: %v", err)
 			return err
 		}
 		opts.ps = ps
@@ -277,7 +277,7 @@ func (mn *mocknet) updatePeerstore(k ic.PrivKey, a ma.Multiaddr, ps peerstore.Pe
 	// 从公钥获取 peer ID
 	p, err := peer.IDFromPublicKey(k.GetPublic())
 	if err != nil {
-		log.Errorf("从公钥获取peer ID失败: %v", err)
+		log.Debugf("从公钥获取peer ID失败: %v", err)
 		return "", err
 	}
 
@@ -286,13 +286,13 @@ func (mn *mocknet) updatePeerstore(k ic.PrivKey, a ma.Multiaddr, ps peerstore.Pe
 	// 添加私钥
 	err = ps.AddPrivKey(p, k)
 	if err != nil {
-		log.Errorf("添加私钥失败: %v", err)
+		log.Debugf("添加私钥失败: %v", err)
 		return "", err
 	}
 	// 添加公钥
 	err = ps.AddPubKey(p, k.GetPublic())
 	if err != nil {
-		log.Errorf("添加公钥失败: %v", err)
+		log.Debugf("添加公钥失败: %v", err)
 		return "", err
 	}
 	return p, nil
@@ -414,7 +414,7 @@ func (mn *mocknet) LinkAll() error {
 	for _, n1 := range nets {
 		for _, n2 := range nets {
 			if _, err := mn.LinkNets(n1, n2); err != nil {
-				log.Errorf("连接网络失败: %v", err)
+				log.Debugf("连接网络失败: %v", err)
 				return err
 			}
 		}
@@ -437,12 +437,12 @@ func (mn *mocknet) LinkPeers(p1, p2 peer.ID) (Link, error) {
 	mn.Unlock()
 
 	if n1 == nil {
-		log.Errorf("p1 的网络不在 mocknet 中")
+		log.Debugf("p1 的网络不在 mocknet 中")
 		return nil, fmt.Errorf("p1 的网络不在 mocknet 中")
 	}
 
 	if n2 == nil {
-		log.Errorf("p2 的网络不在 mocknet 中")
+		log.Debugf("p2 的网络不在 mocknet 中")
 		return nil, fmt.Errorf("p2 的网络不在 mocknet 中")
 	}
 
@@ -462,12 +462,12 @@ func (mn *mocknet) validate(n network.Network) (*peernet, error) {
 
 	nr, ok := n.(*peernet)
 	if !ok {
-		log.Errorf("不支持的网络类型（仅支持 mock 包中的网络）")
+		log.Debugf("不支持的网络类型（仅支持 mock 包中的网络）")
 		return nil, fmt.Errorf("不支持的网络类型（仅支持 mock 包中的网络）")
 	}
 
 	if _, found := mn.nets[nr.peer]; !found {
-		log.Errorf("网络不在 mocknet 中，是否来自其他 mocknet？")
+		log.Debugf("网络不在 mocknet 中，是否来自其他 mocknet？")
 		return nil, fmt.Errorf("网络不在 mocknet 中，是否来自其他 mocknet？")
 	}
 
@@ -490,11 +490,11 @@ func (mn *mocknet) LinkNets(n1, n2 network.Network) (Link, error) {
 	mn.Unlock()
 
 	if err1 != nil {
-		log.Errorf("验证网络失败: %v", err1)
+		log.Debugf("验证网络失败: %v", err1)
 		return nil, err1
 	}
 	if err2 != nil {
-		log.Errorf("验证网络失败: %v", err2)
+		log.Debugf("验证网络失败: %v", err2)
 		return nil, err2
 	}
 
@@ -514,7 +514,7 @@ func (mn *mocknet) LinkNets(n1, n2 network.Network) (Link, error) {
 func (mn *mocknet) Unlink(l2 Link) error {
 	l, ok := l2.(*link)
 	if !ok {
-		log.Errorf("仅支持来自 mocknet 的连接")
+		log.Debugf("仅支持来自 mocknet 的连接")
 		return fmt.Errorf("仅支持来自 mocknet 的连接")
 	}
 
@@ -532,13 +532,13 @@ func (mn *mocknet) Unlink(l2 Link) error {
 func (mn *mocknet) UnlinkPeers(p1, p2 peer.ID) error {
 	ls := mn.LinksBetweenPeers(p1, p2)
 	if ls == nil {
-		log.Errorf("p1 和 p2 之间没有连接")
+		log.Debugf("p1 和 p2 之间没有连接")
 		return fmt.Errorf("p1 和 p2 之间没有连接")
 	}
 
 	for _, l := range ls {
 		if err := mn.Unlink(l); err != nil {
-			log.Errorf("断开连接失败: %v", err)
+			log.Debugf("断开连接失败: %v", err)
 			return err
 		}
 	}
@@ -619,7 +619,7 @@ func (mn *mocknet) ConnectAllButSelf() error {
 			}
 
 			if _, err := mn.ConnectNets(n1, n2); err != nil {
-				log.Errorf("连接网络失败: %v", err)
+				log.Debugf("连接网络失败: %v", err)
 				return err
 			}
 		}

@@ -32,13 +32,13 @@ func (m *msgReader) ReadMsg() ([]byte, error) {
 	// 读取消息长度的 varint 编码
 	sz, err := varint.ReadUvarint(m)
 	if err != nil {
-		log.Errorf("读取消息长度失败: %v", err)
+		log.Debugf("读取消息长度失败: %v", err)
 		return nil, err
 	}
 
 	// 检查消息是否超过缓冲区大小
 	if sz > uint64(len(m.Buf)) {
-		log.Errorf("消息大小超过缓冲区容量: %d > %d", sz, len(m.Buf))
+		log.Debugf("消息大小超过缓冲区容量: %d > %d", sz, len(m.Buf))
 		return nil, io.ErrShortBuffer
 	}
 
@@ -47,7 +47,7 @@ func (m *msgReader) ReadMsg() ([]byte, error) {
 	for n < int(sz) {
 		nr, err := m.R.Read(m.Buf[n:sz])
 		if err != nil {
-			log.Errorf("读取消息内容失败: %v", err)
+			log.Debugf("读取消息内容失败: %v", err)
 			return nil, err
 		}
 		n += nr

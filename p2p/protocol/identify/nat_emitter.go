@@ -85,7 +85,7 @@ func (n *natEmitter) worker() {
 			}
 			ev, ok := evt.(event.EvtLocalReachabilityChanged)
 			if !ok {
-				log.Error("无效事件: %v", evt)
+				log.Debugf("无效事件: %v", evt)
 				continue
 			}
 			n.reachability = ev.Reachability

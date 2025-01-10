@@ -76,7 +76,7 @@ func Listen(h host.Host, tag protocol.ID, opts ...ListenerOption) (net.Listener,
 	}
 	for _, opt := range opts { // 应用所有监听器选项
 		if err := opt(l); err != nil {
-			log.Errorf("应用监听器选项失败: %v", err)
+			log.Debugf("应用监听器选项失败: %v", err)
 			return nil, err
 		}
 	}

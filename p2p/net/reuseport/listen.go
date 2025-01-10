@@ -45,7 +45,7 @@ func (t *Transport) Listen(laddr ma.Multiaddr) (manet.Listener, error) {
 	// 解析多地址获取网络类型和地址字符串
 	nw, naddr, err := manet.DialArgs(laddr)
 	if err != nil {
-		log.Errorf("解析多地址失败: %v", err)
+		log.Debugf("解析多地址失败: %v", err)
 		return nil, err
 	}
 
@@ -57,7 +57,7 @@ func (t *Transport) Listen(laddr ma.Multiaddr) (manet.Listener, error) {
 	case "tcp6":
 		n = &t.v6
 	default:
-		log.Errorf("不支持的网络类型: %s", nw)
+		log.Debugf("不支持的网络类型: %s", nw)
 		return nil, ErrWrongProto // 返回协议错误
 	}
 
@@ -69,14 +69,14 @@ func (t *Transport) Listen(laddr ma.Multiaddr) (manet.Listener, error) {
 	// 创建支持端口重用的监听器
 	nl, err := reuseport.Listen(nw, naddr)
 	if err != nil {
-		log.Errorf("创建支持端口重用的监听器失败: %v", err)
+		log.Debugf("创建支持端口重用的监听器失败: %v", err)
 		return manet.Listen(laddr)
 	}
 
 	// 验证地址类型是否为 TCP
 	if _, ok := nl.Addr().(*net.TCPAddr); !ok {
 		nl.Close()
-		log.Errorf("地址类型不是TCP: %v", nl.Addr())
+		log.Debugf("地址类型不是TCP: %v", nl.Addr())
 		return nil, ErrWrongProto
 	}
 
@@ -84,7 +84,7 @@ func (t *Transport) Listen(laddr ma.Multiaddr) (manet.Listener, error) {
 	malist, err := manet.WrapNetListener(nl)
 	if err != nil {
 		nl.Close()
-		log.Errorf("包装网络监听器失败: %v", err)
+		log.Debugf("包装网络监听器失败: %v", err)
 		return nil, err
 	}
 

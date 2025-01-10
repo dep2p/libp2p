@@ -87,7 +87,7 @@ func thinWaistForm(a ma.Multiaddr) (thinWaist, error) {
 func getObserver(a ma.Multiaddr) (string, error) {
 	ip, err := manet.ToIP(a)
 	if err != nil {
-		log.Errorf("获取观察者失败: %s", err)
+		log.Debugf("获取观察者失败: %s", err)
 		return "", err
 	}
 	if ip4 := ip.To4(); ip4 != nil {
@@ -431,7 +431,7 @@ func (o *ObservedAddrManager) shouldRecordObservation(conn connMultiaddrs, obser
 	// 如果我们使用临时地址拨出，知道该地址的外部映射并不是很有用，因为端口与监听地址不同。
 	ifaceaddrs, err := o.interfaceListenAddrs()
 	if err != nil {
-		log.Errorf("获取接口监听地址失败: %s", err)
+		log.Debugf("获取接口监听地址失败: %s", err)
 		return false, thinWaist{}, thinWaist{}
 	}
 

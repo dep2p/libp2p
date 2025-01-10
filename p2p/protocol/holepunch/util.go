@@ -107,7 +107,7 @@ func holePunchConnect(ctx context.Context, host host.Host, pi peer.AddrInfo, isC
 
 	// 尝试连接
 	if err := host.Connect(dialCtx, pi); err != nil {
-		log.Errorf("打洞尝试失败", "peer ID", pi.ID, "error", err)
+		log.Debugf("打洞尝试失败", "peer ID", pi.ID, "error", err)
 		return err
 	}
 	log.Debugw("打洞成功", "peer", pi.ID)

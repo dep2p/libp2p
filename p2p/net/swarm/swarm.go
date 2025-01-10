@@ -303,7 +303,7 @@ func NewSwarm(local peer.ID, peers peerstore.Peerstore, eventBus event.Bus, opts
 	// 创建连接性变更事件发射器
 	emitter, err := eventBus.Emitter(new(event.EvtPeerConnectednessChanged))
 	if err != nil {
-		log.Errorf("创建连接性变更事件发射器失败: %v", err)
+		log.Debugf("创建连接性变更事件发射器失败: %v", err)
 		return nil, err
 	}
 
@@ -340,7 +340,7 @@ func NewSwarm(local peer.ID, peers peerstore.Peerstore, eventBus event.Bus, opts
 	// 应用可选配置
 	for _, opt := range opts {
 		if err := opt(s); err != nil {
-			log.Errorf("应用配置选项失败: %v", err)
+			log.Debugf("应用配置选项失败: %v", err)
 			return nil, err
 		}
 	}
@@ -509,7 +509,7 @@ func (s *Swarm) addConn(tc transport.CapableConn, dir network.Direction) (*Conn,
 	if s.conns.m == nil {
 		s.conns.Unlock()
 		tc.Close()
-		log.Errorf("swarm 已关闭")
+		log.Debugf("swarm 已关闭")
 		return nil, ErrSwarmClosed
 	}
 
@@ -606,13 +606,13 @@ func (s *Swarm) NewStream(ctx context.Context, p peer.ID) (network.Stream, error
 			if nodial, _ := network.GetNoDial(ctx); !nodial {
 				numDials++
 				if numDials > DialAttempts {
-					log.Errorf("超出最大拨号尝试次数")
+					log.Debugf("超出最大拨号尝试次数")
 					return nil, errors.New("超出最大拨号尝试次数")
 				}
 				var err error
 				c, err = s.dialPeer(ctx, p)
 				if err != nil {
-					log.Errorf("拨号失败: %v", err)
+					log.Debugf("拨号失败: %v", err)
 					return nil, err
 				}
 			} else {
@@ -626,7 +626,7 @@ func (s *Swarm) NewStream(ctx context.Context, p peer.ID) (network.Stream, error
 			var err error
 			c, err = s.waitForDirectConn(ctx, p)
 			if err != nil {
-				log.Errorf("等待直接连接失败: %v", err)
+				log.Debugf("等待直接连接失败: %v", err)
 				return nil, err
 			}
 		}
@@ -637,7 +637,7 @@ func (s *Swarm) NewStream(ctx context.Context, p peer.ID) (network.Stream, error
 			if c.conn.IsClosed() {
 				continue
 			}
-			log.Errorf("创建新流失败: %v", err)
+			log.Debugf("创建新流失败: %v", err)
 			return nil, err
 		}
 		return str, nil
@@ -660,7 +660,7 @@ func (s *Swarm) waitForDirectConn(ctx context.Context, p peer.ID) (*Conn, error)
 	c := s.bestConnToPeer(p)
 	if c == nil {
 		s.directConnNotifs.Unlock()
-		log.Errorf("没有找到最佳连接")
+		log.Debugf("没有找到最佳连接")
 		return nil, network.ErrNoConn
 	} else if !c.Stat().Limited {
 		s.directConnNotifs.Unlock()
@@ -695,7 +695,7 @@ func (s *Swarm) waitForDirectConn(ctx context.Context, p peer.ID) (*Conn, error)
 		// 获取最佳连接
 		c := s.bestConnToPeer(p)
 		if c == nil {
-			log.Errorf("没有找到最佳连接")
+			log.Debugf("没有找到最佳连接")
 			return nil, network.ErrNoConn
 		}
 		if c.Stat().Limited {
@@ -908,7 +908,7 @@ func (s *Swarm) ClosePeer(p peer.ID) error {
 			}
 		}
 		if len(errs) > 0 {
-			log.Errorf("断开与对等点 %s 的连接时: %s", p, strings.Join(errs, ", "))
+			log.Debugf("断开与对等点 %s 的连接时: %s", p, strings.Join(errs, ", "))
 			return fmt.Errorf("断开与对等点 %s 的连接时: %s", p, strings.Join(errs, ", "))
 		}
 		return nil
@@ -1130,7 +1130,7 @@ func (r ResolverFromMaDNS) ResolveDNSAddr(ctx context.Context, expectedPeerID pe
 	// 解析地址
 	addrs, err := r.Resolve(ctx, maddr)
 	if err != nil {
-		log.Errorf("解析DNS地址失败: %v", err)
+		log.Debugf("解析DNS地址失败: %v", err)
 		return nil, err
 	}
 	// 应用输出限制
@@ -1204,7 +1204,7 @@ func (r ResolverFromMaDNS) ResolveDNSComponent(ctx context.Context, maddr ma.Mul
 	// 解析地址
 	addrs, err := r.Resolve(ctx, maddr)
 	if err != nil {
-		log.Errorf("解析DNS地址失败: %v", err)
+		log.Debugf("解析DNS地址失败: %v", err)
 		return nil, err
 	}
 	// 应用输出限制

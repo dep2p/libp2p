@@ -78,7 +78,7 @@ func (s *Swarm) Listen(addrs ...ma.Multiaddr) error {
 
 	// 如果没有成功监听任何地址则返回错误
 	if succeeded == 0 && len(sortedAddrsAndTpts) > 0 {
-		log.Errorf("未能监听任何地址: %s", errs)
+		log.Debugf("未能监听任何地址: %s", errs)
 		return fmt.Errorf("未能监听任何地址: %s", errs)
 	}
 
@@ -140,7 +140,7 @@ func (s *Swarm) AddListenAddr(a ma.Multiaddr) error {
 	// 创建监听器
 	list, err := tpt.Listen(a)
 	if err != nil {
-		log.Errorf("创建监听器失败: %v", err)
+		log.Debugf("创建监听器失败: %v", err)
 		return err
 	}
 

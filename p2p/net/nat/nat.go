@@ -46,7 +46,7 @@ func DiscoverNAT(ctx context.Context) (*NAT, error) {
 	// 发现 NAT 网关
 	natInstance, err := discoverGateway(ctx)
 	if err != nil {
-		log.Errorf("发现 NAT 网关失败: %v", err)
+		log.Debugf("发现 NAT 网关失败: %v", err)
 		return nil, err
 	}
 
@@ -60,7 +60,7 @@ func DiscoverNAT(ctx context.Context) (*NAT, error) {
 	// 记录设备地址
 	addr, err := natInstance.GetDeviceAddress()
 	if err != nil {
-		log.Errorf("发现网关地址错误: %v", err)
+		log.Debugf("发现网关地址错误: %v", err)
 	} else {
 		log.Debugf("发现网关地址: %s", addr)
 	}
@@ -151,7 +151,7 @@ func (nat *NAT) AddMapping(ctx context.Context, protocol string, port int) error
 	switch protocol {
 	case "tcp", "udp":
 	default:
-		log.Errorf("无效协议: %s", protocol)
+		log.Debugf("无效协议: %s", protocol)
 		return fmt.Errorf("无效协议: %s", protocol)
 	}
 
@@ -159,7 +159,7 @@ func (nat *NAT) AddMapping(ctx context.Context, protocol string, port int) error
 	defer nat.mappingmu.Unlock()
 
 	if nat.closed {
-		log.Errorf("已关闭")
+		log.Debugf("已关闭")
 		return errors.New("已关闭")
 	}
 

@@ -90,7 +90,7 @@ type Service struct {
 //   - listenAddrs 必须只返回公共地址
 func NewService(h host.Host, ids identify.IDService, listenAddrs func() []ma.Multiaddr, opts ...Option) (*Service, error) {
 	if ids == nil {
-		log.Errorf("标识服务不能为空")
+		log.Debugf("标识服务不能为空")
 		return nil, errors.New("标识服务不能为空")
 	}
 
@@ -107,7 +107,7 @@ func NewService(h host.Host, ids identify.IDService, listenAddrs func() []ma.Mul
 	for _, opt := range opts {
 		if err := opt(s); err != nil {
 			cancel()
-			log.Errorf("配置打洞服务失败: %v", err)
+			log.Debugf("配置打洞服务失败: %v", err)
 			return nil, err
 		}
 	}
@@ -191,7 +191,7 @@ func (s *Service) Close() error {
 func (s *Service) incomingHolePunch(str network.Stream) (rtt time.Duration, remoteAddrs []ma.Multiaddr, ownAddrs []ma.Multiaddr, err error) {
 	// 健全性检查:打洞请求应该只来自中继后面的对等点
 	if !isRelayAddress(str.Conn().RemoteMultiaddr()) {
-		log.Errorf("收到打洞流: %s", str.Conn().RemoteMultiaddr())
+		log.Debugf("收到打洞流: %s", str.Conn().RemoteMultiaddr())
 		return 0, nil, nil, fmt.Errorf("收到打洞流: %s", str.Conn().RemoteMultiaddr())
 	}
 	ownAddrs = s.listenAddrs()
@@ -201,12 +201,12 @@ func (s *Service) incomingHolePunch(str network.Stream) (rtt time.Duration, remo
 
 	// 如果我们无法告诉对等点在哪里拨号,就没有必要开始打洞
 	if len(ownAddrs) == 0 {
-		log.Errorf("拒绝打洞请求,因为我们没有任何公共地址")
+		log.Debugf("拒绝打洞请求,因为我们没有任何公共地址")
 		return 0, nil, nil, errors.New("拒绝打洞请求,因为我们没有任何公共地址")
 	}
 
 	if err := str.Scope().ReserveMemory(maxMsgSize, network.ReservationPriorityAlways); err != nil {
-		log.Errorf("为流预留内存时出错: %s", err)
+		log.Debugf("为流预留内存时出错: %s", err)
 		return 0, nil, nil, err
 	}
 	defer str.Scope().ReleaseMemory(maxMsgSize)
@@ -220,11 +220,11 @@ func (s *Service) incomingHolePunch(str network.Stream) (rtt time.Duration, remo
 	str.SetDeadline(time.Now().Add(StreamTimeout))
 
 	if err := rd.ReadMsg(msg); err != nil {
-		log.Errorf("从发起者读取消息失败: %v", err)
+		log.Debugf("从发起者读取消息失败: %v", err)
 		return 0, nil, nil, err
 	}
 	if t := msg.GetType(); t != pb.HolePunch_CONNECT {
-		log.Errorf("期望从发起者收到 CONNECT 消息但收到 %d", t)
+		log.Debugf("期望从发起者收到 CONNECT 消息但收到 %d", t)
 		return 0, nil, nil, fmt.Errorf("期望从发起者收到 CONNECT 消息但收到 %d", t)
 	}
 
@@ -235,7 +235,7 @@ func (s *Service) incomingHolePunch(str network.Stream) (rtt time.Duration, remo
 
 	log.Debugw("收到打洞请求", "peer", str.Conn().RemotePeer(), "addrs", obsDial)
 	if len(obsDial) == 0 {
-		log.Errorf("期望 CONNECT 消息包含至少一个地址")
+		log.Debugf("期望 CONNECT 消息包含至少一个地址")
 		return 0, nil, nil, errors.New("期望 CONNECT 消息包含至少一个地址")
 	}
 
@@ -245,18 +245,18 @@ func (s *Service) incomingHolePunch(str network.Stream) (rtt time.Duration, remo
 	msg.ObsAddrs = addrsToBytes(ownAddrs)
 	tstart := time.Now()
 	if err := wr.WriteMsg(msg); err != nil {
-		log.Errorf("向发起者写入 CONNECT 消息失败: %v", err)
+		log.Debugf("向发起者写入 CONNECT 消息失败: %v", err)
 		return 0, nil, nil, err
 	}
 
 	// 读取 SYNC 消息
 	msg.Reset()
 	if err := rd.ReadMsg(msg); err != nil {
-		log.Errorf("从发起者读取消息失败: %v", err)
+		log.Debugf("从发起者读取消息失败: %v", err)
 		return 0, nil, nil, err
 	}
 	if t := msg.GetType(); t != pb.HolePunch_SYNC {
-		log.Errorf("期望从发起者收到 SYNC 消息但收到 %d", t)
+		log.Debugf("期望从发起者收到 SYNC 消息但收到 %d", t)
 		return 0, nil, nil, fmt.Errorf("期望从发起者收到 SYNC 消息但收到 %d", t)
 	}
 	return time.Since(tstart), obsDial, ownAddrs, nil
@@ -287,7 +287,7 @@ func (s *Service) handleNewStream(str network.Stream) {
 	rtt, addrs, ownAddrs, err := s.incomingHolePunch(str)
 	if err != nil {
 		s.tracer.ProtocolError(rp, err)
-		log.Errorf("处理来自对等点的打洞流时出错", "peer", rp, "error", err)
+		log.Debugf("处理来自对等点的打洞流时出错", "peer", rp, "error", err)
 		str.Reset()
 		return
 	}

@@ -144,7 +144,7 @@ func NewConnManager(low, hi int, opts ...Option) (*BasicConnMgr, error) {
 	// 应用所有配置选项
 	for _, o := range opts {
 		if err := o(cfg); err != nil {
-			log.Errorf("应用配置选项失败: %v", err)
+			log.Debugf("应用配置选项失败: %v", err)
 			return nil, err
 		}
 	}
@@ -237,7 +237,7 @@ func (cm *BasicConnMgr) Close() error {
 	}
 	// 关闭衰减器
 	if err := cm.decayer.Close(); err != nil {
-		log.Errorf("关闭衰减器失败: %v", err)
+		log.Debugf("关闭衰减器失败: %v", err)
 		return err
 	}
 	// 等待所有引用计数归零
@@ -325,7 +325,7 @@ func (cm *BasicConnMgr) IsProtected(id peer.ID, tag string) (protected bool) {
 //   - error: 如果超过限制则返回错误
 func (cm *BasicConnMgr) CheckLimit(systemLimit connmgr.GetConnLimiter) error {
 	if cm.cfg.highWater > systemLimit.GetConnLimit() {
-		log.Errorf(
+		log.Debugf(
 			"连接管理器高水位限制: %d, 超过了系统连接限制: %d",
 			cm.cfg.highWater,
 			systemLimit.GetConnLimit(),
@@ -826,7 +826,7 @@ func (nn *cmNotifee) Connected(n network.Network, c network.Conn) {
 
 	_, ok = pinfo.conns[c]
 	if ok {
-		log.Error("收到已在跟踪的连接的connected通知: ", p)
+		log.Debugf("收到已在跟踪的连接的connected通知: ", p)
 		return
 	}
 
@@ -849,13 +849,13 @@ func (nn *cmNotifee) Disconnected(n network.Network, c network.Conn) {
 
 	cinf, ok := s.peers[p]
 	if !ok {
-		log.Error("收到未跟踪peer的disconnected通知: ", p)
+		log.Debugf("收到未跟踪peer的disconnected通知: ", p)
 		return
 	}
 
 	_, ok = cinf.conns[c]
 	if !ok {
-		log.Error("收到未跟踪连接的disconnected通知: ", p)
+		log.Debugf("收到未跟踪连接的disconnected通知: ", p)
 		return
 	}
 

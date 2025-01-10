@@ -69,19 +69,19 @@ func (d *DelimitedReader) ReadByte() (byte, error) {
 func (d *DelimitedReader) ReadMsg(msg proto.Message) error {
 	mlen, err := varint.ReadUvarint(d)
 	if err != nil {
-		log.Errorf("读取消息长度失败: %v", err)
+		log.Debugf("读取消息长度失败: %v", err)
 		return err
 	}
 
 	if uint64(len(d.buf)) < mlen {
-		log.Errorf("消息太大: %d", mlen)
+		log.Debugf("消息太大: %d", mlen)
 		return errors.New("消息太大")
 	}
 
 	buf := d.buf[:mlen]
 	_, err = io.ReadFull(d.r, buf)
 	if err != nil {
-		log.Errorf("读取消息内容失败: %v", err)
+		log.Debugf("读取消息内容失败: %v", err)
 		return err
 	}
 

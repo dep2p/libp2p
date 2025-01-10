@@ -78,21 +78,21 @@ func (rv *ReservationVoucher) UnmarshalRecord(blob []byte) error {
 	// 从字节数组反序列化
 	err := proto.Unmarshal(blob, &pbrv)
 	if err != nil {
-		log.Errorf("反序列化预约凭证失败: %v", err)
+		log.Debugf("反序列化预约凭证失败: %v", err)
 		return err
 	}
 
 	// 从字节数组解析中继节点ID
 	rv.Relay, err = peer.IDFromBytes(pbrv.GetRelay())
 	if err != nil {
-		log.Errorf("解析中继节点ID失败: %v", err)
+		log.Debugf("解析中继节点ID失败: %v", err)
 		return err
 	}
 
 	// 从字节数组解析对等节点ID
 	rv.Peer, err = peer.IDFromBytes(pbrv.GetPeer())
 	if err != nil {
-		log.Errorf("解析对等节点ID失败: %v", err)
+		log.Debugf("解析对等节点ID失败: %v", err)
 		return err
 	}
 

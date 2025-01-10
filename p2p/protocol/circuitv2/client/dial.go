@@ -75,12 +75,12 @@ func (c *Client) dial(ctx context.Context, a ma.Multiaddr, p peer.ID) (*Conn, er
 
 	// 如果地址不包含 /p2p-circuit 部分,第二部分为空
 	if destaddr == nil {
-		log.Errorf("%s 不是一个中继地址", a)
+		log.Debugf("%s 不是一个中继地址", a)
 		return nil, fmt.Errorf("%s 不是一个中继地址", a)
 	}
 
 	if relayaddr == nil {
-		log.Errorf("无法在不指定中继的情况下拨号 p2p-circuit: %s", a)
+		log.Debugf("无法在不指定中继的情况下拨号 p2p-circuit: %s", a)
 		return nil, fmt.Errorf("无法在不指定中继的情况下拨号 p2p-circuit: %s", a)
 	}
 
@@ -94,7 +94,7 @@ func (c *Client) dial(ctx context.Context, a ma.Multiaddr, p peer.ID) (*Conn, er
 
 	rinfo, err := peer.AddrInfoFromP2pAddr(relayaddr)
 	if err != nil {
-		log.Errorf("解析中继多地址 '%s' 出错: %v", relayaddr, err)
+		log.Debugf("解析中继多地址 '%s' 出错: %v", relayaddr, err)
 		return nil, fmt.Errorf("解析中继多地址 '%s' 出错: %w", relayaddr, err)
 	}
 
@@ -123,11 +123,11 @@ retry:
 				}
 
 				// 如果中继因协议错误而连接失败,不要尝试使用相同的中继
-				log.Errorf("通过相同中继的并发活动拨号因协议错误而失败")
+				log.Debugf("通过相同中继的并发活动拨号因协议错误而失败")
 				return nil, fmt.Errorf("通过相同中继的并发活动拨号因协议错误而失败")
 			}
 
-			log.Errorf("并发活动拨号已成功")
+			log.Debugf("并发活动拨号已成功")
 			return nil, fmt.Errorf("并发活动拨号已成功")
 
 		case <-ctx.Done():
@@ -166,7 +166,7 @@ func (c *Client) dialPeer(ctx context.Context, relay, dest peer.AddrInfo) (*Conn
 	defer cancel()
 	s, err := c.host.NewStream(dialCtx, relay.ID, proto.ProtoIDv2Hop)
 	if err != nil {
-		log.Errorf("打开到中继的 hop 流时出错: %v", err)
+		log.Debugf("打开到中继的 hop 流时出错: %v", err)
 		return nil, err
 	}
 	return c.connect(s, dest)
@@ -182,7 +182,7 @@ func (c *Client) dialPeer(ctx context.Context, relay, dest peer.AddrInfo) (*Conn
 //   - error 错误信息
 func (c *Client) connect(s network.Stream, dest peer.AddrInfo) (*Conn, error) {
 	if err := s.Scope().ReserveMemory(maxMessageSize, network.ReservationPriorityAlways); err != nil {
-		log.Errorf("为流 %s 预留内存失败: %v", s.ID(), err)
+		log.Debugf("为流 %s 预留内存失败: %v", s.ID(), err)
 		s.Reset()
 		return nil, err
 	}
@@ -201,7 +201,7 @@ func (c *Client) connect(s network.Stream, dest peer.AddrInfo) (*Conn, error) {
 
 	err := wr.WriteMsg(&msg)
 	if err != nil {
-		log.Errorf("写入拨号消息失败: %v", err)
+		log.Debugf("写入拨号消息失败: %v", err)
 		s.Reset()
 		return nil, err
 	}
@@ -210,7 +210,7 @@ func (c *Client) connect(s network.Stream, dest peer.AddrInfo) (*Conn, error) {
 
 	err = rd.ReadMsg(&msg)
 	if err != nil {
-		log.Errorf("读取拨号消息失败: %v", err)
+		log.Debugf("读取拨号消息失败: %v", err)
 		s.Reset()
 		return nil, err
 	}
@@ -218,14 +218,14 @@ func (c *Client) connect(s network.Stream, dest peer.AddrInfo) (*Conn, error) {
 	s.SetDeadline(time.Time{})
 
 	if msg.GetType() != pbv2.HopMessage_STATUS {
-		log.Errorf("意外的中继响应;不是状态消息 (%d)", msg.GetType())
+		log.Debugf("意外的中继响应;不是状态消息 (%d)", msg.GetType())
 		s.Reset()
 		return nil, newRelayError("意外的中继响应;不是状态消息 (%d)", msg.GetType())
 	}
 
 	status := msg.GetStatus()
 	if status != pbv2.Status_OK {
-		log.Errorf("打开中继电路时出错: %s (%d)", pbv2.Status_name[int32(status)], status)
+		log.Debugf("打开中继电路时出错: %s (%d)", pbv2.Status_name[int32(status)], status)
 		s.Reset()
 		return nil, newRelayError("打开中继电路时出错: %s (%d)", pbv2.Status_name[int32(status)], status)
 	}

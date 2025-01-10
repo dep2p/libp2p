@@ -118,7 +118,7 @@ func New(security []sec.SecureTransport, muxers []StreamMuxer, psk ipnet.PSK, rc
 	// 应用配置选项
 	for _, opt := range opts {
 		if err := opt(u); err != nil {
-			log.Errorf("配置升级器失败: %v", err)
+			log.Debugf("配置升级器失败: %v", err)
 			return nil, err
 		}
 	}
@@ -188,7 +188,7 @@ func (u *upgrader) Upgrade(ctx context.Context, t transport.Transport, maconn ma
 	if err != nil {
 		// 如果升级失败,标记连接管理范围完成
 		connScope.Done()
-		log.Errorf("升级连接失败: %v", err)
+		log.Debugf("升级连接失败: %v", err)
 		return nil, err
 	}
 	return c, nil
@@ -209,7 +209,7 @@ func (u *upgrader) Upgrade(ctx context.Context, t transport.Transport, maconn ma
 func (u *upgrader) upgrade(ctx context.Context, t transport.Transport, maconn manet.Conn, dir network.Direction, p peer.ID, connScope network.ConnManagementScope) (transport.CapableConn, error) {
 	// 检查出站连接是否指定了对等点ID
 	if dir == network.DirOutbound && p == "" {
-		log.Errorf("出站连接未指定对等点ID")
+		log.Debugf("出站连接未指定对等点ID")
 		return nil, ErrNilPeer
 	}
 
@@ -226,13 +226,13 @@ func (u *upgrader) upgrade(ctx context.Context, t transport.Transport, maconn ma
 		pconn, err := pnet.NewProtectedConn(u.psk, conn)
 		if err != nil {
 			conn.Close()
-			log.Errorf("设置私有网络保护失败: %v", err)
+			log.Debugf("设置私有网络保护失败: %v", err)
 			return nil, err
 		}
 		conn = pconn
 	} else if ipnet.ForcePrivateNetwork {
 		// 如果强制使用私有网络但未设置保护器,返回错误
-		log.Errorf("尝试在没有私有网络保护器的情况下拨号,但环境强制要求使用私有网络")
+		log.Debugf("尝试在没有私有网络保护器的情况下拨号,但环境强制要求使用私有网络")
 		return nil, ipnet.ErrNotInPrivateNetwork
 	}
 
@@ -241,14 +241,14 @@ func (u *upgrader) upgrade(ctx context.Context, t transport.Transport, maconn ma
 	sconn, security, err := u.setupSecurity(ctx, conn, p, isServer)
 	if err != nil {
 		conn.Close()
-		log.Errorf("协商安全协议失败: %v", err)
+		log.Debugf("协商安全协议失败: %v", err)
 		return nil, err
 	}
 
 	// 调用连接过滤器(如果已注册)
 	if u.connGater != nil && !u.connGater.InterceptSecured(dir, sconn.RemotePeer(), maconn) {
 		if err := maconn.Close(); err != nil {
-			log.Errorf("关闭连接失败", "peer", p, "addr", maconn.RemoteMultiaddr(), "error", err)
+			log.Debugf("关闭连接失败", "peer", p, "addr", maconn.RemoteMultiaddr(), "error", err)
 		}
 		return nil, fmt.Errorf("过滤器拒绝了与对等点 %s 和地址 %s 的方向为 %d 的连接",
 			sconn.RemotePeer(), maconn.RemoteMultiaddr(), dir)
@@ -259,7 +259,7 @@ func (u *upgrader) upgrade(ctx context.Context, t transport.Transport, maconn ma
 		if err := connScope.SetPeer(sconn.RemotePeer()); err != nil {
 			log.Debugw("资源管理器阻止了对等点连接", "peer", sconn.RemotePeer(), "addr", conn.RemoteAddr(), "error", err)
 			if err := maconn.Close(); err != nil {
-				log.Errorf("关闭连接失败", "peer", p, "addr", maconn.RemoteMultiaddr(), "error", err)
+				log.Debugf("关闭连接失败", "peer", p, "addr", maconn.RemoteMultiaddr(), "error", err)
 			}
 			return nil, fmt.Errorf("资源管理器阻止了与对等点 %s 和地址 %s 的方向为 %d 的连接",
 				sconn.RemotePeer(), maconn.RemoteMultiaddr(), dir)
@@ -270,7 +270,7 @@ func (u *upgrader) upgrade(ctx context.Context, t transport.Transport, maconn ma
 	muxer, smconn, err := u.setupMuxer(ctx, sconn, isServer, connScope.PeerScope())
 	if err != nil {
 		sconn.Close()
-		log.Errorf("协商流多路复用器失败: %v", err)
+		log.Debugf("协商流多路复用器失败: %v", err)
 		return nil, err
 	}
 
@@ -304,7 +304,7 @@ func (u *upgrader) setupSecurity(ctx context.Context, conn net.Conn, p peer.ID, 
 	// 协商安全传输
 	st, err := u.negotiateSecurity(ctx, conn, isServer)
 	if err != nil {
-		log.Errorf("协商安全传输失败: %v", err)
+		log.Debugf("协商安全传输失败: %v", err)
 		return nil, "", err
 	}
 	if isServer {
@@ -328,7 +328,7 @@ func (u *upgrader) setupSecurity(ctx context.Context, conn net.Conn, p peer.ID, 
 func (u *upgrader) negotiateMuxer(nc net.Conn, isServer bool) (*StreamMuxer, error) {
 	// 设置协商超时
 	if err := nc.SetDeadline(time.Now().Add(defaultNegotiateTimeout)); err != nil {
-		log.Errorf("设置协商超时失败: %v", err)
+		log.Debugf("设置协商超时失败: %v", err)
 		return nil, err
 	}
 
@@ -337,7 +337,7 @@ func (u *upgrader) negotiateMuxer(nc net.Conn, isServer bool) (*StreamMuxer, err
 		// 服务端协商
 		selected, _, err := u.muxerMuxer.Negotiate(nc)
 		if err != nil {
-			log.Errorf("服务端协商多路复用器失败: %v", err)
+			log.Debugf("服务端协商多路复用器失败: %v", err)
 			return nil, err
 		}
 		proto = selected
@@ -345,7 +345,7 @@ func (u *upgrader) negotiateMuxer(nc net.Conn, isServer bool) (*StreamMuxer, err
 		// 客户端协商
 		selected, err := mss.SelectOneOf(u.muxerIDs, nc)
 		if err != nil {
-			log.Errorf("客户端协商多路复用器失败: %v", err)
+			log.Debugf("客户端协商多路复用器失败: %v", err)
 			return nil, err
 		}
 		proto = selected
@@ -353,7 +353,7 @@ func (u *upgrader) negotiateMuxer(nc net.Conn, isServer bool) (*StreamMuxer, err
 
 	// 清除超时设置
 	if err := nc.SetDeadline(time.Time{}); err != nil {
-		log.Errorf("清除协商超时失败: %v", err)
+		log.Debugf("清除协商超时失败: %v", err)
 		return nil, err
 	}
 
@@ -361,7 +361,7 @@ func (u *upgrader) negotiateMuxer(nc net.Conn, isServer bool) (*StreamMuxer, err
 	if m := u.getMuxerByID(proto); m != nil {
 		return m, nil
 	}
-	log.Errorf("选择了一个我们没有传输层的协议")
+	log.Debugf("选择了一个我们没有传输层的协议")
 	return nil, fmt.Errorf("选择了一个我们没有传输层的协议")
 }
 
@@ -398,12 +398,12 @@ func (u *upgrader) setupMuxer(ctx context.Context, conn sec.SecureConn, server b
 	if len(muxerSelected) > 0 {
 		m := u.getMuxerByID(muxerSelected)
 		if m == nil {
-			log.Errorf("选择了一个未知的多路复用器: %s", muxerSelected)
+			log.Debugf("选择了一个未知的多路复用器: %s", muxerSelected)
 			return "", nil, fmt.Errorf("选择了一个未知的多路复用器: %s", muxerSelected)
 		}
 		c, err := m.Muxer.NewConn(conn, server, scope)
 		if err != nil {
-			log.Errorf("创建多路复用连接失败: %v", err)
+			log.Debugf("创建多路复用连接失败: %v", err)
 			return "", nil, err
 		}
 		return muxerSelected, c, nil
@@ -495,7 +495,7 @@ func (u *upgrader) negotiateSecurity(ctx context.Context, insecure net.Conn, ser
 	select {
 	case r := <-done:
 		if r.err != nil {
-			log.Errorf("协商安全传输失败: %v", r.err)
+			log.Debugf("协商安全传输失败: %v", r.err)
 			return nil, r.err
 		}
 		if s := u.getSecurityByID(r.proto); s != nil {

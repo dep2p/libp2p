@@ -83,21 +83,21 @@ func (ac *client) GetReachability(ctx context.Context, p peer.ID, reqs []Request
 	// 创建新的流
 	s, err := ac.host.NewStream(ctx, p, DialProtocol)
 	if err != nil {
-		log.Errorf("打开 %s 流失败: %v", DialProtocol, err)
+		log.Debugf("打开 %s 流失败: %v", DialProtocol, err)
 		return Result{}, fmt.Errorf("打开 %s 流失败: %w", DialProtocol, err)
 	}
 
 	// 设置流的服务名
 	if err := s.Scope().SetService(ServiceName); err != nil {
 		s.Reset()
-		log.Errorf("将流 %s 附加到服务 %s 失败: %v", DialProtocol, ServiceName, err)
+		log.Debugf("将流 %s 附加到服务 %s 失败: %v", DialProtocol, ServiceName, err)
 		return Result{}, fmt.Errorf("将流 %s 附加到服务 %s 失败: %w", DialProtocol, ServiceName, err)
 	}
 
 	// 为流预留内存
 	if err := s.Scope().ReserveMemory(maxMsgSize, network.ReservationPriorityAlways); err != nil {
 		s.Reset()
-		log.Errorf("为流 %s 预留内存失败: %v", DialProtocol, err)
+		log.Debugf("为流 %s 预留内存失败: %v", DialProtocol, err)
 		return Result{}, fmt.Errorf("为流 %s 预留内存失败: %w", DialProtocol, err)
 	}
 	defer s.Scope().ReleaseMemory(maxMsgSize)
@@ -122,7 +122,7 @@ func (ac *client) GetReachability(ctx context.Context, p peer.ID, reqs []Request
 	w := pbio.NewDelimitedWriter(s)
 	if err := w.WriteMsg(&msg); err != nil {
 		s.Reset()
-		log.Errorf("拨号请求写入失败: %v", err)
+		log.Debugf("拨号请求写入失败: %v", err)
 		return Result{}, err
 	}
 
@@ -130,7 +130,7 @@ func (ac *client) GetReachability(ctx context.Context, p peer.ID, reqs []Request
 	r := pbio.NewDelimitedReader(s, maxMsgSize)
 	if err := r.ReadMsg(&msg); err != nil {
 		s.Reset()
-		log.Errorf("拨号消息读取失败: %v", err)
+		log.Debugf("拨号消息读取失败: %v", err)
 		return Result{}, err
 	}
 
@@ -141,28 +141,28 @@ func (ac *client) GetReachability(ctx context.Context, p peer.ID, reqs []Request
 	case msg.GetDialDataRequest() != nil:
 		if err := ac.validateDialDataRequest(reqs, &msg); err != nil {
 			s.Reset()
-			log.Errorf("无效的拨号数据请求: %v", err)
+			log.Debugf("无效的拨号数据请求: %v", err)
 			return Result{}, err
 		}
 		// 拨号数据请求有效且我们要发送数据
 		if err := sendDialData(ac.dialData, int(msg.GetDialDataRequest().GetNumBytes()), w, &msg); err != nil {
 			s.Reset()
-			log.Errorf("拨号数据发送失败: %v", err)
+			log.Debugf("拨号数据发送失败: %v", err)
 			return Result{}, err
 		}
 		if err := r.ReadMsg(&msg); err != nil {
 			s.Reset()
-			log.Errorf("拨号响应读取失败: %v", err)
+			log.Debugf("拨号响应读取失败: %v", err)
 			return Result{}, err
 		}
 		if msg.GetDialResponse() == nil {
 			s.Reset()
-			log.Errorf("无效的响应类型: %T", msg.Msg)
+			log.Debugf("无效的响应类型: %T", msg.Msg)
 			return Result{}, err
 		}
 	default:
 		s.Reset()
-		log.Errorf("无效的消息类型: %T", msg.Msg)
+		log.Debugf("无效的消息类型: %T", msg.Msg)
 		return Result{}, fmt.Errorf("无效的消息类型: %T", msg.Msg)
 	}
 
@@ -170,20 +170,20 @@ func (ac *client) GetReachability(ctx context.Context, p peer.ID, reqs []Request
 	if resp.GetStatus() != pb.DialResponse_OK {
 		// E_DIAL_REFUSED 对决定未来地址验证优先级有影响,包装一个独特的错误以方便使用 errors.Is
 		if resp.GetStatus() == pb.DialResponse_E_DIAL_REFUSED {
-			log.Errorf("拨号请求失败: %w", ErrDialRefused)
+			log.Debugf("拨号请求失败: %w", ErrDialRefused)
 			return Result{}, ErrDialRefused
 		}
-		log.Errorf("拨号请求失败: 响应状态 %d %s", resp.GetStatus(),
+		log.Debugf("拨号请求失败: 响应状态 %d %s", resp.GetStatus(),
 			pb.DialResponse_ResponseStatus_name[int32(resp.GetStatus())])
 		return Result{}, fmt.Errorf("拨号请求失败: 响应状态 %d %s", resp.GetStatus(),
 			pb.DialResponse_ResponseStatus_name[int32(resp.GetStatus())])
 	}
 	if resp.GetDialStatus() == pb.DialStatus_UNUSED {
-		log.Errorf("无效响应: 无效的拨号状态 UNUSED")
+		log.Debugf("无效响应: 无效的拨号状态 UNUSED")
 		return Result{}, fmt.Errorf("无效响应: 无效的拨号状态 UNUSED")
 	}
 	if int(resp.AddrIdx) >= len(reqs) {
-		log.Errorf("无效响应: 地址索引超出范围: %d [0-%d)", resp.AddrIdx, len(reqs))
+		log.Debugf("无效响应: 地址索引超出范围: %d [0-%d)", resp.AddrIdx, len(reqs))
 		return Result{}, fmt.Errorf("无效响应: 地址索引超出范围: %d [0-%d)", resp.AddrIdx, len(reqs))
 	}
 
@@ -212,15 +212,15 @@ func (ac *client) GetReachability(ctx context.Context, p peer.ID, reqs []Request
 func (ac *client) validateDialDataRequest(reqs []Request, msg *pb.Message) error {
 	idx := int(msg.GetDialDataRequest().AddrIdx)
 	if idx >= len(reqs) { // 无效的地址索引
-		log.Errorf("地址索引超出范围: %d [0-%d)", idx, len(reqs))
+		log.Debugf("地址索引超出范围: %d [0-%d)", idx, len(reqs))
 		return fmt.Errorf("地址索引超出范围: %d [0-%d)", idx, len(reqs))
 	}
 	if msg.GetDialDataRequest().NumBytes > maxHandshakeSizeBytes { // 数据请求过大
-		log.Errorf("请求的数据过大: %d", msg.GetDialDataRequest().NumBytes)
+		log.Debugf("请求的数据过大: %d", msg.GetDialDataRequest().NumBytes)
 		return fmt.Errorf("请求的数据过大: %d", msg.GetDialDataRequest().NumBytes)
 	}
 	if !reqs[idx].SendDialData { // 低优先级地址
-		log.Errorf("低优先级地址: %s 索引 %d", reqs[idx].Addr, idx)
+		log.Debugf("低优先级地址: %s 索引 %d", reqs[idx].Addr, idx)
 		return fmt.Errorf("低优先级地址: %s 索引 %d", reqs[idx].Addr, idx)
 	}
 	return nil
@@ -245,7 +245,7 @@ func (ac *client) newResult(resp *pb.DialResponse, reqs []Request, dialBackAddr 
 		if !ac.areAddrsConsistent(dialBackAddr, addr) {
 			// 服务器错误地告知我们它成功拨号的地址
 			// 要么我们没有收到回拨,要么回拨的地址与服务器告诉我们的不一致
-			log.Errorf("无效响应: 回拨地址: %s, 响应地址: %s", dialBackAddr, addr)
+			log.Debugf("无效响应: 回拨地址: %s, 响应地址: %s", dialBackAddr, addr)
 			return Result{}, fmt.Errorf("无效响应: 回拨地址: %s, 响应地址: %s", dialBackAddr, addr)
 		}
 		rch = network.ReachabilityPublic
@@ -261,7 +261,7 @@ func (ac *client) newResult(resp *pb.DialResponse, reqs []Request, dialBackAddr 
 		}
 	default:
 		// 意外的响应代码。丢弃响应并失败。
-		log.Errorf("收到地址 %s 的无效状态码: %d", addr, resp.DialStatus)
+		log.Debugf("收到地址 %s 的无效状态码: %d", addr, resp.DialStatus)
 		return Result{}, fmt.Errorf("无效响应: 地址 %s 的无效状态码: %d", addr, resp.DialStatus)
 	}
 
@@ -293,7 +293,7 @@ func sendDialData(dialData []byte, numBytes int, w pbio.Writer, msg *pb.Message)
 			ddResp.Data = ddResp.Data[:remain]
 		}
 		if err := w.WriteMsg(msg); err != nil {
-			log.Errorf("写入失败: %v", err)
+			log.Debugf("写入失败: %v", err)
 			return err
 		}
 		remain -= len(dialData)
@@ -329,7 +329,7 @@ func newDialRequest(reqs []Request, nonce uint64) pb.Message {
 func (ac *client) handleDialBack(s network.Stream) {
 	defer func() {
 		if rerr := recover(); rerr != nil {
-			log.Errorf("捕获到 panic: %s\n%s\n", rerr, debug.Stack())
+			log.Debugf("捕获到 panic: %s\n%s\n", rerr, debug.Stack())
 		}
 		s.Reset()
 	}()
@@ -341,7 +341,7 @@ func (ac *client) handleDialBack(s network.Stream) {
 	}
 
 	if err := s.Scope().ReserveMemory(dialBackMaxMsgSize, network.ReservationPriorityAlways); err != nil {
-		log.Errorf("为流 %s 预留内存失败: %w", DialBackProtocol, err)
+		log.Debugf("为流 %s 预留内存失败: %w", DialBackProtocol, err)
 		s.Reset()
 		return
 	}
@@ -353,7 +353,7 @@ func (ac *client) handleDialBack(s network.Stream) {
 	r := pbio.NewDelimitedReader(s, dialBackMaxMsgSize)
 	var msg pb.DialBack
 	if err := r.ReadMsg(&msg); err != nil {
-		log.Errorf("从 %s 读取回拨消息失败: %s", s.Conn().RemotePeer(), err)
+		log.Debugf("从 %s 读取回拨消息失败: %s", s.Conn().RemotePeer(), err)
 		s.Reset()
 		return
 	}

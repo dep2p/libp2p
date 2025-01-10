@@ -45,7 +45,7 @@ func (c *pskConn) Read(out []byte) (int, error) {
 		// 从连接中读取随机数
 		_, err := io.ReadFull(c.Conn, nonce)
 		if err != nil {
-			log.Errorf("读取随机数失败: %v", err)
+			log.Debugf("读取随机数失败: %v", err)
 			return 0, fmt.Errorf("%w: %w", errShortNonce, err)
 		}
 		// 使用随机数初始化读取流加密器
@@ -55,7 +55,7 @@ func (c *pskConn) Read(out []byte) (int, error) {
 	// 从连接中读取加密数据
 	n, err := c.Conn.Read(out)
 	if err != nil {
-		log.Errorf("读取数据失败: %v", err)
+		log.Debugf("读取数据失败: %v", err)
 		return 0, err
 	}
 	if n > 0 {
@@ -79,13 +79,13 @@ func (c *pskConn) Write(in []byte) (int, error) {
 		nonce := make([]byte, 24)
 		_, err := rand.Read(nonce)
 		if err != nil {
-			log.Errorf("生成随机数失败: %v", err)
+			log.Debugf("生成随机数失败: %v", err)
 			return 0, err
 		}
 		// 发送随机数给对端
 		_, err = c.Conn.Write(nonce)
 		if err != nil {
-			log.Errorf("发送随机数失败: %v", err)
+			log.Debugf("发送随机数失败: %v", err)
 			return 0, err
 		}
 
@@ -116,11 +116,11 @@ var _ net.Conn = (*pskConn)(nil)
 //   - error: 错误信息
 func newPSKConn(psk *[32]byte, insecure net.Conn) (net.Conn, error) {
 	if insecure == nil {
-		log.Errorf("不安全的底层连接为空")
+		log.Debugf("不安全的底层连接为空")
 		return nil, errInsecureNil
 	}
 	if psk == nil {
-		log.Errorf("预共享密钥为空")
+		log.Debugf("预共享密钥为空")
 		return nil, errPSKNil
 	}
 	return &pskConn{

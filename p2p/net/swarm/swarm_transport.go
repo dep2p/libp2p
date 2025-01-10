@@ -39,7 +39,7 @@ func (s *Swarm) TransportForDialing(a ma.Multiaddr) transport.Transport {
 	if len(s.transports.m) == 0 {
 		// 确认不是正在关闭
 		if s.transports.m != nil {
-			log.Error("未配置任何传输层")
+			log.Debugf("未配置任何传输层")
 		}
 		return nil
 	}
@@ -88,7 +88,7 @@ func (s *Swarm) TransportForListening(a ma.Multiaddr) transport.Transport {
 	if len(s.transports.m) == 0 {
 		// 确认不是正在关闭
 		if s.transports.m != nil {
-			log.Error("未配置任何传输层")
+			log.Debugf("未配置任何传输层")
 		}
 		return nil
 	}
@@ -124,7 +124,7 @@ func (s *Swarm) AddTransport(t transport.Transport) error {
 
 	// 如果协议列表为空,返回错误
 	if len(protocols) == 0 {
-		log.Errorf("无用的传输层不处理任何协议: %T", t)
+		log.Debugf("无用的传输层不处理任何协议: %T", t)
 		return fmt.Errorf("无用的传输层不处理任何协议: %T", t)
 	}
 
@@ -133,7 +133,7 @@ func (s *Swarm) AddTransport(t transport.Transport) error {
 	defer s.transports.Unlock()
 	// 如果传输层映射为空,说明已关闭
 	if s.transports.m == nil {
-		log.Errorf("swarm已关闭")
+		log.Debugf("swarm已关闭")
 		return ErrSwarmClosed
 	}
 	// 检查是否有协议已被注册
@@ -150,7 +150,7 @@ func (s *Swarm) AddTransport(t transport.Transport) error {
 	}
 	// 如果有协议已被注册,返回错误
 	if len(registered) > 0 {
-		log.Errorf("以下协议已注册传输层: %s", strings.Join(registered, ", "))
+		log.Debugf("以下协议已注册传输层: %s", strings.Join(registered, ", "))
 		return fmt.Errorf(
 			"以下协议已注册传输层: %s",
 			strings.Join(registered, ", "),

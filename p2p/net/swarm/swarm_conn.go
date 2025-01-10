@@ -255,14 +255,14 @@ func (c *Conn) Stat() network.ConnStats {
 func (c *Conn) NewStream(ctx context.Context) (network.Stream, error) {
 	if c.Stat().Limited {
 		if useLimited, _ := network.GetAllowLimitedConn(ctx); !useLimited {
-			log.Errorf("连接限制: %v", network.ErrLimitedConn)
+			log.Debugf("连接限制: %v", network.ErrLimitedConn)
 			return nil, network.ErrLimitedConn
 		}
 	}
 
 	scope, err := c.swarm.ResourceManager().OpenStream(c.RemotePeer(), network.DirOutbound)
 	if err != nil {
-		log.Errorf("打开流失败: %v", err)
+		log.Debugf("打开流失败: %v", err)
 		return nil, err
 	}
 
@@ -277,7 +277,7 @@ func (c *Conn) NewStream(ctx context.Context) (network.Stream, error) {
 		scope.Done()
 		if errors.Is(err, context.DeadlineExceeded) {
 			err = fmt.Errorf("超时: %w", err)
-			log.Errorf("超时: %v", err)
+			log.Debugf("超时: %v", err)
 		}
 		return nil, err
 	}
@@ -296,7 +296,7 @@ func (c *Conn) NewStream(ctx context.Context) (network.Stream, error) {
 func (c *Conn) openAndAddStream(ctx context.Context, scope network.StreamManagementScope) (network.Stream, error) {
 	ts, err := c.conn.OpenStream(ctx)
 	if err != nil {
-		log.Errorf("打开流失败: %v", err)
+		log.Debugf("打开流失败: %v", err)
 		return nil, err
 	}
 	return c.addStream(ts, network.DirOutbound, scope)
@@ -318,7 +318,7 @@ func (c *Conn) addStream(ts network.MuxedStream, dir network.Direction, scope ne
 	if c.streams.m == nil {
 		c.streams.Unlock()
 		ts.Reset()
-		log.Errorf("连接已关闭")
+		log.Debugf("连接已关闭")
 		return nil, ErrConnClosed
 	}
 

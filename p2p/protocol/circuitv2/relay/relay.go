@@ -113,7 +113,7 @@ func New(h host.Host, opts ...Option) (*Relay, error) {
 	for _, opt := range opts {
 		err := opt(r)
 		if err != nil {
-			log.Errorf("应用中继选项时出错: %v", err)
+			log.Debugf("应用中继选项时出错: %v", err)
 			return nil, err
 		}
 	}
@@ -770,7 +770,7 @@ func makeReservationMsg(
 	// 创建自身P2P地址组件
 	selfP2PAddr, err := ma.NewComponent("p2p", selfID.String())
 	if err != nil {
-		log.Errorf("创建p2p组件时出错: %s", err)
+		log.Debugf("创建p2p组件时出错: %s", err)
 		return rsvp
 	}
 

@@ -71,12 +71,12 @@ func (d *dialer) DialContext(ctx context.Context, network, addr string) (net.Con
 	if len(d.specific) > 0 || len(d.loopback) > 0 {
 		tcpAddr, err := net.ResolveTCPAddr(network, addr)
 		if err != nil {
-			log.Errorf("解析TCP地址失败: %v", err)
+			log.Debugf("解析TCP地址失败: %v", err)
 			return nil, err
 		}
 		ip := tcpAddr.IP
 		if !ip.IsLoopback() && !ip.IsGlobalUnicast() {
-			log.Errorf("无法拨号的IP地址: %s", ip)
+			log.Debugf("无法拨号的IP地址: %s", ip)
 			return nil, fmt.Errorf("无法拨号的IP地址: %s", ip)
 		}
 

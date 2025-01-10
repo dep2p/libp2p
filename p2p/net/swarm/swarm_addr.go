@@ -67,7 +67,7 @@ func (s *Swarm) InterfaceListenAddresses() ([]ma.Multiaddr, error) {
 			ifaceListenAddres, err = manet.ResolveUnspecifiedAddresses(listenAddres, nil)
 			if err != nil {
 				s.listeners.Unlock() // 错误时提前解锁
-				log.Errorf("解析未指定的地址失败: %v", err)
+				log.Debugf("解析未指定的地址失败: %v", err)
 				return nil, err
 			}
 		} else {

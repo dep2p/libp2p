@@ -123,7 +123,7 @@ func (d *decayer) RegisterDecayingTag(name string, interval time.Duration, decay
 
 	// 检查标签名是否已存在
 	if _, ok := d.knownTags[name]; ok {
-		log.Errorf("已存在名为 %s 的衰减标签", name)
+		log.Debugf("已存在名为 %s 的衰减标签", name)
 		return nil, fmt.Errorf("已存在名为 %s 的衰减标签", name)
 	}
 
@@ -344,7 +344,7 @@ func (t *decayingTag) Interval() time.Duration {
 //   - error: 如果增加过程中出现错误则返回错误
 func (t *decayingTag) Bump(p peer.ID, delta int) error {
 	if t.closed.Load() {
-		log.Errorf("衰减标签 %s 已关闭;不接受更多增加操作", t.name)
+		log.Debugf("衰减标签 %s 已关闭;不接受更多增加操作", t.name)
 		return fmt.Errorf("衰减标签 %s 已关闭;不接受更多增加操作", t.name)
 	}
 
@@ -354,7 +354,7 @@ func (t *decayingTag) Bump(p peer.ID, delta int) error {
 	case t.trkr.bumpTagCh <- bmp:
 		return nil
 	default:
-		log.Errorf(
+		log.Debugf(
 			"无法为peer %s 增加衰减标签 %s,delta %d;队列已满(长度=%d)",
 			p, t.name, delta, len(t.trkr.bumpTagCh))
 		return fmt.Errorf(
@@ -371,7 +371,7 @@ func (t *decayingTag) Bump(p peer.ID, delta int) error {
 //   - error: 如果移除过程中出现错误则返回错误
 func (t *decayingTag) Remove(p peer.ID) error {
 	if t.closed.Load() {
-		log.Errorf("衰减标签 %s 已关闭;不接受更多移除操作", t.name)
+		log.Debugf("衰减标签 %s 已关闭;不接受更多移除操作", t.name)
 		return fmt.Errorf("衰减标签 %s 已关闭;不接受更多移除操作", t.name)
 	}
 
@@ -381,7 +381,7 @@ func (t *decayingTag) Remove(p peer.ID) error {
 	case t.trkr.removeTagCh <- rm:
 		return nil
 	default:
-		log.Errorf(
+		log.Debugf(
 			"无法为peer %s 移除衰减标签 %s;队列已满(长度=%d)",
 			p, t.name, len(t.trkr.removeTagCh))
 		return fmt.Errorf(
@@ -403,7 +403,7 @@ func (t *decayingTag) Close() error {
 	case t.trkr.closeTagCh <- t:
 		return nil
 	default:
-		log.Errorf(
+		log.Debugf(
 			"无法关闭衰减标签 %s;队列已满(长度=%d)",
 			t.name, len(t.trkr.closeTagCh))
 		return fmt.Errorf(

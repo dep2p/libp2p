@@ -34,7 +34,7 @@ func (t *Transport) DialContext(ctx context.Context, raddr ma.Multiaddr) (manet.
 	// 从多地址解析出网络类型和地址
 	network, addr, err := manet.DialArgs(raddr)
 	if err != nil {
-		log.Errorf("解析多地址失败: %v", err)
+		log.Debugf("解析多地址失败: %v", err)
 		return nil, err
 	}
 
@@ -46,14 +46,14 @@ func (t *Transport) DialContext(ctx context.Context, raddr ma.Multiaddr) (manet.
 	case "tcp6":
 		d = t.v6.getDialer(network)
 	default:
-		log.Errorf("不支持的网络类型: %s", network)
+		log.Debugf("不支持的网络类型: %s", network)
 		return nil, ErrWrongProto
 	}
 
 	// 使用拨号器建立连接
 	conn, err := d.DialContext(ctx, network, addr)
 	if err != nil {
-		log.Errorf("拨号失败: %v", err)
+		log.Debugf("拨号失败: %v", err)
 		return nil, err
 	}
 
@@ -61,7 +61,7 @@ func (t *Transport) DialContext(ctx context.Context, raddr ma.Multiaddr) (manet.
 	maconn, err := manet.WrapNetConn(conn)
 	if err != nil {
 		conn.Close()
-		log.Errorf("包装网络连接失败: %v", err)
+		log.Debugf("包装网络连接失败: %v", err)
 		return nil, err
 	}
 	return maconn, nil

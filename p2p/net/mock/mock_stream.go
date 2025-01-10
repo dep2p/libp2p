@@ -107,7 +107,7 @@ func (s *stream) Write(p []byte) (n int, err error) {
 
 	select {
 	case <-s.closed: // 如果流已关闭则退出
-		log.Errorf("流已关闭")
+		log.Debugf("流已关闭")
 		return 0, s.writeErr
 	case s.toDeliver <- &transportObject{msg: cpy, arrivalTime: t}:
 	}
@@ -160,7 +160,7 @@ func (s *stream) CloseWrite() error {
 	}
 	<-s.closed
 	if s.writeErr != ErrClosed {
-		log.Errorf("写入错误: %v", s.writeErr)
+		log.Debugf("写入错误: %v", s.writeErr)
 		return s.writeErr
 	}
 	return nil
@@ -278,7 +278,7 @@ func (s *stream) transport() {
 		if buf.Len() > 0 {
 			_, err := s.write.Write(buf.Bytes())
 			if err != nil {
-				log.Errorf("写入错误: %v", err)
+				log.Debugf("写入错误: %v", err)
 				return err
 			}
 			buf.Reset()

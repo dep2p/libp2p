@@ -119,7 +119,7 @@ func New(host host.Host, dialerHost host.Host, opts ...AutoNATOption) (*AutoNAT,
 	s := defaultSettings()
 	for _, o := range opts {
 		if err := o(s); err != nil {
-			log.Errorf("应用选项失败: %v", err)
+			log.Debugf("应用选项失败: %v", err)
 			return nil, err
 		}
 	}
@@ -171,7 +171,7 @@ func (an *AutoNAT) Start() error {
 		new(event.EvtPeerIdentificationCompleted),
 	})
 	if err != nil {
-		log.Errorf("事件订阅失败: %v", err)
+		log.Debugf("事件订阅失败: %v", err)
 		return err
 	}
 	an.cli.Start()
@@ -203,7 +203,7 @@ func (an *AutoNAT) GetReachability(ctx context.Context, reqs []Request) (Result,
 	if !an.allowPrivateAddrs {
 		for _, r := range reqs {
 			if !manet.IsPublicAddr(r.Addr) {
-				log.Errorf("私有地址无法通过 autonatv2 验证: %s", r.Addr)
+				log.Debugf("私有地址无法通过 autonatv2 验证: %s", r.Addr)
 				return Result{}, fmt.Errorf("私有地址无法通过 autonatv2 验证: %s", r.Addr)
 			}
 		}
@@ -217,7 +217,7 @@ func (an *AutoNAT) GetReachability(ctx context.Context, reqs []Request) (Result,
 
 	res, err := an.cli.GetReachability(ctx, p, reqs)
 	if err != nil {
-		log.Errorf("与 %s 的可达性检查失败, 错误: %s", p, err)
+		log.Debugf("与 %s 的可达性检查失败, 错误: %s", p, err)
 		return Result{}, fmt.Errorf("与 %s 的可达性检查失败: %w", p, err)
 	}
 	log.Debugf("与 %s 的可达性检查成功", p)

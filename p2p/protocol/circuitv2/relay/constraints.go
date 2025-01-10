@@ -83,21 +83,21 @@ func (c *constraints) Reserve(p peer.ID, a ma.Multiaddr, expiry time.Time) error
 
 	// 检查总预约数限制
 	if len(c.total) >= c.rc.MaxReservations {
-		log.Errorf("总预约数超过限制: %d", len(c.total))
+		log.Debugf("总预约数超过限制: %d", len(c.total))
 		return errTooManyReservations
 	}
 
 	// 获取IP地址
 	ip, err := manet.ToIP(a)
 	if err != nil {
-		log.Errorf("对等点没有关联的IP地址: %v", err)
+		log.Debugf("对等点没有关联的IP地址: %v", err)
 		return err
 	}
 
 	// 检查IP预约数限制
 	ipReservations := c.ips[ip.String()]
 	if len(ipReservations) >= c.rc.MaxReservationsPerIP {
-		log.Errorf("IP地址预约数超过限制: %d", len(ipReservations))
+		log.Debugf("IP地址预约数超过限制: %d", len(ipReservations))
 		return errTooManyReservationsForIP
 	}
 
@@ -109,7 +109,7 @@ func (c *constraints) Reserve(p peer.ID, a ma.Multiaddr, expiry time.Time) error
 		if asn != 0 {
 			asnReservations = c.asns[asn]
 			if len(asnReservations) >= c.rc.MaxReservationsPerASN {
-				log.Errorf("ASN预约数超过限制: %d", len(asnReservations))
+				log.Debugf("ASN预约数超过限制: %d", len(asnReservations))
 				return errTooManyReservationsForASN
 			}
 		}

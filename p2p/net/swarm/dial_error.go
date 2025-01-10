@@ -97,7 +97,7 @@ type TransportError struct {
 // 返回值:
 //   - string 格式化后的错误信息
 func (e *TransportError) Error() string {
-	log.Errorf("拨号 %s 失败: %s", e.Address, e.Cause)
+	log.Debugf("拨号 %s 失败: %s", e.Address, e.Cause)
 	return fmt.Sprintf("拨号 %s 失败: %s", e.Address, e.Cause)
 }
 

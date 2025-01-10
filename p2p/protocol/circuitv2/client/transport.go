@@ -95,14 +95,14 @@ func (c *Client) Dial(ctx context.Context, a ma.Multiaddr, p peer.ID) (transport
 	connScope, err := c.host.Network().ResourceManager().OpenConnection(network.DirOutbound, false, a)
 
 	if err != nil {
-		log.Errorf("打开连接资源时出错: %w", err)
+		log.Debugf("打开连接资源时出错: %w", err)
 		return nil, err
 	}
 	// 拨号并升级连接
 	conn, err := c.dialAndUpgrade(ctx, a, p, connScope)
 	if err != nil {
 		connScope.Done()
-		log.Errorf("拨号并升级连接时出错: %w", err)
+		log.Debugf("拨号并升级连接时出错: %w", err)
 		return nil, err
 	}
 	return conn, nil
@@ -120,18 +120,18 @@ func (c *Client) Dial(ctx context.Context, a ma.Multiaddr, p peer.ID) (transport
 //   - error 如果出现错误则返回错误信息
 func (c *Client) dialAndUpgrade(ctx context.Context, a ma.Multiaddr, p peer.ID, connScope network.ConnManagementScope) (transport.CapableConn, error) {
 	if err := connScope.SetPeer(p); err != nil {
-		log.Errorf("设置对等节点ID失败: %w", err)
+		log.Debugf("设置对等节点ID失败: %w", err)
 		return nil, err
 	}
 	conn, err := c.dial(ctx, a, p)
 	if err != nil {
-		log.Errorf("拨号失败: %w", err)
+		log.Debugf("拨号失败: %w", err)
 		return nil, err
 	}
 	conn.tagHop()
 	cc, err := c.upgrader.Upgrade(ctx, c, conn, network.DirOutbound, p, connScope)
 	if err != nil {
-		log.Errorf("升级连接失败: %w", err)
+		log.Debugf("升级连接失败: %w", err)
 		return nil, err
 	}
 	return capableConn{cc.(capableConnWithStat)}, nil
@@ -161,7 +161,7 @@ func (c *Client) CanDial(addr ma.Multiaddr) bool {
 func (c *Client) Listen(addr ma.Multiaddr) (transport.Listener, error) {
 	// TODO: 如果指定了中继，则连接到中继并保留槽位
 	if _, err := addr.ValueForProtocol(ma.P_CIRCUIT); err != nil {
-		log.Errorf("检查中继地址失败: %v", err)
+		log.Debugf("检查中继地址失败: %v", err)
 		return nil, err
 	}
 

@@ -96,14 +96,14 @@ func (hp *holePuncher) beginDirectConnect(p peer.ID) error {
 	hp.closeMx.RLock()
 	defer hp.closeMx.RUnlock()
 	if hp.closed {
-		log.Errorf("打洞器已关闭")
+		log.Debugf("打洞器已关闭")
 		return ErrClosed
 	}
 
 	hp.activeMx.Lock()
 	defer hp.activeMx.Unlock()
 	if _, ok := hp.active[p]; ok {
-		log.Errorf("打洞尝试正在进行中: %s", p)
+		log.Debugf("打洞尝试正在进行中: %s", p)
 		return ErrHolePunchActive
 	}
 
@@ -120,7 +120,7 @@ func (hp *holePuncher) beginDirectConnect(p peer.ID) error {
 //   - error 错误信息
 func (hp *holePuncher) DirectConnect(p peer.ID) error {
 	if err := hp.beginDirectConnect(p); err != nil {
-		log.Errorf("开始直接连接失败: %v", err)
+		log.Debugf("开始直接连接失败: %v", err)
 		return err
 	}
 
@@ -225,14 +225,14 @@ func (hp *holePuncher) initiateHolePunch(rp peer.ID) ([]ma.Multiaddr, []ma.Multi
 
 	str, err := hp.host.NewStream(sCtx, rp, Protocol)
 	if err != nil {
-		log.Errorf("打开打洞流失败: %v", err)
+		log.Debugf("打开打洞流失败: %v", err)
 		return nil, nil, 0, fmt.Errorf("打开打洞流失败: %w", err)
 	}
 	defer str.Close()
 
 	addr, obsAddr, rtt, err := hp.initiateHolePunchImpl(str)
 	if err != nil {
-		log.Errorf("打洞初始化失败: %v", err)
+		log.Debugf("打洞初始化失败: %v", err)
 		str.Reset()
 		return addr, obsAddr, rtt, err
 	}
@@ -271,7 +271,7 @@ func (hp *holePuncher) initiateHolePunchImpl(str network.Stream) ([]ma.Multiaddr
 		obsAddrs = hp.filter.FilterLocal(str.Conn().RemotePeer(), obsAddrs)
 	}
 	if len(obsAddrs) == 0 {
-		log.Errorf("因为没有公共地址而中止打洞初始化")
+		log.Debugf("因为没有公共地址而中止打洞初始化")
 		return nil, nil, 0, errors.New("因为没有公共地址而中止打洞初始化")
 	}
 
@@ -280,7 +280,7 @@ func (hp *holePuncher) initiateHolePunchImpl(str network.Stream) ([]ma.Multiaddr
 		Type:     pb.HolePunch_CONNECT.Enum(),
 		ObsAddrs: addrsToBytes(obsAddrs),
 	}); err != nil {
-		log.Errorf("发送 CONNECT 消息失败: %v", err)
+		log.Debugf("发送 CONNECT 消息失败: %v", err)
 		str.Reset()
 		return nil, nil, 0, err
 	}
@@ -288,12 +288,12 @@ func (hp *holePuncher) initiateHolePunchImpl(str network.Stream) ([]ma.Multiaddr
 	// 等待远程节点的 CONNECT 消息
 	var msg pb.HolePunch
 	if err := rd.ReadMsg(&msg); err != nil {
-		log.Errorf("读取远程节点的 CONNECT 消息失败: %v", err)
+		log.Debugf("读取远程节点的 CONNECT 消息失败: %v", err)
 		return nil, nil, 0, err
 	}
 	rtt := time.Since(start)
 	if t := msg.GetType(); t != pb.HolePunch_CONNECT {
-		log.Errorf("期望 CONNECT 消息,但收到 %s", t)
+		log.Debugf("期望 CONNECT 消息,但收到 %s", t)
 		return nil, nil, 0, fmt.Errorf("期望 CONNECT 消息,但收到 %s", t)
 	}
 
@@ -303,12 +303,12 @@ func (hp *holePuncher) initiateHolePunchImpl(str network.Stream) ([]ma.Multiaddr
 	}
 
 	if len(addrs) == 0 {
-		log.Errorf("在 CONNECT 中没有收到任何公共地址")
+		log.Debugf("在 CONNECT 中没有收到任何公共地址")
 		return nil, nil, 0, errors.New("在 CONNECT 中没有收到任何公共地址")
 	}
 
 	if err := w.WriteMsg(&pb.HolePunch{Type: pb.HolePunch_SYNC.Enum()}); err != nil {
-		log.Errorf("发送打洞 SYNC 消息失败: %v", err)
+		log.Debugf("发送打洞 SYNC 消息失败: %v", err)
 		return nil, nil, 0, err
 	}
 	return addrs, obsAddrs, rtt, nil

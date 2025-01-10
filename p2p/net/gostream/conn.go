@@ -79,7 +79,7 @@ func Dial(ctx context.Context, h host.Host, pid peer.ID, tag protocol.ID) (net.C
 	// 创建新的流
 	s, err := h.NewStream(ctx, pid, tag)
 	if err != nil {
-		log.Errorf("创建流失败: %v", err)
+		log.Debugf("创建流失败: %v", err)
 		return nil, err
 	}
 	// 返回封装了流的连接

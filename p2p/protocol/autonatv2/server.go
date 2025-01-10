@@ -332,7 +332,7 @@ func getDialData(w pbio.Writer, s network.Stream, msg *pb.Message, addrIdx int) 
 		},
 	}
 	if err := w.WriteMsg(msg); err != nil {
-		log.Errorf("拨号数据写入失败: %v", err)
+		log.Debugf("拨号数据写入失败: %v", err)
 		return err
 	}
 	// 到目前为止在此流上使用的 pbio.Reader 是带缓冲的。但此时流上没有未读的内容。
@@ -353,7 +353,7 @@ func readDialData(numBytes int, r io.Reader) error {
 	for remain := numBytes; remain > 0; {
 		msg, err := mr.ReadMsg()
 		if err != nil {
-			log.Errorf("拨号数据读取失败: %v", err)
+			log.Debugf("拨号数据读取失败: %v", err)
 			return err
 		}
 		// protobuf 格式为:
@@ -372,7 +372,7 @@ func readDialData(numBytes int, r io.Reader) error {
 		}
 		// 检查对等点是否发送太少的数据导致我们只是做了大量计算
 		if bytesLen < 100 && remain > 0 {
-			log.Errorf("拨号数据消息太小: %d", bytesLen)
+			log.Debugf("拨号数据消息太小: %d", bytesLen)
 			return fmt.Errorf("拨号数据消息太小: %d", bytesLen)
 		}
 	}
@@ -401,13 +401,13 @@ func (as *server) dialBack(ctx context.Context, p peer.ID, addr ma.Multiaddr, no
 
 	err := as.dialerHost.Connect(ctx, peer.AddrInfo{ID: p})
 	if err != nil {
-		log.Errorf("拨号失败: %v", err)
+		log.Debugf("拨号失败: %v", err)
 		return pb.DialStatus_E_DIAL_ERROR
 	}
 
 	s, err := as.dialerHost.NewStream(ctx, p, DialBackProtocol)
 	if err != nil {
-		log.Errorf("创建回拨流失败: %v", err)
+		log.Debugf("创建回拨流失败: %v", err)
 		return pb.DialStatus_E_DIAL_BACK_ERROR
 	}
 
@@ -417,7 +417,7 @@ func (as *server) dialBack(ctx context.Context, p peer.ID, addr ma.Multiaddr, no
 	w := pbio.NewDelimitedWriter(s)
 	if err := w.WriteMsg(&pb.DialBack{Nonce: nonce}); err != nil {
 		s.Reset()
-		log.Errorf("写入回拨消息失败: %v", err)
+		log.Debugf("写入回拨消息失败: %v", err)
 		return pb.DialStatus_E_DIAL_BACK_ERROR
 	}
 
@@ -586,7 +586,7 @@ func (r *rateLimiter) Close() {
 func amplificationAttackPrevention(s network.Stream, dialAddr ma.Multiaddr) bool {
 	connIP, err := manet.ToIP(s.Conn().RemoteMultiaddr())
 	if err != nil {
-		log.Errorf("获取连接 IP 失败: %v", err)
+		log.Debugf("获取连接 IP 失败: %v", err)
 		return true
 	}
 	dialIP, _ := manet.ToIP(s.Conn().LocalMultiaddr()) // 必须是 IP 多地址

@@ -279,7 +279,7 @@ func NewIDService(h host.Host, opts ...Option) (*idService, error) {
 		observedAddrs, err := NewObservedAddrManager(h.Network().ListenAddresses,
 			h.Addrs, h.Network().InterfaceListenAddresses, normalize)
 		if err != nil {
-			log.Errorf("创建观察地址管理器失败: %s", err)
+			log.Debugf("创建观察地址管理器失败: %s", err)
 			return nil, err
 		}
 		natEmitter, err := newNATEmitter(h, observedAddrs, time.Minute)
@@ -293,15 +293,15 @@ func NewIDService(h host.Host, opts ...Option) (*idService, error) {
 
 	s.emitters.evtPeerProtocolsUpdated, err = h.EventBus().Emitter(&event.EvtPeerProtocolsUpdated{})
 	if err != nil {
-		log.Errorf("identify 服务不发出对等协议更新; err: %s", err)
+		log.Debugf("identify 服务不发出对等协议更新; err: %s", err)
 	}
 	s.emitters.evtPeerIdentificationCompleted, err = h.EventBus().Emitter(&event.EvtPeerIdentificationCompleted{})
 	if err != nil {
-		log.Errorf("identify 服务不发出识别完成事件; err: %s", err)
+		log.Debugf("identify 服务不发出识别完成事件; err: %s", err)
 	}
 	s.emitters.evtPeerIdentificationFailed, err = h.EventBus().Emitter(&event.EvtPeerIdentificationFailed{})
 	if err != nil {
-		log.Errorf("identify 服务不发出识别失败事件; err: %s", err)
+		log.Debugf("identify 服务不发出识别失败事件; err: %s", err)
 	}
 	return s, nil
 }
@@ -545,7 +545,7 @@ func newStreamAndNegotiate(ctx context.Context, c network.Conn, proto protocol.I
 	// 打开新流
 	s, err := c.NewStream(network.WithAllowLimitedConn(ctx, "identify"))
 	if err != nil {
-		log.Errorf("打开 identify 流错误", "peer", c.RemotePeer(), "error", err)
+		log.Debugf("打开 identify 流错误", "peer", c.RemotePeer(), "error", err)
 		return nil, err
 	}
 
@@ -554,13 +554,13 @@ func newStreamAndNegotiate(ctx context.Context, c network.Conn, proto protocol.I
 
 	// 设置协议
 	if err := s.SetProtocol(proto); err != nil {
-		log.Errorf("为流设置 identify 协议时出错: %s", err)
+		log.Debugf("为流设置 identify 协议时出错: %s", err)
 		_ = s.Reset()
 	}
 
 	// 协商协议
 	if err := msmux.SelectProtoOrFail(proto, s); err != nil {
-		log.Errorf("与对等节点协商 identify 协议失败", "peer", c.RemotePeer(), "error", err)
+		log.Debugf("与对等节点协商 identify 协议失败", "peer", c.RemotePeer(), "error", err)
 		_ = s.Reset()
 		return nil, err
 	}
@@ -581,7 +581,7 @@ func (ids *idService) identifyConn(c network.Conn) error {
 	// 打开并协商流
 	s, err := newStreamAndNegotiate(network.WithAllowLimitedConn(ctx, "identify"), c, ID)
 	if err != nil {
-		log.Errorf("打开 identify 流错误", "peer", c.RemotePeer(), "error", err)
+		log.Debugf("打开 identify 流错误", "peer", c.RemotePeer(), "error", err)
 		return err
 	}
 
@@ -632,7 +632,7 @@ func (ids *idService) sendIdentifyResp(s network.Stream, isPush bool) error {
 
 	log.Debugf("%s 向 %s %s 发送消息", ID, s.Conn().RemotePeer(), s.Conn().RemoteMultiaddr())
 	if err := ids.writeChunkedIdentifyMsg(s, mes); err != nil {
-		log.Errorf("写入 identify 消息失败: %v", err)
+		log.Debugf("写入 identify 消息失败: %v", err)
 		return err
 	}
 
@@ -666,13 +666,13 @@ func (ids *idService) sendIdentifyResp(s network.Stream, isPush bool) error {
 func (ids *idService) handleIdentifyResponse(s network.Stream, isPush bool) error {
 	// 设置流的服务和内存限制
 	if err := s.Scope().SetService(ServiceName); err != nil {
-		log.Errorf("将流附加到 identify 服务时出错: %s", err)
+		log.Debugf("将流附加到 identify 服务时出错: %s", err)
 		s.Reset()
 		return err
 	}
 
 	if err := s.Scope().ReserveMemory(signedIDSize, network.ReservationPriorityAlways); err != nil {
-		log.Errorf("为 identify 流预留内存时出错: %s", err)
+		log.Debugf("为 identify 流预留内存时出错: %s", err)
 		s.Reset()
 		return err
 	}
@@ -685,7 +685,7 @@ func (ids *idService) handleIdentifyResponse(s network.Stream, isPush bool) erro
 	mes := &pb.Identify{}
 
 	if err := readAllIDMessages(r, mes); err != nil {
-		log.Errorf("读取 identify 消息时出错: %v", err)
+		log.Debugf("读取 identify 消息时出错: %v", err)
 		s.Reset()
 		return err
 	}
@@ -743,7 +743,7 @@ func readAllIDMessages(r pbio.Reader, finalMsg proto.Message) error {
 		case nil:
 			proto.Merge(finalMsg, mes)
 		default:
-			log.Errorf("读取 identify 消息时出错: %v", err)
+			log.Debugf("读取 identify 消息时出错: %v", err)
 			return err
 		}
 	}
@@ -819,7 +819,7 @@ func (ids *idService) writeChunkedIdentifyMsg(s network.Stream, mes *pb.Identify
 	sr := mes.SignedPeerRecord
 	mes.SignedPeerRecord = nil
 	if err := writer.WriteMsg(mes); err != nil {
-		log.Errorf("写入 identify 消息失败: %v", err)
+		log.Debugf("写入 identify 消息失败: %v", err)
 		return err
 	}
 	// 然后只写签名记录
@@ -896,14 +896,14 @@ func (ids *idService) createBaseIdentifyResponse(conn network.Conn, snapshot *id
 func (ids *idService) getSignedRecord(snapshot *identifySnapshot) []byte {
 	// 如果禁用签名记录或记录为空则返回 nil
 	if ids.disableSignedPeerRecord || snapshot.record == nil {
-		log.Errorf("禁用签名记录或记录为空")
+		log.Debugf("禁用签名记录或记录为空")
 		return nil
 	}
 
 	// 序列化记录
 	recBytes, err := snapshot.record.Marshal()
 	if err != nil {
-		log.Errorw("序列化签名记录失败", "err", err)
+		log.Debugf("序列化签名记录失败", "err", err)
 		return nil
 	}
 
@@ -1093,7 +1093,7 @@ func (ids *idService) consumeMessage(mes *pb.Identify, c network.Conn, isPush bo
 //   - error 处理过程中的错误
 func (ids *idService) consumeSignedPeerRecord(p peer.ID, signedPeerRecord *record.Envelope) ([]ma.Multiaddr, error) {
 	if signedPeerRecord.PublicKey == nil {
-		log.Errorf("缺少公钥")
+		log.Debugf("缺少公钥")
 		return nil, errors.New("缺少公钥")
 	}
 	id, err := peer.IDFromPublicKey(signedPeerRecord.PublicKey)
@@ -1102,21 +1102,21 @@ func (ids *idService) consumeSignedPeerRecord(p peer.ID, signedPeerRecord *recor
 		return nil, err
 	}
 	if id != p {
-		log.Errorf("收到的签名对等节点记录信封的对等节点 ID 不符。期望 %s, 得到 %s", p, id)
+		log.Debugf("收到的签名对等节点记录信封的对等节点 ID 不符。期望 %s, 得到 %s", p, id)
 		return nil, fmt.Errorf("收到的签名对等节点记录信封的对等节点 ID 不符。期望 %s, 得到 %s", p, id)
 	}
 	r, err := signedPeerRecord.Record()
 	if err != nil {
-		log.Errorf("获取记录失败: %w", err)
+		log.Debugf("获取记录失败: %w", err)
 		return nil, fmt.Errorf("获取记录失败: %w", err)
 	}
 	rec, ok := r.(*peer.PeerRecord)
 	if !ok {
-		log.Errorf("不是对等节点记录")
+		log.Debugf("不是对等节点记录")
 		return nil, errors.New("不是对等节点记录")
 	}
 	if rec.PeerID != p {
-		log.Errorf("收到的签名对等节点记录的对等节点 ID 不符。期望 %s, 得到 %s", p, rec.PeerID)
+		log.Debugf("收到的签名对等节点记录的对等节点 ID 不符。期望 %s, 得到 %s", p, rec.PeerID)
 		return nil, fmt.Errorf("收到的签名对等节点记录的对等节点 ID 不符。期望 %s, 得到 %s", p, rec.PeerID)
 	}
 	// 不要将签名的对等节点记录放入 peerstore
@@ -1141,14 +1141,14 @@ func (ids *idService) consumeReceivedPubKey(c network.Conn, kb []byte) {
 	// 解析公钥
 	newKey, err := crypto.UnmarshalPublicKey(kb)
 	if err != nil {
-		log.Errorf("%s 无法解析远程对等节点的密钥: %s, %s", lp, rp, err)
+		log.Debugf("%s 无法解析远程对等节点的密钥: %s, %s", lp, rp, err)
 		return
 	}
 
 	// 验证密钥是否匹配对等节点 ID
 	np, err := peer.IDFromPublicKey(newKey)
 	if err != nil {
-		log.Errorf("%s 无法从远程对等节点的密钥获取对等节点 ID: %s, %s", lp, rp, err)
+		log.Debugf("%s 无法从远程对等节点的密钥获取对等节点 ID: %s, %s", lp, rp, err)
 		return
 	}
 
@@ -1175,7 +1175,7 @@ func (ids *idService) consumeReceivedPubKey(c network.Conn, kb []byte) {
 		// 没有密钥?没有认证传输。设置这个密钥
 		err := ids.Host.Peerstore().AddPubKey(rp, newKey)
 		if err != nil {
-			log.Errorf("%s 无法将 %s 的密钥添加到 peerstore: %s", lp, rp, err)
+			log.Debugf("%s 无法将 %s 的密钥添加到 peerstore: %s", lp, rp, err)
 		}
 		return
 	}

@@ -131,7 +131,7 @@ func (ds *dialSync) Dial(ctx context.Context, p peer.ID) (*Conn, error) {
 	// 获取活跃拨号状态
 	ad, err := ds.getActiveDial(p)
 	if err != nil {
-		log.Errorf("获取活跃拨号状态失败: %v", err)
+		log.Debugf("获取活跃拨号状态失败: %v", err)
 		return nil, err
 	}
 

@@ -72,7 +72,7 @@ func WithGracePeriod(p time.Duration) Option {
 	return func(cfg *config) error {
 		// 检查宽限期是否为负值
 		if p < 0 {
-			log.Errorf("宽限期必须是非负值")
+			log.Debugf("宽限期必须是非负值")
 			return errors.New("宽限期必须是非负值")
 		}
 		// 设置宽限期
@@ -92,7 +92,7 @@ func WithSilencePeriod(p time.Duration) Option {
 	return func(cfg *config) error {
 		// 检查静默期是否小于等于0
 		if p <= 0 {
-			log.Errorf("静默期必须是非零值")
+			log.Debugf("静默期必须是非零值")
 			return errors.New("静默期必须是非零值")
 		}
 		// 设置静默期

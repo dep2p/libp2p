@@ -183,7 +183,7 @@ func (l *listener) Accept() (transport.CapableConn, error) {
 		}
 	}
 	if strings.Contains(l.err.Error(), "使用已关闭的网络连接") {
-		log.Errorf("监听器已关闭")
+		log.Debugf("监听器已关闭")
 		return nil, transport.ErrListenerClosed
 	}
 	return nil, l.err

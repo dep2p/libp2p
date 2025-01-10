@@ -76,7 +76,7 @@ func Reserve(ctx context.Context, h host.Host, ai peer.AddrInfo) (*Reservation, 
 	// 打开到中继节点的流
 	s, err := h.NewStream(ctx, ai.ID, proto.ProtoIDv2Hop)
 	if err != nil {
-		log.Errorf("打开流失败: %v", err)
+		log.Debugf("打开流失败: %v", err)
 		return nil, ReservationError{Status: pbv2.Status_CONNECTION_FAILED, Reason: "打开流失败", err: err}
 	}
 	defer s.Close()
@@ -95,7 +95,7 @@ func Reserve(ctx context.Context, h host.Host, ai peer.AddrInfo) (*Reservation, 
 
 	// 发送预留请求
 	if err := wr.WriteMsg(&msg); err != nil {
-		log.Errorf("写入预留消息失败: %v", err)
+		log.Debugf("写入预留消息失败: %v", err)
 		s.Reset()
 		return nil, ReservationError{Status: pbv2.Status_CONNECTION_FAILED, Reason: "写入预留消息时出错", err: err}
 	}
@@ -104,27 +104,27 @@ func Reserve(ctx context.Context, h host.Host, ai peer.AddrInfo) (*Reservation, 
 
 	// 读取响应
 	if err := rd.ReadMsg(&msg); err != nil {
-		log.Errorf("读取预留响应消息失败: %v", err)
+		log.Debugf("读取预留响应消息失败: %v", err)
 		s.Reset()
 		return nil, ReservationError{Status: pbv2.Status_CONNECTION_FAILED, Reason: "读取预留响应消息时出错: %w", err: err}
 	}
 
 	// 验证响应类型
 	if msg.GetType() != pbv2.HopMessage_STATUS {
-		log.Errorf("意外的中继响应:不是状态消息 (%d)", msg.GetType())
+		log.Debugf("意外的中继响应:不是状态消息 (%d)", msg.GetType())
 		return nil, ReservationError{Status: pbv2.Status_MALFORMED_MESSAGE, Reason: fmt.Sprintf("意外的中继响应:不是状态消息 (%d)", msg.GetType())}
 	}
 
 	// 检查状态
 	if status := msg.GetStatus(); status != pbv2.Status_OK {
-		log.Errorf("预留失败: %s (%d)", pbv2.Status_name[int32(status)], status)
+		log.Debugf("预留失败: %s (%d)", pbv2.Status_name[int32(status)], status)
 		return nil, ReservationError{Status: msg.GetStatus(), Reason: "预留失败"}
 	}
 
 	// 获取预留信息
 	rsvp := msg.GetReservation()
 	if rsvp == nil {
-		log.Errorf("缺少预留信息")
+		log.Debugf("缺少预留信息")
 		return nil, ReservationError{Status: pbv2.Status_MALFORMED_MESSAGE, Reason: "缺少预留信息"}
 	}
 
@@ -132,7 +132,7 @@ func Reserve(ctx context.Context, h host.Host, ai peer.AddrInfo) (*Reservation, 
 	result := &Reservation{}
 	result.Expiration = time.Unix(int64(rsvp.GetExpire()), 0)
 	if result.Expiration.Before(time.Now()) {
-		log.Errorf("收到的预留过期时间在过去: %s", result.Expiration)
+		log.Debugf("收到的预留过期时间在过去: %s", result.Expiration)
 		return nil, ReservationError{
 			Status: pbv2.Status_MALFORMED_MESSAGE,
 			Reason: fmt.Sprintf("收到的预留过期时间在过去: %s", result.Expiration),
@@ -145,7 +145,7 @@ func Reserve(ctx context.Context, h host.Host, ai peer.AddrInfo) (*Reservation, 
 	for _, ab := range addrs {
 		a, err := ma.NewMultiaddrBytes(ab)
 		if err != nil {
-			log.Errorf("忽略无法解析的中继地址: %s", err)
+			log.Debugf("忽略无法解析的中继地址: %s", err)
 			continue
 		}
 		result.Addrs = append(result.Addrs, a)
@@ -156,7 +156,7 @@ func Reserve(ctx context.Context, h host.Host, ai peer.AddrInfo) (*Reservation, 
 	if voucherBytes != nil {
 		env, rec, err := record.ConsumeEnvelope(voucherBytes, proto.RecordDomain)
 		if err != nil {
-			log.Errorf("解析凭证信封时出错: %s", err)
+			log.Debugf("解析凭证信封时出错: %s", err)
 			return nil, ReservationError{
 				Status: pbv2.Status_MALFORMED_MESSAGE,
 				Reason: fmt.Sprintf("解析凭证信封时出错: %s", err),
@@ -166,7 +166,7 @@ func Reserve(ctx context.Context, h host.Host, ai peer.AddrInfo) (*Reservation, 
 
 		voucher, ok := rec.(*proto.ReservationVoucher)
 		if !ok {
-			log.Errorf("意外的凭证记录类型: %+T", rec)
+			log.Debugf("意外的凭证记录类型: %+T", rec)
 			return nil, ReservationError{
 				Status: pbv2.Status_MALFORMED_MESSAGE,
 				Reason: fmt.Sprintf("意外的凭证记录类型: %+T", rec),
@@ -174,7 +174,7 @@ func Reserve(ctx context.Context, h host.Host, ai peer.AddrInfo) (*Reservation, 
 		}
 		signerPeerID, err := peer.IDFromPublicKey(env.PublicKey)
 		if err != nil {
-			log.Errorf("无效的凭证签名公钥: %s", err)
+			log.Debugf("无效的凭证签名公钥: %s", err)
 			return nil, ReservationError{
 				Status: pbv2.Status_MALFORMED_MESSAGE,
 				Reason: fmt.Sprintf("无效的凭证签名公钥: %s", err),
@@ -182,14 +182,14 @@ func Reserve(ctx context.Context, h host.Host, ai peer.AddrInfo) (*Reservation, 
 			}
 		}
 		if signerPeerID != voucher.Relay {
-			log.Errorf("无效的凭证中继ID: 期望 %s, 得到 %s", signerPeerID, voucher.Relay)
+			log.Debugf("无效的凭证中继ID: 期望 %s, 得到 %s", signerPeerID, voucher.Relay)
 			return nil, ReservationError{
 				Status: pbv2.Status_MALFORMED_MESSAGE,
 				Reason: fmt.Sprintf("无效的凭证中继ID: 期望 %s, 得到 %s", signerPeerID, voucher.Relay),
 			}
 		}
 		if h.ID() != voucher.Peer {
-			log.Errorf("无效的凭证节点ID: 期望 %s, 得到 %s", h.ID(), voucher.Peer)
+			log.Debugf("无效的凭证节点ID: 期望 %s, 得到 %s", h.ID(), voucher.Peer)
 			return nil, ReservationError{
 				Status: pbv2.Status_MALFORMED_MESSAGE,
 				Reason: fmt.Sprintf("无效的凭证节点ID: 期望 %s, 得到 %s", h.ID(), voucher.Peer),

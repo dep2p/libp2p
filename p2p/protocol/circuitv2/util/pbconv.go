@@ -19,14 +19,14 @@ import (
 func PeerToPeerInfoV2(p *pbv2.Peer) (peer.AddrInfo, error) {
 	// 检查输入参数是否为空
 	if p == nil {
-		log.Errorf("peer 对象为空")
+		log.Debugf("peer 对象为空")
 		return peer.AddrInfo{}, errors.New("peer 对象为空")
 	}
 
 	// 从字节数组解析出 peer ID
 	id, err := peer.IDFromBytes(p.Id)
 	if err != nil {
-		log.Errorf("从字节数组解析出 peer ID 失败: %v", err)
+		log.Debugf("从字节数组解析出 peer ID 失败: %v", err)
 		return peer.AddrInfo{}, err
 	}
 

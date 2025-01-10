@@ -21,7 +21,7 @@ var log = logging.Logger("net-pnet")
 func NewProtectedConn(psk ipnet.PSK, conn net.Conn) (net.Conn, error) {
 	// 检查 PSK 长度是否为 32 字节
 	if len(psk) != 32 {
-		log.Errorf("预期 PSK 长度为 32 字节")
+		log.Debugf("预期 PSK 长度为 32 字节")
 		return nil, errors.New("预期 PSK 长度为 32 字节")
 	}
 
