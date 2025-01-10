@@ -76,7 +76,7 @@ type Option func(*config) error
 func WithStaticRelays(static []peer.AddrInfo) Option {
 	return func(c *config) error {
 		if c.peerSource != nil {
-			log.Errorf("已经设置了节点源")
+			log.Debugf("已经设置了节点源")
 			return errAlreadyHavePeerSource
 		}
 
@@ -109,7 +109,7 @@ func WithStaticRelays(static []peer.AddrInfo) Option {
 func WithPeerSource(f PeerSource) Option {
 	return func(c *config) error {
 		if c.peerSource != nil {
-			log.Errorf("已经设置了节点源")
+			log.Debugf("已经设置了节点源")
 			return errAlreadyHavePeerSource
 		}
 		c.peerSource = f

@@ -73,13 +73,13 @@ func (o *opaqueState) Marshal(hmac hash.Hash, b []byte) ([]byte, error) {
 	// 序列化字段
 	fieldsMarshalled, err := json.Marshal(o)
 	if err != nil {
-		log.Errorf("序列化字段失败: %v", err)
+		log.Debugf("序列化字段失败: %v", err)
 		return b, err
 	}
 	// 计算 HMAC
 	_, err = hmac.Write(fieldsMarshalled)
 	if err != nil {
-		log.Errorf("计算 HMAC 失败: %v", err)
+		log.Debugf("计算 HMAC 失败: %v", err)
 		return b, err
 	}
 	// 将 HMAC 和序列化的字段追加到结果中
@@ -100,7 +100,7 @@ func (o *opaqueState) Unmarshal(hmacImpl hash.Hash, d []byte) error {
 	hmacImpl.Reset()
 	// 检查数据长度是否足够
 	if len(d) < hmacImpl.Size() {
-		log.Errorf("HMAC 值长度不足")
+		log.Debugf("HMAC 值长度不足")
 		return ErrInvalidHMAC
 	}
 	// 分离 HMAC 值和字段数据
@@ -109,20 +109,20 @@ func (o *opaqueState) Unmarshal(hmacImpl hash.Hash, d []byte) error {
 	// 计算 HMAC
 	_, err := hmacImpl.Write(fields)
 	if err != nil {
-		log.Errorf("计算 HMAC 失败: %v", err)
+		log.Debugf("计算 HMAC 失败: %v", err)
 		return ErrInvalidHMAC
 	}
 	// 验证 HMAC
 	expectedHmac := hmacImpl.Sum(nil)
 	if !hmac.Equal(hmacVal, expectedHmac) {
-		log.Errorf("HMAC 验证失败")
+		log.Debugf("HMAC 验证失败")
 		return ErrInvalidHMAC
 	}
 
 	// 反序列化字段
 	err = json.Unmarshal(fields, &o)
 	if err != nil {
-		log.Errorf("反序列化字段失败: %v", err)
+		log.Debugf("反序列化字段失败: %v", err)
 		return err
 	}
 	return nil
@@ -191,7 +191,7 @@ func (h *PeerIDAuthHandshakeServer) ParseHeaderVal(headerVal []byte) error {
 	// 解析对等节点认证方案参数
 	err := h.p.parsePeerIDAuthSchemeParams(headerVal)
 	if err != nil {
-		log.Errorf("解析对等节点认证方案参数失败: %v", err)
+		log.Debugf("解析对等节点认证方案参数失败: %v", err)
 		return err
 	}
 	// 根据参数设置状态
@@ -203,7 +203,7 @@ func (h *PeerIDAuthHandshakeServer) ParseHeaderVal(headerVal []byte) error {
 	case h.p.challengeServer != nil && h.p.publicKeyB64 != nil:
 		h.state = peerIDAuthServerStateSignChallenge
 	default:
-		log.Errorf("无效的头部")
+		log.Debugf("无效的头部")
 		return errInvalidHeader
 	}
 	return nil
@@ -222,31 +222,31 @@ func (h *PeerIDAuthHandshakeServer) Run() error {
 		h.hb.writeScheme(PeerIDAuthScheme)
 		// 添加客户端挑战参数
 		if err := h.addChallengeClientParam(); err != nil {
-			log.Errorf("添加客户端挑战参数失败: %v", err)
+			log.Debugf("添加客户端挑战参数失败: %v", err)
 			return err
 		}
 		// 添加公钥参数
 		if err := h.addPublicKeyParam(); err != nil {
-			log.Errorf("添加公钥参数失败: %v", err)
+			log.Debugf("添加公钥参数失败: %v", err)
 			return err
 		}
 
 		// 解码客户端公钥
 		publicKeyBytes, err := base64.URLEncoding.AppendDecode(nil, h.p.publicKeyB64)
 		if err != nil {
-			log.Errorf("解码客户端公钥失败: %v", err)
+			log.Debugf("解码客户端公钥失败: %v", err)
 			return err
 		}
 		// 保存客户端公钥
 		h.opaque.ClientPublicKey = publicKeyBytes
 		// 添加服务器签名参数
 		if err := h.addServerSigParam(publicKeyBytes); err != nil {
-			log.Errorf("添加服务器签名参数失败: %v", err)
+			log.Debugf("添加服务器签名参数失败: %v", err)
 			return err
 		}
 		// 添加不透明参数
 		if err := h.addOpaqueParam(); err != nil {
-			log.Errorf("添加不透明参数失败: %v", err)
+			log.Debugf("添加不透明参数失败: %v", err)
 			return err
 		}
 	case peerIDAuthServerStateChallengeClient:
@@ -254,47 +254,47 @@ func (h *PeerIDAuthHandshakeServer) Run() error {
 		h.hb.writeScheme(PeerIDAuthScheme)
 		// 添加客户端挑战参数
 		if err := h.addChallengeClientParam(); err != nil {
-			log.Errorf("添加客户端挑战参数失败: %v", err)
+			log.Debugf("添加客户端挑战参数失败: %v", err)
 			return err
 		}
 		// 添加公钥参数
 		if err := h.addPublicKeyParam(); err != nil {
-			log.Errorf("添加公钥参数失败: %v", err)
+			log.Debugf("添加公钥参数失败: %v", err)
 			return err
 		}
 		// 添加不透明参数
 		if err := h.addOpaqueParam(); err != nil {
-			log.Errorf("添加不透明参数失败: %v", err)
+			log.Debugf("添加不透明参数失败: %v", err)
 			return err
 		}
 	case peerIDAuthServerStateVerifyChallenge:
 		// 解码不透明数据
 		opaque, err := base64.URLEncoding.AppendDecode(h.buf[:0], h.p.opaqueB64)
 		if err != nil {
-			log.Errorf("解码不透明数据失败: %v", err)
+			log.Debugf("解码不透明数据失败: %v", err)
 			return err
 		}
 		// 反序列化不透明状态
 		err = h.opaque.Unmarshal(h.Hmac, opaque)
 		if err != nil {
-			log.Errorf("反序列化不透明状态失败: %v", err)
+			log.Debugf("反序列化不透明状态失败: %v", err)
 			return err
 		}
 
 		// 检查挑战是否过期
 		if nowFn().After(h.opaque.CreatedTime.Add(challengeTTL)) {
-			log.Errorf("挑战已过期")
+			log.Debugf("挑战已过期")
 			return ErrExpiredChallenge
 		}
 		// 检查是否为令牌
 		if h.opaque.IsToken {
-			log.Errorf("预期挑战，但收到令牌")
+			log.Debugf("预期挑战，但收到令牌")
 			return errors.New("预期挑战，但收到令牌")
 		}
 
 		// 检查主机名是否匹配
 		if h.Hostname != h.opaque.Hostname {
-			log.Errorf("主机名不匹配")
+			log.Debugf("主机名不匹配")
 			return errors.New("主机名不匹配")
 		}
 
@@ -307,33 +307,33 @@ func (h *PeerIDAuthHandshakeServer) Run() error {
 		} else {
 			// 检查公钥是否存在
 			if len(h.p.publicKeyB64) == 0 {
-				log.Errorf("公钥缺失")
+				log.Debugf("公钥缺失")
 				return errors.New("公钥缺失")
 			}
 			var err error
 			// 解码公钥
 			publicKeyBytes, err = base64.URLEncoding.AppendDecode(nil, h.p.publicKeyB64)
 			if err != nil {
-				log.Errorf("解码公钥失败: %v", err)
+				log.Debugf("解码公钥失败: %v", err)
 				return err
 			}
 		}
 		// 解析公钥
 		pubKey, err := crypto.UnmarshalPublicKey(publicKeyBytes)
 		if err != nil {
-			log.Errorf("解析公钥失败: %v", err)
+			log.Debugf("解析公钥失败: %v", err)
 			return err
 		}
 		// 验证签名
 		if err := h.verifySig(pubKey); err != nil {
-			log.Errorf("验证签名失败: %v", err)
+			log.Debugf("验证签名失败: %v", err)
 			return err
 		}
 
 		// 从公钥获取对等节点 ID
 		peerID, err := peer.IDFromPublicKey(pubKey)
 		if err != nil {
-			log.Errorf("从公钥获取对等节点 ID 失败: %v", err)
+			log.Debugf("从公钥获取对等节点 ID 失败: %v", err)
 			return err
 		}
 
@@ -351,44 +351,44 @@ func (h *PeerIDAuthHandshakeServer) Run() error {
 		if !clientInitiatedHandshake {
 			// 添加服务器签名参数
 			if err := h.addServerSigParam(publicKeyBytes); err != nil {
-				log.Errorf("添加服务器签名参数失败: %v", err)
+				log.Debugf("添加服务器签名参数失败: %v", err)
 				return err
 			}
 		}
 		// 添加 Bearer 参数
 		if err := h.addBearerParam(); err != nil {
-			log.Errorf("添加 Bearer 参数失败: %v", err)
+			log.Debugf("添加 Bearer 参数失败: %v", err)
 			return err
 		}
 	case peerIDAuthServerStateVerifyBearer:
 		// 解码 Bearer 令牌
 		bearerToken, err := base64.URLEncoding.AppendDecode(h.buf[:0], h.p.bearerTokenB64)
 		if err != nil {
-			log.Errorf("解码 Bearer 令牌失败: %v", err)
+			log.Debugf("解码 Bearer 令牌失败: %v", err)
 			return err
 		}
 		// 反序列化不透明状态
 		err = h.opaque.Unmarshal(h.Hmac, bearerToken)
 		if err != nil {
-			log.Errorf("反序列化不透明状态失败: %v", err)
+			log.Debugf("反序列化不透明状态失败: %v", err)
 			return err
 		}
 
 		// 检查是否为令牌
 		if !h.opaque.IsToken {
-			log.Errorf("预期令牌，但收到挑战")
+			log.Debugf("预期令牌，但收到挑战")
 			return errors.New("预期令牌，但收到挑战")
 		}
 
 		// 检查令牌是否过期
 		if nowFn().After(h.opaque.CreatedTime.Add(h.TokenTTL)) {
-			log.Errorf("令牌已过期")
+			log.Debugf("令牌已过期")
 			return ErrExpiredToken
 		}
 
 		return nil
 	default:
-		log.Errorf("未处理的状态")
+		log.Debugf("未处理的状态")
 		return errors.New("未处理的状态")
 	}
 
@@ -402,7 +402,7 @@ func (h *PeerIDAuthHandshakeServer) addChallengeClientParam() error {
 	// 生成随机挑战
 	_, err := io.ReadFull(randReader, h.buf[:challengeLen])
 	if err != nil {
-		log.Errorf("生成随机挑战失败: %v", err)
+		log.Debugf("生成随机挑战失败: %v", err)
 		return err
 	}
 	// 编码挑战
@@ -423,7 +423,7 @@ func (h *PeerIDAuthHandshakeServer) addOpaqueParam() error {
 	// 序列化不透明状态
 	opaqueVal, err := h.opaque.Marshal(h.Hmac, h.buf[:0])
 	if err != nil {
-		log.Errorf("序列化不透明状态失败: %v", err)
+		log.Debugf("序列化不透明状态失败: %v", err)
 		return err
 	}
 	// 写入不透明参数
@@ -440,7 +440,7 @@ func (h *PeerIDAuthHandshakeServer) addOpaqueParam() error {
 func (h *PeerIDAuthHandshakeServer) addServerSigParam(clientPublicKeyBytes []byte) error {
 	// 检查挑战长度
 	if len(h.p.challengeServer) < challengeLen {
-		log.Errorf("挑战太短")
+		log.Debugf("挑战太短")
 		return errors.New("挑战太短")
 	}
 	// 生成服务器签名
@@ -465,7 +465,7 @@ func (h *PeerIDAuthHandshakeServer) addBearerParam() error {
 	// 序列化 Bearer 令牌
 	bearerToken, err := h.opaque.Marshal(h.Hmac, h.buf[:0])
 	if err != nil {
-		log.Errorf("序列化 Bearer 令牌失败: %v", err)
+		log.Debugf("序列化 Bearer 令牌失败: %v", err)
 		return err
 	}
 	// 写入 Bearer 参数
@@ -482,7 +482,7 @@ func (h *PeerIDAuthHandshakeServer) addPublicKeyParam() error {
 	// 序列化公钥
 	pubKeyBytes, err := crypto.MarshalPublicKey(serverPubKey)
 	if err != nil {
-		log.Errorf("序列化公钥失败: %v", err)
+		log.Debugf("序列化公钥失败: %v", err)
 		return err
 	}
 	// 写入公钥参数
@@ -502,13 +502,13 @@ func (h *PeerIDAuthHandshakeServer) verifySig(clientPubKey crypto.PubKey) error 
 	// 序列化服务器公钥
 	serverPubKeyBytes, err := crypto.MarshalPublicKey(serverPubKey)
 	if err != nil {
-		log.Errorf("序列化服务器公钥失败: %v", err)
+		log.Debugf("序列化服务器公钥失败: %v", err)
 		return err
 	}
 	// 解码签名
 	sig, err := base64.URLEncoding.AppendDecode(h.buf[:0], h.p.sigB64)
 	if err != nil {
-		log.Errorf("解码签名失败: %v", err)
+		log.Debugf("解码签名失败: %v", err)
 		return err
 	}
 	// 验证签名
@@ -518,7 +518,7 @@ func (h *PeerIDAuthHandshakeServer) verifySig(clientPubKey crypto.PubKey) error 
 		{k: "hostname", v: []byte(h.Hostname)},
 	}, sig)
 	if err != nil {
-		log.Errorf("验证签名失败: %v", err)
+		log.Debugf("验证签名失败: %v", err)
 		return err
 	}
 	return nil
@@ -531,7 +531,7 @@ func (h *PeerIDAuthHandshakeServer) verifySig(clientPubKey crypto.PubKey) error 
 func (h *PeerIDAuthHandshakeServer) PeerID() (peer.ID, error) {
 	// 检查是否已运行
 	if !h.ran {
-		log.Errorf("未运行")
+		log.Debugf("未运行")
 		return "", errNotRan
 	}
 	// 检查状态是否正确
@@ -539,12 +539,12 @@ func (h *PeerIDAuthHandshakeServer) PeerID() (peer.ID, error) {
 	case peerIDAuthServerStateVerifyChallenge:
 	case peerIDAuthServerStateVerifyBearer:
 	default:
-		log.Errorf("状态不正确")
+		log.Debugf("状态不正确")
 		return "", errors.New("状态不正确")
 	}
 	// 检查对等节点 ID 是否已设置
 	if h.opaque.PeerID == "" {
-		log.Errorf("对等节点 ID 未设置")
+		log.Debugf("对等节点 ID 未设置")
 		return "", errors.New("对等节点 ID 未设置")
 	}
 	return h.opaque.PeerID, nil

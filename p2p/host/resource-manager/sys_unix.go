@@ -15,7 +15,7 @@ func getNumFDs() int {
 	// 获取系统文件描述符数量限制
 	if err := unix.Getrlimit(unix.RLIMIT_NOFILE, &l); err != nil {
 		// 获取失败时记录错误日志
-		log.Errorf("获取文件描述符限制失败: %v", err)
+		log.Debugf("获取文件描述符限制失败: %v", err)
 		return 0
 	}
 	// 返回当前文件描述符数量

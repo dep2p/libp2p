@@ -147,7 +147,7 @@ func (s *mdnsService) getIPs(addrs []ma.Multiaddr) ([]string, error) {
 		ips = append(ips, ip6)
 	}
 	if len(ips) == 0 {
-		log.Errorf("没有找到任何IP地址")
+		log.Debugf("没有找到任何IP地址")
 		return nil, errors.New("没有找到任何IP地址")
 	}
 	return ips, nil

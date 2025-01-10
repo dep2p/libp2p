@@ -79,7 +79,7 @@ func New(h host.Host, options ...Option) (AutoNAT, error) {
 
 	// 应用默认配置
 	if err = defaults(conf); err != nil {
-		log.Errorf("应用默认配置失败: %v", err)
+		log.Debugf("应用默认配置失败: %v", err)
 		return nil, err
 	}
 	// 设置地址获取函数
@@ -94,7 +94,7 @@ func New(h host.Host, options ...Option) (AutoNAT, error) {
 	// 应用选项配置
 	for _, o := range options {
 		if err = o(conf); err != nil {
-			log.Errorf("应用配置选项失败: %v", err)
+			log.Debugf("应用配置选项失败: %v", err)
 			return nil, err
 		}
 	}
@@ -106,7 +106,7 @@ func New(h host.Host, options ...Option) (AutoNAT, error) {
 	if (!conf.forceReachability || conf.reachability == network.ReachabilityPublic) && conf.dialer != nil {
 		service, err = newAutoNATService(conf)
 		if err != nil {
-			log.Errorf("创建autoNAT服务失败: %v", err)
+			log.Debugf("创建autoNAT服务失败: %v", err)
 			return nil, err
 		}
 		service.Enable()
@@ -151,7 +151,7 @@ func New(h host.Host, options ...Option) (AutoNAT, error) {
 		eventbus.Name("autonat"),
 	)
 	if err != nil {
-		log.Errorf("订阅事件失败: %v", err)
+		log.Debugf("订阅事件失败: %v", err)
 		return nil, err
 	}
 	as.subscriber = subscriber
@@ -240,7 +240,7 @@ func (as *AmbientAutoNAT) background() {
 			case event.EvtLocalAddressesUpdated:
 				// 地址更新时安排新的探测
 			default:
-				log.Errorf("未知的事件类型: %T", e)
+				log.Debugf("未知的事件类型: %T", e)
 			}
 		case obs := <-as.observations:
 			// 记录观察结果

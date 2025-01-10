@@ -349,7 +349,7 @@ func (t *trace) backgroundWriter(out io.WriteCloser) {
 func (t *trace) writeEvents(pend []interface{}, jout *json.Encoder) error {
 	for _, e := range pend {
 		if err := jout.Encode(e); err != nil {
-			log.Errorf("写入资源管理器跟踪事件失败: %v", err)
+			log.Debugf("写入资源管理器跟踪事件失败: %v", err)
 			return err
 		}
 	}

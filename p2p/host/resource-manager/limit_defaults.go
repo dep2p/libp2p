@@ -168,15 +168,15 @@ const (
 func (l LimitVal) MarshalJSON() ([]byte, error) {
 	// 如果是无限制值,返回"unlimited"字符串
 	if l == Unlimited {
-		log.Errorf("序列化无限制值")
+		log.Debugf("序列化无限制值")
 		return json.Marshal("unlimited")
 		// 如果是默认限制值,返回"default"字符串
 	} else if l == DefaultLimit {
-		log.Errorf("序列化默认限制值")
+		log.Debugf("序列化默认限制值")
 		return json.Marshal("default")
 		// 如果是阻止所有限制值,返回"blockAll"字符串
 	} else if l == BlockAllLimit {
-		log.Errorf("序列化阻止所有限制值")
+		log.Debugf("序列化阻止所有限制值")
 		return json.Marshal("blockAll")
 	}
 	// 其他情况将限制值转换为整数返回
@@ -207,7 +207,7 @@ func (l *LimitVal) UnmarshalJSON(b []byte) error {
 	// 尝试将JSON解析为整数值
 	var val int
 	if err := json.Unmarshal(b, &val); err != nil {
-		log.Errorf("反序列化限制值失败: %v", err)
+		log.Debugf("反序列化限制值失败: %v", err)
 		return err
 	}
 
@@ -264,13 +264,13 @@ const (
 func (l LimitVal64) MarshalJSON() ([]byte, error) {
 	// 如果是无限制值,序列化为 "unlimited" 字符串
 	if l == Unlimited64 {
-		log.Errorf("序列化无限制值")
+		log.Debugf("序列化无限制值")
 		return json.Marshal("unlimited")
 	} else if l == DefaultLimit64 { // 如果是默认限制值,序列化为 "default" 字符串
-		log.Errorf("序列化默认限制值")
+		log.Debugf("序列化默认限制值")
 		return json.Marshal("default")
 	} else if l == BlockAllLimit64 { // 如果是阻止所有限制值,序列化为 "blockAll" 字符串
-		log.Errorf("序列化阻止所有限制值")
+		log.Debugf("序列化阻止所有限制值")
 		return json.Marshal("blockAll")
 	}
 
@@ -287,15 +287,15 @@ func (l LimitVal64) MarshalJSON() ([]byte, error) {
 func (l *LimitVal64) UnmarshalJSON(b []byte) error {
 	// 如果是 "default" 字符串,设置为默认限制值
 	if string(b) == `"default"` {
-		log.Errorf("反序列化默认限制值")
+		log.Debugf("反序列化默认限制值")
 		*l = DefaultLimit64
 		return nil
 	} else if string(b) == `"unlimited"` { // 如果是 "unlimited" 字符串,设置为无限制值
-		log.Errorf("反序列化无限制值")
+		log.Debugf("反序列化无限制值")
 		*l = Unlimited64
 		return nil
 	} else if string(b) == `"blockAll"` { // 如果是 "blockAll" 字符串,设置为阻止所有限制值
-		log.Errorf("反序列化阻止所有限制值")
+		log.Debugf("反序列化阻止所有限制值")
 		*l = BlockAllLimit64
 		return nil
 	}
@@ -312,7 +312,7 @@ func (l *LimitVal64) UnmarshalJSON(b []byte) error {
 
 		// 如果 JSON 中有明确的 0,解释为阻止所有
 		if val == 0 {
-			log.Errorf("反序列化阻止所有限制值")
+			log.Debugf("反序列化阻止所有限制值")
 			*l = BlockAllLimit64
 			return nil
 		}
@@ -325,7 +325,7 @@ func (l *LimitVal64) UnmarshalJSON(b []byte) error {
 	// 将字符串解析为 64 位整数
 	i, err := strconv.ParseInt(val, 10, 64)
 	if err != nil {
-		log.Errorf("反序列化限制值失败: %v", err)
+		log.Debugf("反序列化限制值失败: %v", err)
 		return err
 	}
 

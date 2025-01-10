@@ -78,7 +78,7 @@ func NewProtoBook(opts ...ProtoBookOption) (*memoryProtoBook, error) {
 
 	for _, opt := range opts { // 应用选项
 		if err := opt(pb); err != nil { // 如果选项应用失败
-			log.Errorf("应用协议簿选项失败: %v", err)
+			log.Debugf("应用协议簿选项失败: %v", err)
 			return nil, err // 返回错误
 		}
 	}

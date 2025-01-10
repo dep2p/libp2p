@@ -134,7 +134,7 @@ func (r *AutoRelay) Close() error {
 	err := r.relayFinder.Stop() // 停止中继查找器
 	r.refCount.Wait()           // 等待所有goroutine完成
 	if err != nil {
-		log.Errorf("停止中继查找器失败: %v", err)
+		log.Debugf("停止中继查找器失败: %v", err)
 	}
 	return err
 }

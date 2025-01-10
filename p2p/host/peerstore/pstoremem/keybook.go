@@ -78,7 +78,7 @@ func (mkb *memoryKeyBook) PubKey(p peer.ID) ic.PubKey {
 //   - error: 错误信息
 func (mkb *memoryKeyBook) AddPubKey(p peer.ID, pk ic.PubKey) error {
 	if !p.MatchesPublicKey(pk) { // 验证ID与公钥是否匹配
-		log.Errorf("ID与公钥不匹配: %v", p)
+		log.Debugf("ID与公钥不匹配: %v", p)
 		return errors.New("ID与公钥不匹配")
 	}
 
@@ -109,12 +109,12 @@ func (mkb *memoryKeyBook) PrivKey(p peer.ID) ic.PrivKey {
 //   - error: 错误信息
 func (mkb *memoryKeyBook) AddPrivKey(p peer.ID, sk ic.PrivKey) error {
 	if sk == nil { // 检查私钥是否为空
-		log.Errorf("私钥为空: %v", p)
+		log.Debugf("私钥为空: %v", p)
 		return errors.New("私钥为空")
 	}
 
 	if !p.MatchesPrivateKey(sk) { // 验证ID与私钥是否匹配
-		log.Errorf("ID与私钥不匹配: %v", p)
+		log.Debugf("ID与私钥不匹配: %v", p)
 		return errors.New("ID与私钥不匹配")
 	}
 

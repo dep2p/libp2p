@@ -34,7 +34,7 @@ func (d *dialPolicy) skipDial(addr ma.Multiaddr) bool {
 
 	// 如果允许自拨号则不跳过
 	if d.allowSelfDials {
-		log.Errorf("允许自拨号: %s", addr.String())
+		log.Debugf("允许自拨号: %s", addr.String())
 		return false
 	}
 
@@ -57,7 +57,7 @@ func (d *dialPolicy) skipDial(addr ma.Multiaddr) bool {
 			continue
 		}
 		if localIP.Equal(candidateIP) {
-			log.Errorf("跳过本地节点地址: %s", addr.String())
+			log.Debugf("跳过本地节点地址: %s", addr.String())
 			return true
 		}
 	}
@@ -99,7 +99,7 @@ func (d *dialPolicy) skipPeer(addrs []ma.Multiaddr) bool {
 
 			for _, lIP := range localHosts {
 				if lIP.Equal(aIP) {
-					log.Errorf("跳过本地节点地址: %s", addr.String())
+					log.Debugf("跳过本地节点地址: %s", addr.String())
 					return true
 				}
 			}

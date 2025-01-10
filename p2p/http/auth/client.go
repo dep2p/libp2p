@@ -54,7 +54,7 @@ func (a *ClientPeerIDAuth) AuthenticatedDo(client *http.Client, req *http.Reques
 			// token 被拒绝,需要重新认证
 			break
 		default:
-			log.Errorf("doWithToken 失败: %v", err)
+			log.Debugf("doWithToken 失败: %v", err)
 			return "", nil, err
 		}
 
@@ -63,7 +63,7 @@ func (a *ClientPeerIDAuth) AuthenticatedDo(client *http.Client, req *http.Reques
 		req = req.Clone(req.Context())
 		req.Body, err = req.GetBody()
 		if err != nil {
-			log.Errorf("GetBody 失败: %v", err)
+			log.Debugf("GetBody 失败: %v", err)
 			return "", nil, err
 		}
 
@@ -109,7 +109,7 @@ func (a *ClientPeerIDAuth) runHandshake(client *http.Client, req *http.Request, 
 	// 运行握手
 	err := hs.Run()
 	if err != nil {
-		log.Errorf("握手失败: %v", err)
+		log.Debugf("握手失败: %v", err)
 		return "", nil, err
 	}
 
@@ -124,27 +124,27 @@ func (a *ClientPeerIDAuth) runHandshake(client *http.Client, req *http.Request, 
 
 		resp, err = client.Do(req)
 		if err != nil {
-			log.Errorf("发送请求失败: %v", err)
+			log.Debugf("发送请求失败: %v", err)
 			return "", nil, err
 		}
 
 		hs.ParseHeader(resp.Header)
 		err = hs.Run()
 		if err != nil {
-			log.Errorf("握手失败: %v", err)
+			log.Debugf("握手失败: %v", err)
 			resp.Body.Close()
 			return "", nil, err
 		}
 
 		if maxSteps--; maxSteps == 0 {
-			log.Errorf("握手步骤过多")
+			log.Debugf("握手步骤过多")
 			return "", nil, errors.New("握手步骤过多")
 		}
 	}
 
 	p, err := hs.PeerID()
 	if err != nil {
-		log.Errorf("获取对等节点 ID 失败: %v", err)
+		log.Debugf("获取对等节点 ID 失败: %v", err)
 		resp.Body.Close()
 		return "", nil, err
 	}
@@ -170,7 +170,7 @@ func (a *ClientPeerIDAuth) doWithToken(client *http.Client, req *http.Request, t
 	req.Header.Set("Authorization", ti.token)
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Errorf("发送请求失败: %v", err)
+		log.Debugf("发送请求失败: %v", err)
 		return "", nil, err
 	}
 	if resp.StatusCode != http.StatusUnauthorized {
@@ -180,7 +180,7 @@ func (a *ClientPeerIDAuth) doWithToken(client *http.Client, req *http.Request, t
 	if req.GetBody == nil {
 		// 无法重试请求
 		// 返回响应和错误
-		log.Errorf("token 已过期。无法执行握手因为 req.GetBody 为空")
+		log.Debugf("token 已过期。无法执行握手因为 req.GetBody 为空")
 		return "", resp, errors.New("token 已过期。无法执行握手因为 req.GetBody 为空")
 	}
 	resp.Body.Close()

@@ -37,7 +37,7 @@ func WithAllowlistedMultiaddrs(mas []multiaddr.Multiaddr) Option {
 		for _, ma := range mas { // 遍历多地址
 			err := rm.allowlist.Add(ma) // 添加到白名单
 			if err != nil {
-				log.Errorf("添加到白名单失败: %v", err)
+				log.Debugf("添加到白名单失败: %v", err)
 				return err
 			}
 		}
@@ -85,7 +85,7 @@ func toIPNet(ma multiaddr.Multiaddr) (*net.IPNet, peer.ID, error) {
 	})
 
 	if ipString == "" {
-		log.Errorf("缺少IP地址")
+		log.Debugf("缺少IP地址")
 		return nil, allowedPeer, errors.New("缺少IP地址")
 	}
 
@@ -101,7 +101,7 @@ func toIPNet(ma multiaddr.Multiaddr) (*net.IPNet, peer.ID, error) {
 	if mask == "" {
 		ip := net.ParseIP(ipString) // 解析IP地址
 		if ip == nil {
-			log.Errorf("无效的IP地址")
+			log.Debugf("无效的IP地址")
 			return nil, allowedPeer, errors.New("无效的IP地址")
 		}
 		var mask net.IPMask
@@ -128,7 +128,7 @@ func toIPNet(ma multiaddr.Multiaddr) (*net.IPNet, peer.ID, error) {
 func (al *Allowlist) Add(ma multiaddr.Multiaddr) error {
 	ipnet, allowedPeer, err := toIPNet(ma) // 转换为IP网络
 	if err != nil {
-		log.Errorf("转换为IP网络失败: %v", err)
+		log.Debugf("转换为IP网络失败: %v", err)
 		return err
 	}
 	al.mu.Lock()         // 加锁
@@ -155,7 +155,7 @@ func (al *Allowlist) Add(ma multiaddr.Multiaddr) error {
 func (al *Allowlist) Remove(ma multiaddr.Multiaddr) error {
 	ipnet, allowedPeer, err := toIPNet(ma) // 转换为IP网络
 	if err != nil {
-		log.Errorf("转换为IP网络失败: %v", err)
+		log.Debugf("转换为IP网络失败: %v", err)
 		return err
 	}
 	al.mu.Lock()         // 加锁
@@ -201,7 +201,7 @@ func (al *Allowlist) Remove(ma multiaddr.Multiaddr) error {
 func (al *Allowlist) Allowed(ma multiaddr.Multiaddr) bool {
 	ip, err := manet.ToIP(ma) // 转换为IP
 	if err != nil {
-		log.Errorf("转换为IP失败: %v", err)
+		log.Debugf("转换为IP失败: %v", err)
 		return false
 	}
 	al.mu.RLock()         // 读锁
@@ -234,7 +234,7 @@ func (al *Allowlist) Allowed(ma multiaddr.Multiaddr) bool {
 func (al *Allowlist) AllowedPeerAndMultiaddr(peerID peer.ID, ma multiaddr.Multiaddr) bool {
 	ip, err := manet.ToIP(ma) // 转换为IP
 	if err != nil {
-		log.Errorf("转换为IP失败: %v", err)
+		log.Debugf("转换为IP失败: %v", err)
 		return false
 	}
 	al.mu.RLock()         // 读锁

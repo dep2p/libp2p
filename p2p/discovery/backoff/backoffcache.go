@@ -150,7 +150,7 @@ func (d *BackoffDiscovery) FindPeers(ctx context.Context, ns string, opts ...dis
 	var options discovery.Options
 	err := options.Apply(opts...)
 	if err != nil {
-		log.Errorf("解析选项失败: %v", err)
+		log.Debugf("解析选项失败: %v", err)
 		return nil, err
 	}
 
@@ -218,7 +218,7 @@ func (d *BackoffDiscovery) FindPeers(ctx context.Context, ns string, opts ...dis
 	if !c.ongoing {
 		pch, err := d.disc.FindPeers(ctx, ns, opts...)
 		if err != nil {
-			log.Errorf("查找节点失败: %v", err)
+			log.Debugf("查找节点失败: %v", err)
 			return nil, err
 		}
 

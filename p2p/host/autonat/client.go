@@ -90,7 +90,7 @@ func (c *client) DialBack(ctx context.Context, p peer.ID) error {
 	// 创建并发送拨号请求消息
 	req := newDialMessage(peer.AddrInfo{ID: c.h.ID(), Addrs: c.addrFunc()})
 	if err := w.WriteMsg(req); err != nil {
-		log.Errorf("发送拨号请求消息失败: %v", err)
+		log.Debugf("发送拨号请求消息失败: %v", err)
 		s.Reset()
 		return err
 	}
@@ -98,14 +98,14 @@ func (c *client) DialBack(ctx context.Context, p peer.ID) error {
 	// 读取响应消息
 	var res pb.Message
 	if err := r.ReadMsg(&res); err != nil {
-		log.Errorf("读取响应消息失败: %v", err)
+		log.Debugf("读取响应消息失败: %v", err)
 		s.Reset()
 		return err
 	}
 	// 检查响应类型是否正确
 	if res.GetType() != pb.Message_DIAL_RESPONSE {
 		s.Reset()
-		log.Errorf("意外的响应类型: %s", res.GetType().String())
+		log.Debugf("意外的响应类型: %s", res.GetType().String())
 		return fmt.Errorf("意外的响应类型: %s", res.GetType().String())
 	}
 
@@ -133,7 +133,7 @@ type Error struct {
 // 返回值:
 //   - string: 返回格式化的错误信息
 func (e Error) Error() string {
-	log.Errorf("AutoNAT错误: %s (%s)", e.Text, e.Status.String())
+	log.Debugf("AutoNAT错误: %s (%s)", e.Text, e.Status.String())
 	return fmt.Sprintf("AutoNAT错误: %s (%s)", e.Text, e.Status.String())
 }
 

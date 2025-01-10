@@ -167,7 +167,7 @@ func mulInt64WithOverflow(a, b int64) (c int64, ok bool) {
 func (rc *resources) checkMemory(rsvp int64, prio uint8) error {
 	// 检查是否为负数请求
 	if rsvp < 0 {
-		log.Errorf("不能预留负数内存. rsvp=%v", rsvp)
+		log.Debugf("不能预留负数内存. rsvp=%v", rsvp)
 		return fmt.Errorf("不能预留负数内存. rsvp=%v", rsvp)
 	}
 
@@ -215,7 +215,7 @@ func (rc *resources) checkMemory(rsvp int64, prio uint8) error {
 func (rc *resources) reserveMemory(size int64, prio uint8) error {
 	// 检查内存限制
 	if err := rc.checkMemory(size, prio); err != nil {
-		log.Errorf("内存预留失败: %v", err)
+		log.Debugf("内存预留失败: %v", err)
 		return err
 	}
 
@@ -813,7 +813,7 @@ func (s *resourceScope) addConnForEdges(dir network.Direction, usefd bool) error
 		var stat network.ScopeStat
 		stat, err = e.AddConnForChild(dir, usefd) // 在每个边缘节点中为子节点添加连接
 		if err != nil {
-			log.Errorf("边缘节点连接添加被阻塞", logValuesConnLimit(s.name, e.name, dir, usefd, stat, err)...)
+			log.Debugf("边缘节点连接添加被阻塞", logValuesConnLimit(s.name, e.name, dir, usefd, stat, err)...)
 			break
 		}
 		reserved++

@@ -80,7 +80,7 @@ func NewProtoBook(meta pstore.PeerMetadata, opts ...ProtoBookOption) (*dsProtoBo
 	// 应用配置选项
 	for _, opt := range opts {
 		if err := opt(pb); err != nil {
-			log.Errorf("应用协议簿选项失败: %v", err)
+			log.Debugf("应用协议簿选项失败: %v", err)
 			return nil, err
 		}
 	}
@@ -126,11 +126,11 @@ func (pb *dsProtoBook) AddProtocols(p peer.ID, protos ...protocol.ID) error {
 
 	pmap, err := pb.getProtocolMap(p)
 	if err != nil {
-		log.Errorf("获取协议映射失败: %v", err)
+		log.Debugf("获取协议映射失败: %v", err)
 		return err
 	}
 	if len(pmap)+len(protos) > pb.maxProtos {
-		log.Errorf("协议数量超出限制: %v", errTooManyProtocols)
+		log.Debugf("协议数量超出限制: %v", errTooManyProtocols)
 		return errTooManyProtocols
 	}
 
@@ -156,7 +156,7 @@ func (pb *dsProtoBook) GetProtocols(p peer.ID) ([]protocol.ID, error) {
 
 	pmap, err := pb.getProtocolMap(p)
 	if err != nil {
-		log.Errorf("获取协议映射失败: %v", err)
+		log.Debugf("获取协议映射失败: %v", err)
 		return nil, err
 	}
 
@@ -184,7 +184,7 @@ func (pb *dsProtoBook) SupportsProtocols(p peer.ID, protos ...protocol.ID) ([]pr
 
 	pmap, err := pb.getProtocolMap(p)
 	if err != nil {
-		log.Errorf("获取协议映射失败: %v", err)
+		log.Debugf("获取协议映射失败: %v", err)
 		return nil, err
 	}
 
@@ -214,7 +214,7 @@ func (pb *dsProtoBook) FirstSupportedProtocol(p peer.ID, protos ...protocol.ID) 
 
 	pmap, err := pb.getProtocolMap(p)
 	if err != nil {
-		log.Errorf("获取协议映射失败: %v", err)
+		log.Debugf("获取协议映射失败: %v", err)
 		return "", err
 	}
 	// 返回第一个支持的协议
@@ -241,7 +241,7 @@ func (pb *dsProtoBook) RemoveProtocols(p peer.ID, protos ...protocol.ID) error {
 
 	pmap, err := pb.getProtocolMap(p)
 	if err != nil {
-		log.Errorf("获取协议映射失败: %v", err)
+		log.Debugf("获取协议映射失败: %v", err)
 		return err
 	}
 
@@ -275,7 +275,7 @@ func (pb *dsProtoBook) getProtocolMap(p peer.ID) (map[protocol.ID]struct{}, erro
 	case nil:
 		cast, ok := iprotomap.(map[protocol.ID]struct{})
 		if !ok {
-			log.Errorf("存储的协议集不是map")
+			log.Debugf("存储的协议集不是map")
 			return nil, fmt.Errorf("存储的协议集不是map")
 		}
 

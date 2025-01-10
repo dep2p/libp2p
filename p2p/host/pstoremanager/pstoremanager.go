@@ -78,7 +78,7 @@ func NewPeerstoreManager(pstore peerstore.Peerstore, eventBus event.Bus, network
 	}
 	for _, opt := range opts { // 应用配置选项
 		if err := opt(m); err != nil {
-			log.Errorf("应用配置选项失败: %v", err)
+			log.Debugf("应用配置选项失败: %v", err)
 			return nil, err
 		}
 	}
@@ -94,7 +94,7 @@ func (m *PeerstoreManager) Start() {
 	m.cancel = cancel                                                                                      // 保存取消函数
 	sub, err := m.eventBus.Subscribe(&event.EvtPeerConnectednessChanged{}, eventbus.Name("pstoremanager")) // 订阅连接状态变更事件
 	if err != nil {
-		log.Errorf("订阅失败。对等节点存储管理器未激活。错误: %s", err)
+		log.Debugf("订阅失败。对等节点存储管理器未激活。错误: %s", err)
 		return
 	}
 	m.refCount.Add(1)         // 增加引用计数

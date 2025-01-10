@@ -65,22 +65,22 @@ type dsAddrBookGc struct {
 func newAddressBookGc(ctx context.Context, ab *dsAddrBook) (*dsAddrBookGc, error) {
 	// 检查清除间隔是否为负
 	if ab.opts.GCPurgeInterval < 0 {
-		log.Errorf("提供了负的GC清除间隔: %s", ab.opts.GCPurgeInterval)
+		log.Debugf("提供了负的GC清除间隔: %s", ab.opts.GCPurgeInterval)
 		return nil, fmt.Errorf("提供了负的GC清除间隔: %s", ab.opts.GCPurgeInterval)
 	}
 	// 检查预查间隔是否为负
 	if ab.opts.GCLookaheadInterval < 0 {
-		log.Errorf("提供了负的GC预查间隔: %s", ab.opts.GCLookaheadInterval)
+		log.Debugf("提供了负的GC预查间隔: %s", ab.opts.GCLookaheadInterval)
 		return nil, fmt.Errorf("提供了负的GC预查间隔: %s", ab.opts.GCLookaheadInterval)
 	}
 	// 检查初始延迟是否为负
 	if ab.opts.GCInitialDelay < 0 {
-		log.Errorf("提供了负的GC初始延迟: %s", ab.opts.GCInitialDelay)
+		log.Debugf("提供了负的GC初始延迟: %s", ab.opts.GCInitialDelay)
 		return nil, fmt.Errorf("提供了负的GC初始延迟: %s", ab.opts.GCInitialDelay)
 	}
 	// 检查预查间隔是否大于清除间隔
 	if ab.opts.GCLookaheadInterval > 0 && ab.opts.GCLookaheadInterval < ab.opts.GCPurgeInterval {
-		log.Errorf("预查间隔必须大于清除间隔,分别为: %s, %s",
+		log.Debugf("预查间隔必须大于清除间隔,分别为: %s, %s",
 			ab.opts.GCLookaheadInterval, ab.opts.GCPurgeInterval)
 		return nil, fmt.Errorf("预查间隔必须大于清除间隔,分别为: %s, %s",
 			ab.opts.GCLookaheadInterval, ab.opts.GCPurgeInterval)

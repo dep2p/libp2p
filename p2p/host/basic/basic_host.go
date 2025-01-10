@@ -202,7 +202,7 @@ func NewHost(n network.Network, opts *HostOpts) (*BasicHost, error) {
 	// 创建对等节点存储管理器
 	psManager, err := pstoremanager.NewPeerstoreManager(n.Peerstore(), opts.EventBus, n)
 	if err != nil {
-		log.Errorf("创建对等节点存储管理器失败: %v", err)
+		log.Debugf("创建对等节点存储管理器失败: %v", err)
 		return nil, err
 	}
 
@@ -228,12 +228,12 @@ func NewHost(n network.Network, opts *HostOpts) (*BasicHost, error) {
 
 	// 创建本地协议更新事件发射器
 	if h.emitters.evtLocalProtocolsUpdated, err = h.eventbus.Emitter(&event.EvtLocalProtocolsUpdated{}, eventbus.Stateful); err != nil {
-		log.Errorf("创建本地协议更新事件发射器失败: %v", err)
+		log.Debugf("创建本地协议更新事件发射器失败: %v", err)
 		return nil, err
 	}
 	// 创建本地地址更新事件发射器
 	if h.emitters.evtLocalAddrsUpdated, err = h.eventbus.Emitter(&event.EvtLocalAddressesUpdated{}, eventbus.Stateful); err != nil {
-		log.Errorf("创建本地地址更新事件发射器失败: %v", err)
+		log.Debugf("创建本地地址更新事件发射器失败: %v", err)
 		return nil, err
 	}
 
@@ -242,7 +242,7 @@ func NewHost(n network.Network, opts *HostOpts) (*BasicHost, error) {
 		// 获取认证地址簿
 		cab, ok := peerstore.GetCertifiedAddrBook(n.Peerstore())
 		if !ok {
-			log.Errorf("peerstore应该也是一个认证地址簿")
+			log.Debugf("peerstore应该也是一个认证地址簿")
 			return nil, errors.New("peerstore应该也是一个认证地址簿")
 		}
 		h.caBook = cab
@@ -250,7 +250,7 @@ func NewHost(n network.Network, opts *HostOpts) (*BasicHost, error) {
 		// 获取主机私钥
 		h.signKey = h.Peerstore().PrivKey(h.ID())
 		if h.signKey == nil {
-			log.Errorf("无法访问主机密钥")
+			log.Debugf("无法访问主机密钥")
 			return nil, errors.New("无法访问主机密钥")
 		}
 
@@ -660,7 +660,7 @@ func (h *BasicHost) background() {
 		// 如果未禁用签名对等记录,则将其存储在对等存储中
 		if !h.disableSignedPeerRecord {
 			if _, err := h.caBook.ConsumePeerRecord(changeEvt.SignedPeerRecord, peerstore.PermanentAddrTTL); err != nil {
-				log.Debugf("在对等存储中持久化签名对等记录失败, err=%s", err)
+				log.Errorf("在对等存储中持久化签名对等记录失败, err=%s", err)
 				return
 			}
 		}
@@ -674,7 +674,7 @@ func (h *BasicHost) background() {
 
 		// 发出地址变化事件
 		if err := h.emitters.evtLocalAddrsUpdated.Emit(*changeEvt); err != nil {
-			log.Debugf("发出地址变更事件失败: %s", err)
+			log.Warnf("发出地址变更事件失败: %s", err)
 		}
 	}
 
@@ -819,7 +819,7 @@ func (h *BasicHost) NewStream(ctx context.Context, p peer.ID, pids ...protocol.I
 	if nodial, _ := network.GetNoDial(ctx); !nodial {
 		err := h.Connect(ctx, peer.AddrInfo{ID: p})
 		if err != nil {
-			log.Errorf("连接对等点失败: %v", err)
+			log.Debugf("连接对等点失败: %v", err)
 			return nil, err
 		}
 	}
@@ -828,7 +828,7 @@ func (h *BasicHost) NewStream(ctx context.Context, p peer.ID, pids ...protocol.I
 	s, err := h.Network().NewStream(network.WithNoDial(ctx, "already dialed"), p)
 	if err != nil {
 		if errors.Is(err, network.ErrNoConn) {
-			log.Errorf("连接失败")
+			log.Debugf("连接失败")
 			return nil, errors.New("连接失败")
 		}
 		log.Debugf("打开流失败: %v", err)
@@ -851,14 +851,14 @@ func (h *BasicHost) NewStream(ctx context.Context, p peer.ID, pids ...protocol.I
 	// 获取首选协议
 	pref, err := h.preferredProtocol(p, pids)
 	if err != nil {
-		log.Errorf("获取首选协议失败: %v", err)
+		log.Debugf("获取首选协议失败: %v", err)
 		return nil, err
 	}
 
 	// 如果有首选协议,直接使用
 	if pref != "" {
 		if err := s.SetProtocol(pref); err != nil {
-			log.Errorf("设置协议失败: %v", err)
+			log.Debugf("设置协议失败: %v", err)
 			return nil, err
 		}
 		lzcon := msmux.NewMSSelect(s, pref)
@@ -891,7 +891,7 @@ func (h *BasicHost) NewStream(ctx context.Context, p peer.ID, pids ...protocol.I
 
 	// 设置选定的协议
 	if err := s.SetProtocol(selected); err != nil {
-		log.Errorf("设置协议失败: %v", err)
+		log.Debugf("设置协议失败: %v", err)
 		return nil, err
 	}
 	_ = h.Peerstore().AddProtocols(p, selected) // 将协议添加到对等存储不是关键操作
@@ -910,7 +910,7 @@ func (h *BasicHost) preferredProtocol(p peer.ID, pids []protocol.ID) (protocol.I
 	// 从对等存储中获取支持的协议列表
 	supported, err := h.Peerstore().SupportsProtocols(p, pids...)
 	if err != nil {
-		log.Errorf("获取支持的协议列表失败: %v", err)
+		log.Debugf("获取支持的协议列表失败: %v", err)
 		return "", err
 	}
 
@@ -1163,7 +1163,7 @@ func (h *BasicHost) addCertHashes(addrs []ma.Multiaddr) []ma.Multiaddr {
 	// 尝试将网络转换为 transportForListeninger 接口
 	s, ok := h.Network().(transportForListeninger)
 	if !ok {
-		log.Errorf("网络不支持transportForListeninger接口")
+		log.Debugf("网络不支持transportForListeninger接口")
 		return addrs
 	}
 
@@ -1326,7 +1326,7 @@ func (h *BasicHost) Close() error {
 
 		// 关闭网络
 		if err := h.network.Close(); err != nil {
-			log.Errorf("swarm 关闭失败: %v", err)
+			log.Debugf("swarm 关闭失败: %v", err)
 		}
 
 		// 关闭协议管理器

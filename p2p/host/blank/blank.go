@@ -125,7 +125,7 @@ func (bh *BlankHost) initSignedRecord() error {
 	// 获取认证地址簿
 	cab, ok := peerstore.GetCertifiedAddrBook(bh.n.Peerstore())
 	if !ok {
-		log.Error("对等存储不支持签名记录")
+		log.Errorf("对等存储不支持签名记录")
 		return errors.New("对等存储不支持签名记录")
 	}
 	// 创建对等记录
@@ -133,13 +133,13 @@ func (bh *BlankHost) initSignedRecord() error {
 	// 签名记录
 	ev, err := record.Seal(rec, bh.Peerstore().PrivKey(bh.ID()))
 	if err != nil {
-		log.Debugf("为自身创建签名记录失败: %s", err)
+		log.Errorf("为自身创建签名记录失败: %s", err)
 		return err
 	}
 	// 保存记录到对等存储
 	_, err = cab.ConsumePeerRecord(ev, peerstore.PermanentAddrTTL)
 	if err != nil {
-		log.Debugf("将签名记录持久化到对等存储失败: %s", err)
+		log.Errorf("将签名记录持久化到对等存储失败: %s", err)
 		return err
 	}
 	return nil

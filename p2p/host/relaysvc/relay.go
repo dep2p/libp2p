@@ -70,7 +70,7 @@ func (m *RelayManager) background(ctx context.Context) {
 				return
 			}
 			if err := m.reachabilityChanged(ev.(event.EvtLocalReachabilityChanged).Reachability); err != nil { // 处理可达性变更
-				log.Errorf("处理可达性变更失败: %v", err)
+				log.Debugf("处理可达性变更失败: %v", err)
 				return
 			}
 		}
@@ -95,7 +95,7 @@ func (m *RelayManager) reachabilityChanged(r network.Reachability) error {
 		}
 		relay, err := relayv2.New(m.host, m.opts...) // 创建新的中继
 		if err != nil {                              // 创建失败
-			log.Errorf("创建中继失败: %v", err)
+			log.Debugf("创建中继失败: %v", err)
 			return err
 		}
 		m.relay = relay // 设置中继
@@ -105,7 +105,7 @@ func (m *RelayManager) reachabilityChanged(r network.Reachability) error {
 		if m.relay != nil {    // 如果中继存在
 			err := m.relay.Close() // 关闭中继
 			m.relay = nil          // 清空中继
-			log.Errorf("关闭中继失败: %v", err)
+			log.Debugf("关闭中继失败: %v", err)
 			return err
 		}
 	}

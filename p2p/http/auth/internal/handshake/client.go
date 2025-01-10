@@ -89,14 +89,14 @@ func (h *PeerIDAuthHandshakeClient) ParseHeader(header http.Header) error {
 
 	// 检查头部值是否存在
 	if len(headerVal) == 0 {
-		log.Errorf("缺少认证信息")
+		log.Debugf("缺少认证信息")
 		return errMissingChallenge
 	}
 
 	// 解析认证方案参数
 	err := h.p.parsePeerIDAuthSchemeParams(headerVal)
 	if err != nil {
-		log.Errorf("解析认证方案参数失败: %v", err)
+		log.Debugf("解析认证方案参数失败: %v", err)
 		return err
 	}
 
@@ -105,19 +105,19 @@ func (h *PeerIDAuthHandshakeClient) ParseHeader(header http.Header) error {
 		// 解码 base64 格式的公钥
 		serverPubKeyBytes, err := base64.URLEncoding.AppendDecode(nil, h.p.publicKeyB64)
 		if err != nil {
-			log.Errorf("解码公钥失败: %v", err)
+			log.Debugf("解码公钥失败: %v", err)
 			return err
 		}
 		// 解析公钥
 		h.serverPubKey, err = crypto.UnmarshalPublicKey(serverPubKeyBytes)
 		if err != nil {
-			log.Errorf("解析公钥失败: %v", err)
+			log.Debugf("解析公钥失败: %v", err)
 			return err
 		}
 		// 从公钥生成对等节点 ID
 		h.serverPeerID, err = peer.IDFromPublicKey(h.serverPubKey)
 		if err != nil {
-			log.Errorf("从公钥生成对等节点 ID 失败: %v", err)
+			log.Debugf("从公钥生成对等节点 ID 失败: %v", err)
 			return err
 		}
 	}
@@ -139,7 +139,7 @@ func (h *PeerIDAuthHandshakeClient) Run() error {
 	// 获取客户端公钥字节
 	clientPubKeyBytes, err := crypto.MarshalPublicKey(h.PrivKey.GetPublic())
 	if err != nil {
-		log.Errorf("获取客户端公钥字节失败: %v", err)
+		log.Debugf("获取客户端公钥字节失败: %v", err)
 		return err
 	}
 
@@ -181,7 +181,7 @@ func (h *PeerIDAuthHandshakeClient) Run() error {
 	case peerIDAuthClientStateSignChallenge:
 		// 验证挑战长度
 		if len(h.p.challengeClient) < challengeLen {
-			log.Errorf("挑战数据长度过短")
+			log.Debugf("挑战数据长度过短")
 			return errors.New("挑战数据长度过短")
 		}
 
@@ -189,11 +189,11 @@ func (h *PeerIDAuthHandshakeClient) Run() error {
 		h.hb.writeScheme(PeerIDAuthScheme)
 		h.hb.writeParamB64(nil, "public-key", clientPubKeyBytes)
 		if err := h.addChallengeServerParam(); err != nil {
-			log.Errorf("添加服务端挑战参数失败: %v", err)
+			log.Debugf("添加服务端挑战参数失败: %v", err)
 			return err
 		}
 		if err := h.addSigParam(); err != nil {
-			log.Errorf("添加客户端签名参数失败: %v", err)
+			log.Debugf("添加客户端签名参数失败: %v", err)
 			return err
 		}
 		h.hb.writeParam("opaque", h.p.opaqueB64)
@@ -203,7 +203,7 @@ func (h *PeerIDAuthHandshakeClient) Run() error {
 	case peerIDAuthClientStateVerifyChallenge:
 		// 验证服务端签名
 		if err := h.verifySig(clientPubKeyBytes); err != nil {
-			log.Errorf("验证服务端签名失败: %v", err)
+			log.Debugf("验证服务端签名失败: %v", err)
 			return err
 		}
 
@@ -225,7 +225,7 @@ func (h *PeerIDAuthHandshakeClient) addChallengeServerParam() error {
 	// 生成随机挑战数据
 	_, err := io.ReadFull(randReader, h.buf[:challengeLen])
 	if err != nil {
-		log.Errorf("生成随机挑战数据失败: %v", err)
+		log.Debugf("生成随机挑战数据失败: %v", err)
 		return err
 	}
 	// 编码为 base64 格式
@@ -245,7 +245,7 @@ func (h *PeerIDAuthHandshakeClient) addChallengeServerParam() error {
 //   - error: 验证过程中的错误
 func (h *PeerIDAuthHandshakeClient) verifySig(clientPubKeyBytes []byte) error {
 	if len(h.p.sigB64) == 0 {
-		log.Errorf("签名未设置")
+		log.Debugf("签名未设置")
 		return errors.New("签名未设置")
 	}
 	// 解码签名
@@ -273,7 +273,7 @@ func (h *PeerIDAuthHandshakeClient) addSigParam() error {
 	// 获取服务端公钥字节
 	serverPubKeyBytes, err := crypto.MarshalPublicKey(h.serverPubKey)
 	if err != nil {
-		log.Errorf("获取服务端公钥字节失败: %v", err)
+		log.Debugf("获取服务端公钥字节失败: %v", err)
 		return err
 	}
 	// 生成签名
@@ -300,12 +300,12 @@ func (h *PeerIDAuthHandshakeClient) PeerID() (peer.ID, error) {
 	case peerIDAuthClientStateDone:
 	case peerIDAuthClientStateWaitingForBearer:
 	default:
-		log.Errorf("服务端尚未认证")
+		log.Debugf("服务端尚未认证")
 		return "", errors.New("服务端尚未认证")
 	}
 
 	if h.serverPeerID == "" {
-		log.Errorf("对等节点 ID 未设置")
+		log.Debugf("对等节点 ID 未设置")
 		return "", errors.New("对等节点 ID 未设置")
 	}
 	return h.serverPeerID, nil

@@ -87,28 +87,28 @@ func NewPeerstore(ctx context.Context, store ds.Batching, opts Options) (*pstore
 	// 创建地址簿
 	addrBook, err := NewAddrBook(ctx, store, opts)
 	if err != nil {
-		log.Errorf("创建地址簿失败: %v", err)
+		log.Debugf("创建地址簿失败: %v", err)
 		return nil, err
 	}
 
 	// 创建密钥簿
 	keyBook, err := NewKeyBook(ctx, store, opts)
 	if err != nil {
-		log.Errorf("创建密钥簿失败: %v", err)
+		log.Debugf("创建密钥簿失败: %v", err)
 		return nil, err
 	}
 
 	// 创建对等节点元数据
 	peerMetadata, err := NewPeerMetadata(ctx, store, opts)
 	if err != nil {
-		log.Errorf("创建对等节点元数据失败: %v", err)
+		log.Debugf("创建对等节点元数据失败: %v", err)
 		return nil, err
 	}
 
 	// 创建协议簿
 	protoBook, err := NewProtoBook(peerMetadata, WithMaxProtocols(opts.MaxProtocols))
 	if err != nil {
-		log.Errorf("创建协议簿失败: %v", err)
+		log.Debugf("创建协议簿失败: %v", err)
 		return nil, err
 	}
 
@@ -142,7 +142,7 @@ func uniquePeerIds(ds ds.Datastore, prefix ds.Key, extractor func(result query.R
 
 	// 执行查询
 	if results, err = ds.Query(context.TODO(), q); err != nil {
-		log.Errorf("查询数据存储失败: %v", err)
+		log.Debugf("查询数据存储失败: %v", err)
 		return nil, err
 	}
 
@@ -193,7 +193,7 @@ func (ps *pstoreds) Close() (err error) {
 
 	// 如果有错误则返回组合的错误信息
 	if len(errs) > 0 {
-		log.Errorf("关闭peerstore失败: %v", errs)
+		log.Debugf("关闭peerstore失败: %v", errs)
 		return fmt.Errorf("关闭peerstore失败: %v", errs)
 	}
 	return nil

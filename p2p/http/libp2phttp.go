@@ -272,13 +272,13 @@ func (h *Host) setupListeners(listenerErrCh chan error) error {
 		// 解析多地址
 		parsedAddr, err := parseMultiaddr(addr)
 		if err != nil {
-			log.Errorf("解析多地址失败: %v", err)
+			log.Debugf("解析多地址失败: %v", err)
 			return err
 		}
 		// 解析主机地址
 		ipaddr, err := net.ResolveIPAddr("ip", parsedAddr.host)
 		if err != nil {
-			log.Errorf("解析主机地址失败: %v", err)
+			log.Debugf("解析主机地址失败: %v", err)
 			return err
 		}
 
@@ -286,7 +286,7 @@ func (h *Host) setupListeners(listenerErrCh chan error) error {
 		// 创建 TCP 监听器
 		l, err := net.Listen("tcp", host+":"+parsedAddr.port)
 		if err != nil {
-			log.Errorf("创建TCP监听器失败: %v", err)
+			log.Debugf("创建TCP监听器失败: %v", err)
 			return err
 		}
 		h.httpTransport.listeners = append(h.httpTransport.listeners, l)
@@ -294,7 +294,7 @@ func (h *Host) setupListeners(listenerErrCh chan error) error {
 		// 获取解析后的端口
 		_, port, err := net.SplitHostPort(l.Addr().String())
 		if err != nil {
-			log.Errorf("获取解析后的端口失败: %v", err)
+			log.Debugf("获取解析后的端口失败: %v", err)
 			return err
 		}
 
@@ -342,7 +342,7 @@ func (h *Host) Serve() error {
 	for _, addr := range h.ListenAddrs {
 		_, isHTTP := normalizeHTTPMultiaddr(addr)
 		if !isHTTP {
-			log.Errorf("地址 %s 不包含 /http 或 /https 组件", addr)
+			log.Debugf("地址 %s 不包含 /http 或 /https 组件", addr)
 			return fmt.Errorf("地址 %s 不包含 /http 或 /https 组件", addr)
 		}
 	}
@@ -369,7 +369,7 @@ func (h *Host) Serve() error {
 
 	// 检查是否有可用的监听器
 	if len(h.ListenAddrs) == 0 && h.StreamHost == nil {
-		log.Errorf("没有可用的监听器")
+		log.Debugf("没有可用的监听器")
 		return ErrNoListeners
 	}
 
@@ -391,7 +391,7 @@ func (h *Host) Serve() error {
 	if h.StreamHost != nil {
 		listener, err := streamHostListen(h.StreamHost)
 		if err != nil {
-			log.Errorf("设置流监听器失败: %v", err)
+			log.Debugf("设置流监听器失败: %v", err)
 			return err
 		}
 		h.httpTransport.listeners = append(h.httpTransport.listeners, listener)
@@ -413,7 +413,7 @@ func (h *Host) Serve() error {
 	err := h.setupListeners(errCh)
 	if err != nil {
 		closeAllListeners()
-		log.Errorf("设置监听器失败: %v", err)
+		log.Debugf("设置监听器失败: %v", err)
 		return err
 	}
 
@@ -424,7 +424,7 @@ func (h *Host) Serve() error {
 	// 检查监听器和地址是否有效
 	if len(h.httpTransport.listeners) == 0 || len(h.httpTransport.listenAddrs) == 0 {
 		closeAllListeners()
-		log.Errorf("没有可用的监听器")
+		log.Debugf("没有可用的监听器")
 		return ErrNoListeners
 	}
 
@@ -566,7 +566,7 @@ func (rt *streamRoundTripper) RoundTrip(r *http.Request) (*http.Response, error)
 	// 创建新的流
 	s, err := rt.h.NewStream(r.Context(), rt.server, ProtocolIDForMultistreamSelect)
 	if err != nil {
-		log.Errorf("创建新流失败: %v", err)
+		log.Debugf("创建新流失败: %v", err)
 		return nil, err
 	}
 
@@ -591,7 +591,7 @@ func (rt *streamRoundTripper) RoundTrip(r *http.Request) (*http.Response, error)
 	resp, err := http.ReadResponse(bufio.NewReader(s), r)
 	if err != nil {
 		s.Close()
-		log.Errorf("读取响应失败: %v", err)
+		log.Debugf("读取响应失败: %v", err)
 		return nil, err
 	}
 	// 包装响应体
@@ -650,7 +650,7 @@ func relativeMultiaddrURIToAbs(original *url.URL, relative *url.URL) (*url.URL, 
 	// 如果 OmitHost 为 true,说明不是相对路径,而是完整的多地址 URI
 	if relative.OmitHost {
 		// 不是相对路径(至少无法判断),无法处理
-		log.Errorf("不是相对路径")
+		log.Debugf("不是相对路径")
 		return nil, errNotRelative
 	}
 
@@ -745,7 +745,7 @@ func (rt *roundTripperForSpecificServer) GetPeerMetadata() (PeerMeta, error) {
 func (rt *roundTripperForSpecificServer) RoundTrip(r *http.Request) (*http.Response, error) {
 	// 验证请求的协议和主机
 	if (r.URL.Scheme != "" && r.URL.Scheme != rt.scheme) || (r.URL.Host != "" && r.URL.Host != rt.targetServerAddr) {
-		log.Errorf("此传输仅用于 %s://%s 的请求", rt.scheme, rt.targetServerAddr)
+		log.Debugf("此传输仅用于 %s://%s 的请求", rt.scheme, rt.targetServerAddr)
 		return nil, fmt.Errorf("此传输仅用于 %s://%s 的请求", rt.scheme, rt.targetServerAddr)
 	}
 	// 设置请求的协议和主机
@@ -835,7 +835,7 @@ func (h *Host) NamespaceRoundTripper(roundtripper http.RoundTripper, p protocol.
 	// 检查协议是否存在
 	v, ok := protos[p]
 	if !ok {
-		log.Errorf("服务器 %s 不支持协议 %s", server, p)
+		log.Debugf("服务器 %s 不支持协议 %s", server, p)
 		return &namespacedRoundTripper{}, fmt.Errorf("服务器 %s 不支持协议 %s", server, p)
 	}
 
@@ -849,7 +849,7 @@ func (h *Host) NamespaceRoundTripper(roundtripper http.RoundTripper, p protocol.
 	// 解析路径
 	u, err := url.Parse(path)
 	if err != nil {
-		log.Errorf("服务器 %s 的协议 %s 的路径 %s 无效", server, p, v.Path)
+		log.Debugf("服务器 %s 的协议 %s 的路径 %s 无效", server, p, v.Path)
 		return &namespacedRoundTripper{}, fmt.Errorf("服务器 %s 的协议 %s 的路径 %s 无效", server, p, v.Path)
 	}
 
@@ -876,14 +876,14 @@ func (h *Host) NamespacedClient(p protocol.ID, server peer.AddrInfo, opts ...Rou
 	// 创建受限的 RoundTripper
 	rt, err := h.NewConstrainedRoundTripper(server, opts...)
 	if err != nil {
-		log.Errorf("创建受限的 RoundTripper 失败: %v", err)
+		log.Debugf("创建受限的 RoundTripper 失败: %v", err)
 		return http.Client{}, err
 	}
 
 	// 创建命名空间限定的 RoundTripper
 	nrt, err := h.NamespaceRoundTripper(rt, p, server.ID)
 	if err != nil {
-		log.Errorf("创建命名空间限定的 RoundTripper 失败: %v", err)
+		log.Debugf("创建命名空间限定的 RoundTripper 失败: %v", err)
 		return http.Client{}, err
 	}
 
@@ -990,12 +990,12 @@ func (h *Host) RoundTrip(r *http.Request) (*http.Response, error) {
 
 	// 处理基于流的请求
 	if h.StreamHost == nil {
-		log.Errorf("无法通过流执行 HTTP。缺少 StreamHost")
+		log.Debugf("无法通过流执行 HTTP。缺少 StreamHost")
 		return nil, fmt.Errorf("无法通过流执行 HTTP。缺少 StreamHost")
 	}
 
 	if parsed.peer == "" {
-		log.Errorf("multiaddr 中没有对等节点 ID")
+		log.Debugf("multiaddr 中没有对等节点 ID")
 		return nil, fmt.Errorf("multiaddr 中没有对等节点 ID")
 	}
 	// 分离 HTTP 路径组件
@@ -1045,7 +1045,7 @@ func (h *Host) NewConstrainedRoundTripper(server peer.AddrInfo, opts ...RoundTri
 
 	// 验证对等节点认证要求
 	if options.serverMustAuthenticatePeerID && server.ID == "" {
-		log.Errorf("要求服务器认证对等节点 ID,但未提供对等节点 ID")
+		log.Debugf("要求服务器认证对等节点 ID,但未提供对等节点 ID")
 		return nil, fmt.Errorf("要求服务器认证对等节点 ID,但未提供对等节点 ID")
 	}
 
@@ -1079,7 +1079,7 @@ func (h *Host) NewConstrainedRoundTripper(server peer.AddrInfo, opts ...RoundTri
 		// 使用 HTTP 传输
 		parsed, err := parseMultiaddr(httpAddrs[0])
 		if err != nil {
-			log.Errorf("解析多地址失败: %v", err)
+			log.Debugf("解析多地址失败: %v", err)
 			return nil, err
 		}
 		scheme := "http"
@@ -1110,12 +1110,12 @@ func (h *Host) NewConstrainedRoundTripper(server peer.AddrInfo, opts ...RoundTri
 
 	// 使用基于流的传输
 	if h.StreamHost == nil {
-		log.Errorf("无法使用 HTTP 传输(无地址或需要对等节点 ID 认证),且未提供流主机")
+		log.Debugf("无法使用 HTTP 传输(无地址或需要对等节点 ID 认证),且未提供流主机")
 		return nil, fmt.Errorf("无法使用 HTTP 传输(无地址或需要对等节点 ID 认证),且未提供流主机")
 	}
 	if !existingStreamConn {
 		if server.ID == "" {
-			log.Errorf("无法使用 HTTP 传输,且未提供服务器对等节点 ID")
+			log.Debugf("无法使用 HTTP 传输,且未提供服务器对等节点 ID")
 			return nil, fmt.Errorf("无法使用 HTTP 传输,且未提供服务器对等节点 ID")
 		}
 	}
@@ -1295,7 +1295,7 @@ func (h *Host) getAndStorePeerMetadata(ctx context.Context, roundtripper http.Ro
 		meta, err = requestPeerMeta(ctx, roundtripper, WellKnownProtocols)
 	}
 	if err != nil {
-		log.Errorf("请求对等节点元数据失败: %v", err)
+		log.Debugf("请求对等节点元数据失败: %v", err)
 		return nil, err
 	}
 
@@ -1320,7 +1320,7 @@ func requestPeerMeta(ctx context.Context, roundtripper http.RoundTripper, wellKn
 	// 创建请求
 	req, err := http.NewRequestWithContext(ctx, "GET", wellKnownResource, nil)
 	if err != nil {
-		log.Errorf("创建请求失败: %v", err)
+		log.Debugf("创建请求失败: %v", err)
 		return nil, err
 	}
 	req.Header.Set("Accept", "application/json")
@@ -1329,14 +1329,14 @@ func requestPeerMeta(ctx context.Context, roundtripper http.RoundTripper, wellKn
 	client := http.Client{Transport: roundtripper}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Errorf("发送请求失败: %v", err)
+		log.Debugf("发送请求失败: %v", err)
 		return nil, err
 	}
 	defer resp.Body.Close()
 
 	// 检查状态码
 	if resp.StatusCode != http.StatusOK {
-		log.Errorf("意外的状态码: %d", resp.StatusCode)
+		log.Debugf("意外的状态码: %d", resp.StatusCode)
 		return nil, fmt.Errorf("意外的状态码: %d", resp.StatusCode)
 	}
 

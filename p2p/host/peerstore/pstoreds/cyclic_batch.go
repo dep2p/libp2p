@@ -33,7 +33,7 @@ func newCyclicBatch(ds ds.Batching, threshold int) (ds.Batch, error) {
 	// 从数据存储创建一个新的批处理
 	batch, err := ds.Batch(context.TODO())
 	if err != nil {
-		log.Errorf("创建批处理失败: %v", err)
+		log.Debugf("创建批处理失败: %v", err)
 		return nil, err
 	}
 	return &cyclicBatch{Batch: batch, ds: ds}, nil
@@ -45,7 +45,7 @@ func newCyclicBatch(ds ds.Batching, threshold int) (ds.Batch, error) {
 func (cb *cyclicBatch) cycle() (err error) {
 	// 检查批处理是否已关闭
 	if cb.Batch == nil {
-		log.Errorf("批处理已关闭")
+		log.Debugf("批处理已关闭")
 		return errors.New("批处理已关闭")
 	}
 	// 检查是否达到阈值

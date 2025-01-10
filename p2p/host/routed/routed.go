@@ -80,7 +80,7 @@ func (rh *RoutedHost) Connect(ctx context.Context, pi peer.AddrInfo) error {
 		var err error
 		addrs, err = rh.findPeerAddrs(ctx, pi.ID)
 		if err != nil {
-			log.Errorf("查找对等节点地址失败: %v", err)
+			log.Debugf("查找对等节点地址失败: %v", err)
 			return err
 		}
 	}
@@ -166,17 +166,13 @@ func (rh *RoutedHost) Connect(ctx context.Context, pi peer.AddrInfo) error {
 func (rh *RoutedHost) findPeerAddrs(ctx context.Context, id peer.ID) ([]ma.Multiaddr, error) {
 	pi, err := rh.route.FindPeer(ctx, id)
 	if err != nil {
-		log.Errorf("查找对等节点地址失败: %v", err)
+		log.Debugf("查找对等节点地址失败: %v", err)
 		return nil, err // 找不到任何地址 :(
 	}
 
 	if pi.ID != id {
 		err = fmt.Errorf("路由失败：提供了不同对等节点的地址")
-		log.Errorw("获得了错误的对等节点",
-			"错误", err,
-			"期望的对等节点", id,
-			"获得的对等节点", pi.ID,
-		)
+		log.Debugf("获得了错误的对等节点: %v", err)
 		return nil, err
 	}
 

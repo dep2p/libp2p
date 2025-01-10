@@ -69,14 +69,14 @@ func (pm *dsPeerMetadata) Get(p peer.ID, key string) (interface{}, error) {
 		if err == ds.ErrNotFound {
 			err = pstore.ErrNotFound
 		}
-		log.Errorf("获取元数据失败: %v", err)
+		log.Debugf("获取元数据失败: %v", err)
 		return nil, err
 	}
 
 	// 解码存储的值
 	var res interface{}
 	if err := gob.NewDecoder(bytes.NewReader(value)).Decode(&res); err != nil {
-		log.Errorf("解码元数据失败: %v", err)
+		log.Debugf("解码元数据失败: %v", err)
 		return nil, err
 	}
 	return res, nil
@@ -98,7 +98,7 @@ func (pm *dsPeerMetadata) Put(p peer.ID, key string, val interface{}) error {
 	var buf pool.Buffer
 	// 编码值
 	if err := gob.NewEncoder(&buf).Encode(&val); err != nil {
-		log.Errorf("编码元数据失败: %v", err)
+		log.Debugf("编码元数据失败: %v", err)
 		return err
 	}
 	// 存储到数据存储中
@@ -116,7 +116,7 @@ func (pm *dsPeerMetadata) RemovePeer(p peer.ID) {
 		KeysOnly: true,
 	})
 	if err != nil {
-		log.Errorf("查询数据存储以移除对等节点时失败: %v", err)
+		log.Debugf("查询数据存储以移除对等节点时失败: %v", err)
 		return
 	}
 	// 删除所有找到的键

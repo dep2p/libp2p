@@ -99,7 +99,7 @@ func (a *ServerPeerIDAuth) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	hostname := r.Host
 	if a.NoTLS {
 		if a.ValidHostnameFn == nil {
-			log.Error("未设置 ValidHostnameFn，NoTLS 模式下必需")
+			log.Debugf("未设置 ValidHostnameFn，NoTLS 模式下必需")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

@@ -62,12 +62,12 @@ func (ps *memoryPeerMetadata) Get(p peer.ID, key string) (interface{}, error) {
 
 	m, ok := ps.ds[p] // 获取节点的元数据映射
 	if !ok {          // 如果不存在
-		log.Errorf("对等节点不存在: %v", p)
+		log.Debugf("对等节点不存在: %v", p)
 		return nil, pstore.ErrNotFound // 返回未找到错误
 	}
 	val, ok := m[key] // 获取元数据值
 	if !ok {          // 如果不存在
-		log.Errorf("元数据不存在: %v", key)
+		log.Debugf("元数据不存在: %v", key)
 		return nil, pstore.ErrNotFound // 返回未找到错误
 	}
 	return val, nil // 返回元数据值

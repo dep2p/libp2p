@@ -73,12 +73,12 @@ func (r *addrsRecord) flush(write ds.Write) (err error) {
 	// 序列化记录
 	data, err := proto.Marshal(r)
 	if err != nil {
-		log.Errorf("序列化地址簿记录失败: %v", err)
+		log.Debugf("序列化地址簿记录失败: %v", err)
 		return err
 	}
 	// 写入数据存储
 	if err = write.Put(context.TODO(), key, data); err != nil {
-		log.Errorf("写入地址簿记录失败: %v", err)
+		log.Debugf("写入地址簿记录失败: %v", err)
 		return err
 	}
 	// 写入成功,清除脏标记
@@ -266,7 +266,7 @@ func NewAddrBook(ctx context.Context, store ds.Batching, opts Options) (ab *dsAd
 	// 根据缓存大小配置初始化缓存
 	if opts.CacheSize > 0 {
 		if ab.cache, err = arc.NewARC[peer.ID, *addrsRecord](int(opts.CacheSize)); err != nil {
-			log.Errorf("初始化ARC缓存失败: %v", err)
+			log.Debugf("初始化ARC缓存失败: %v", err)
 			return nil, err
 		}
 	} else {
@@ -275,7 +275,7 @@ func NewAddrBook(ctx context.Context, store ds.Batching, opts Options) (ab *dsAd
 
 	// 初始化垃圾回收器
 	if ab.gc, err = newAddressBookGc(ctx, ab); err != nil {
-		log.Errorf("初始化垃圾回收器失败: %v", err)
+		log.Debugf("初始化垃圾回收器失败: %v", err)
 		return nil, err
 	}
 
@@ -336,7 +336,7 @@ func (ab *dsAddrBook) loadRecord(id peer.ID, cache bool, update bool) (pr *addrs
 	case nil:
 		// 反序列化记录
 		if err := proto.Unmarshal(data, pr); err != nil {
-			log.Errorf("反序列化地址簿记录失败: %v", err)
+			log.Debugf("反序列化地址簿记录失败: %v", err)
 			return nil, err
 		}
 		// 清理记录并根据需要更新
@@ -344,7 +344,7 @@ func (ab *dsAddrBook) loadRecord(id peer.ID, cache bool, update bool) (pr *addrs
 			err = pr.flush(ab.ds)
 		}
 	default:
-		log.Errorf("加载地址簿记录失败: %v", err)
+		log.Debugf("加载地址簿记录失败: %v", err)
 		return nil, err
 	}
 
@@ -398,18 +398,18 @@ func (ab *dsAddrBook) ConsumePeerRecord(recordEnvelope *record.Envelope, ttl tim
 	// 从信封中获取记录
 	r, err := recordEnvelope.Record()
 	if err != nil {
-		log.Errorf("从信封中获取记录失败: %v", err)
+		log.Debugf("从信封中获取记录失败: %v", err)
 		return false, err
 	}
 	// 类型断言为PeerRecord
 	rec, ok := r.(*peer.PeerRecord)
 	if !ok {
-		log.Errorf("信封未包含PeerRecord")
+		log.Debugf("信封未包含PeerRecord")
 		return false, fmt.Errorf("信封未包含PeerRecord")
 	}
 	// 验证签名密钥是否匹配PeerRecord中的PeerID
 	if !rec.PeerID.MatchesPublicKey(recordEnvelope.PublicKey) {
-		log.Errorf("签名密钥与PeerRecord中的PeerID不匹配")
+		log.Debugf("签名密钥与PeerRecord中的PeerID不匹配")
 		return false, fmt.Errorf("签名密钥与PeerRecord中的PeerID不匹配")
 	}
 
@@ -424,14 +424,14 @@ func (ab *dsAddrBook) ConsumePeerRecord(recordEnvelope *record.Envelope, ttl tim
 	// 设置地址
 	err = ab.setAddrs(rec.PeerID, addrs, ttl, ttlExtend, true)
 	if err != nil {
-		log.Errorf("设置地址失败: %v", err)
+		log.Debugf("设置地址失败: %v", err)
 		return false, err
 	}
 
 	// 存储签名的PeerRecord
 	err = ab.storeSignedPeerRecord(rec.PeerID, recordEnvelope, rec)
 	if err != nil {
-		log.Errorf("存储签名的PeerRecord失败: %v", err)
+		log.Debugf("存储签名的PeerRecord失败: %v", err)
 		return false, err
 	}
 	return true, nil
@@ -475,7 +475,7 @@ func (ab *dsAddrBook) storeSignedPeerRecord(p peer.ID, envelope *record.Envelope
 	// 序列化信封
 	envelopeBytes, err := envelope.Marshal()
 	if err != nil {
-		log.Errorf("序列化信封失败: %v", err)
+		log.Debugf("序列化信封失败: %v", err)
 		return err
 	}
 	// 重新加载记录并添加路由状态
@@ -483,7 +483,7 @@ func (ab *dsAddrBook) storeSignedPeerRecord(p peer.ID, envelope *record.Envelope
 	// 它将被删除
 	pr, err := ab.loadRecord(p, true, false)
 	if err != nil {
-		log.Errorf("加载记录失败: %v", err)
+		log.Debugf("加载记录失败: %v", err)
 		return err
 	}
 	pr.Lock()
@@ -517,7 +517,7 @@ func (ab *dsAddrBook) GetPeerRecord(p peer.ID) *record.Envelope {
 	defer pr.RUnlock()
 	// 检查记录是否有效
 	if pr.CertifiedRecord == nil || len(pr.CertifiedRecord.Raw) == 0 || len(pr.Addrs) == 0 {
-		log.Errorf("记录无效: %v", pr)
+		log.Debugf("记录无效: %v", pr)
 		return nil
 	}
 	// 解析信封
@@ -602,7 +602,7 @@ func (ab *dsAddrBook) Addrs(p peer.ID) []ma.Multiaddr {
 	// 加载记录
 	pr, err := ab.loadRecord(p, true, true)
 	if err != nil {
-		log.Errorf("查询地址时加载peer %s的peerstore条目失败, 错误: %v", p, err)
+		log.Warnf("查询地址时加载peer %s的peerstore条目失败, 错误: %v", p, err)
 		return nil
 	}
 
@@ -615,7 +615,7 @@ func (ab *dsAddrBook) Addrs(p peer.ID) []ma.Multiaddr {
 		var err error
 		addrs[i], err = ma.NewMultiaddrBytes(a.Addr)
 		if err != nil {
-			log.Errorf("查询地址时解析peer %v的peerstore条目失败, 错误: %v", p, err)
+			log.Warnf("查询地址时解析peer %v的peerstore条目失败, 错误: %v", p, err)
 			return nil
 		}
 	}
@@ -632,7 +632,7 @@ func (ab *dsAddrBook) PeersWithAddrs() peer.IDSlice {
 		return ds.RawKey(result.Key).Name()
 	})
 	if err != nil {
-		log.Debugf("获取有地址的peer时出错: %v", err)
+		log.Errorf("获取有地址的peer时出错: %v", err)
 	}
 	return ids
 }
@@ -688,7 +688,7 @@ func (ab *dsAddrBook) setAddrs(p peer.ID, addrs []ma.Multiaddr, ttl time.Duratio
 	// 加载记录
 	pr, err := ab.loadRecord(p, true, false)
 	if err != nil {
-		log.Errorf("设置地址时加载peer %s的peerstore条目失败, 错误: %v", p, err)
+		log.Debugf("设置地址时加载peer %s的peerstore条目失败, 错误: %v", p, err)
 		return fmt.Errorf("设置地址时加载peer %s的peerstore条目失败, 错误: %v", p, err)
 	}
 
@@ -802,7 +802,7 @@ func (ab *dsAddrBook) deleteAddrs(p peer.ID, addrs []ma.Multiaddr) (err error) {
 	// 加载记录
 	pr, err := ab.loadRecord(p, false, false)
 	if err != nil {
-		log.Errorf("删除地址时加载peer %v的peerstore条目失败, 错误: %v", p, err)
+		log.Debugf("删除地址时加载peer %v的peerstore条目失败, 错误: %v", p, err)
 		return fmt.Errorf("删除地址时加载peer %v的peerstore条目失败, 错误: %v", p, err)
 	}
 

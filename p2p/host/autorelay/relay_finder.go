@@ -133,7 +133,6 @@ func (rf *relayFinder) cleanupDisconnectedPeers(ctx context.Context) {
 	// 订阅节点连接状态变更事件
 	subConnectedness, err := rf.host.EventBus().Subscribe(new(event.EvtPeerConnectednessChanged), eventbus.Name("autorelay (relay finder)"), eventbus.BufSize(32))
 	if err != nil {
-		log.Error("订阅 EvtPeerConnectednessChanged 失败")
 		return
 	}
 	defer subConnectedness.Close() // 延迟关闭订阅
@@ -536,14 +535,14 @@ var errProtocolNotSupported = errors.New("不支持电路v2协议")
 //   - err: error 错误信息
 func (rf *relayFinder) tryNode(ctx context.Context, pi peer.AddrInfo) (supportsRelayV2 bool, err error) {
 	if err := rf.host.Connect(ctx, pi); err != nil { // 连接到节点
-		log.Errorf("连接中继 %s 时出错: %v", pi.ID, err)
+		log.Debugf("连接中继 %s 时出错: %v", pi.ID, err)
 		return false, fmt.Errorf("连接中继 %s 时出错: %w", pi.ID, err) // 返回连接错误
 	}
 
 	conns := rf.host.Network().ConnsToPeer(pi.ID) // 获取到节点的连接
 	for _, conn := range conns {                  // 遍历所有连接
 		if isRelayAddr(conn.RemoteMultiaddr()) { // 如果是中继地址
-			log.Errorf("不是公共节点")
+			log.Debugf("不是公共节点")
 			return false, errors.New("不是公共节点") // 返回错误
 		}
 	}
@@ -566,17 +565,17 @@ func (rf *relayFinder) tryNode(ctx context.Context, pi peer.AddrInfo) (supportsR
 	select {
 	case <-ready: // 等待就绪信号
 	case <-ctx.Done(): // 上下文取消
-		log.Errorf("检查节点 %s 的中继协议支持时出错: %v", pi.ID, ctx.Err())
+		log.Debugf("检查节点 %s 的中继协议支持时出错: %v", pi.ID, ctx.Err())
 		return false, ctx.Err() // 返回上下文错误
 	}
 
 	protos, err := rf.host.Peerstore().SupportsProtocols(pi.ID, protoIDv2) // 检查协议支持
 	if err != nil {                                                        // 如果发生错误
-		log.Errorf("检查节点 %s 的中继协议支持时出错: %v", pi.ID, err)
+		log.Debugf("检查节点 %s 的中继协议支持时出错: %v", pi.ID, err)
 		return false, fmt.Errorf("检查节点 %s 的中继协议支持时出错: %w", pi.ID, err) // 返回错误
 	}
 	if len(protos) == 0 { // 如果不支持任何协议
-		log.Errorf("节点 %s 不支持中继协议", pi.ID)
+		log.Debugf("节点 %s 不支持中继协议", pi.ID)
 		return false, errProtocolNotSupported // 返回协议不支持错误
 	}
 	return true, nil // 返回支持v2协议
@@ -689,7 +688,7 @@ func (rf *relayFinder) connectToRelay(ctx context.Context, cand *candidate) (*ci
 			rf.candidateMx.Lock()          // 加锁
 			rf.removeCandidate(cand.ai.ID) // 移除候选节点
 			rf.candidateMx.Unlock()        // 解锁
-			log.Errorf("连接中继 %s 失败: %v", id, err)
+			log.Debugf("连接中继 %s 失败: %v", id, err)
 			return nil, fmt.Errorf("连接失败: %w", err) // 返回错误
 		}
 	}
@@ -732,7 +731,7 @@ func (rf *relayFinder) refreshReservations(ctx context.Context, now time.Time) b
 			err := rf.refreshRelayReservation(ctx, p)              // 刷新预约
 			rf.metricsTracer.ReservationRequestFinished(true, err) // 更新指标
 			if err != nil {
-				log.Errorf("刷新中继预约失败: %v", err)
+				log.Debugf("刷新中继预约失败: %v", err)
 			}
 			return err // 返回错误
 		})
@@ -763,7 +762,7 @@ func (rf *relayFinder) refreshRelayReservation(ctx context.Context, p peer.ID) e
 		if exists {                                      // 如果存在
 			rf.metricsTracer.ReservationEnded(1) // 更新指标
 		}
-		log.Errorf("刷新中继预约失败: %v", err)
+		log.Debugf("刷新中继预约失败: %v", err)
 		return err // 返回错误
 	}
 

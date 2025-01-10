@@ -48,7 +48,7 @@ type autoNATService struct {
 //   - error: 如果发生错误则返回错误信息
 func newAutoNATService(c *config) (*autoNATService, error) {
 	if c.dialer == nil {
-		log.Errorf("无法在没有网络的情况下创建NAT服务")
+		log.Debugf("无法在没有网络的情况下创建NAT服务")
 		return nil, errors.New("无法在没有网络的情况下创建NAT服务")
 	}
 	return &autoNATService{
@@ -134,7 +134,7 @@ func (as *autoNATService) handleStream(s network.Stream) {
 func (as *autoNATService) handleDial(p peer.ID, obsaddr ma.Multiaddr, mpi *pb.Message_PeerInfo) *pb.Message_DialResponse {
 	// 验证节点信息
 	if mpi == nil {
-		log.Errorf("缺少节点信息")
+		log.Debugf("缺少节点信息")
 		return newDialResponseError(pb.Message_E_BAD_REQUEST, "缺少节点信息")
 	}
 
@@ -143,12 +143,12 @@ func (as *autoNATService) handleDial(p peer.ID, obsaddr ma.Multiaddr, mpi *pb.Me
 	if mpid != nil {
 		mp, err := peer.IDFromBytes(mpid)
 		if err != nil {
-			log.Errorf("无效的节点ID: %v", err)
+			log.Debugf("无效的节点ID: %v", err)
 			return newDialResponseError(pb.Message_E_BAD_REQUEST, "无效的节点ID")
 		}
 
 		if mp != p {
-			log.Errorf("节点ID不匹配")
+			log.Debugf("节点ID不匹配")
 			return newDialResponseError(pb.Message_E_BAD_REQUEST, "节点ID不匹配")
 		}
 	}
@@ -181,7 +181,7 @@ func (as *autoNATService) handleDial(p peer.ID, obsaddr ma.Multiaddr, mpi *pb.Me
 	for _, maddr := range mpi.GetAddrs() {
 		addr, err := ma.NewMultiaddrBytes(maddr)
 		if err != nil {
-			log.Errorf("解析多地址时出错: %s", err.Error())
+			log.Debugf("解析多地址时出错: %s", err.Error())
 			continue
 		}
 
@@ -190,7 +190,7 @@ func (as *autoNATService) handleDial(p peer.ID, obsaddr ma.Multiaddr, mpi *pb.Me
 			switch ip.Protocol().Code {
 			case ma.P_IP4, ma.P_IP6:
 			default:
-				log.Errorf("跳过非IP地址: %s", addr.String())
+				log.Debugf("跳过非IP地址: %s", addr.String())
 				continue
 			}
 			addr = hostIP
@@ -201,14 +201,14 @@ func (as *autoNATService) handleDial(p peer.ID, obsaddr ma.Multiaddr, mpi *pb.Me
 
 		// 检查是否应该跳过此地址
 		if as.config.dialPolicy.skipDial(addr) {
-			log.Errorf("跳过地址: %s", addr.String())
+			log.Debugf("跳过地址: %s", addr.String())
 			continue
 		}
 
 		str := addr.String()
 		_, ok := seen[str]
 		if ok {
-			log.Errorf("地址已存在: %s", addr.String())
+			log.Debugf("地址已存在: %s", addr.String())
 			continue
 		}
 
@@ -225,7 +225,7 @@ func (as *autoNATService) handleDial(p peer.ID, obsaddr ma.Multiaddr, mpi *pb.Me
 		if as.config.metricsTracer != nil {
 			as.config.metricsTracer.OutgoingDialRefused(no_valid_address)
 		}
-		log.Errorf("没有可拨号的地址")
+		log.Debugf("没有可拨号的地址")
 		return newDialResponseError(pb.Message_E_DIAL_REFUSED, "没有可拨号的地址")
 	}
 
@@ -270,7 +270,7 @@ func (as *autoNATService) doDial(pi peer.AddrInfo) *pb.Message_DialResponse {
 	// 执行拨号
 	conn, err := as.config.dialer.DialPeer(ctx, pi.ID)
 	if err != nil {
-		log.Errorf("拨号 %s 时出错: %s", pi.ID, err.Error())
+		log.Debugf("拨号 %s 时出错: %s", pi.ID, err.Error())
 		<-ctx.Done()
 		return newDialResponseError(pb.Message_E_DIAL_ERROR, "拨号失败")
 	}

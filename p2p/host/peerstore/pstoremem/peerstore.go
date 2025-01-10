@@ -44,7 +44,7 @@ func NewPeerstore(opts ...Option) (ps *pstoremem, err error) {
 		case AddrBookOption: // 如果是地址簿选项
 			addrBookOpts = append(addrBookOpts, o) // 添加到地址簿选项列表
 		default: // 其他类型
-			log.Errorf("意外的对等节点存储选项: %v", o)
+			log.Debugf("意外的对等节点存储选项: %v", o)
 			return nil, fmt.Errorf("意外的对等节点存储选项: %v", o) // 返回错误
 		}
 	}
@@ -53,7 +53,7 @@ func NewPeerstore(opts ...Option) (ps *pstoremem, err error) {
 	pb, err := NewProtoBook(protoBookOpts...) // 创建协议簿
 	if err != nil {                           // 如果出错
 		ab.Close() // 关闭地址簿
-		log.Errorf("创建协议簿失败: %v", err)
+		log.Debugf("创建协议簿失败: %v", err)
 		return nil, err // 返回错误
 	}
 
@@ -84,7 +84,7 @@ func (ps *pstoremem) Close() (err error) {
 	weakClose("peermetadata", ps.memoryPeerMetadata) // 关闭元数据
 
 	if len(errs) > 0 { // 如果有错误
-		log.Errorf("关闭对等节点存储失败: %v", errs)            // 返回错误信息
+		log.Debugf("关闭对等节点存储失败: %v", errs)            // 返回错误信息
 		return fmt.Errorf("关闭对等节点存储失败; 错误: %q", errs) // 返回错误信息
 	}
 	return nil

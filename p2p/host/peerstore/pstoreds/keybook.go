@@ -102,7 +102,7 @@ func (kb *dsKeyBook) PubKey(p peer.ID) ic.PubKey {
 func (kb *dsKeyBook) AddPubKey(p peer.ID, pk ic.PubKey) error {
 	// 检查公钥是否匹配peer ID
 	if !p.MatchesPublicKey(pk) {
-		log.Errorf("peer ID与公钥不匹配: %v", p)
+		log.Debugf("peer ID与公钥不匹配: %v", p)
 		return errors.New("peer ID与公钥不匹配")
 	}
 
@@ -152,12 +152,12 @@ func (kb *dsKeyBook) PrivKey(p peer.ID) ic.PrivKey {
 func (kb *dsKeyBook) AddPrivKey(p peer.ID, sk ic.PrivKey) error {
 	// 检查私钥是否为空
 	if sk == nil {
-		log.Errorf("私钥为空: %v", p)
+		log.Debugf("私钥为空: %v", p)
 		return errors.New("私钥为空")
 	}
 	// 检查私钥是否匹配peer ID
 	if !p.MatchesPrivateKey(sk) {
-		log.Errorf("peer ID与私钥不匹配: %v", p)
+		log.Debugf("peer ID与私钥不匹配: %v", p)
 		return errors.New("peer ID与私钥不匹配")
 	}
 

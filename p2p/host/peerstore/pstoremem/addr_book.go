@@ -392,16 +392,16 @@ func (mab *memoryAddrBook) AddAddrs(p peer.ID, addrs []ma.Multiaddr, ttl time.Du
 func (mab *memoryAddrBook) ConsumePeerRecord(recordEnvelope *record.Envelope, ttl time.Duration) (bool, error) {
 	r, err := recordEnvelope.Record() // 获取记录
 	if err != nil {
-		log.Errorf("获取记录失败: %v", err)
+		log.Debugf("获取记录失败: %v", err)
 		return false, err
 	}
 	rec, ok := r.(*peer.PeerRecord) // 类型断言
 	if !ok {
-		log.Errorf("无法处理信封:不是PeerRecord")
+		log.Debugf("无法处理信封:不是PeerRecord")
 		return false, fmt.Errorf("无法处理信封:不是PeerRecord")
 	}
 	if !rec.PeerID.MatchesPublicKey(recordEnvelope.PublicKey) { // 验证公钥
-		log.Errorf("签名密钥与PeerRecord中的PeerID不匹配")
+		log.Debugf("签名密钥与PeerRecord中的PeerID不匹配")
 		return false, fmt.Errorf("签名密钥与PeerRecord中的PeerID不匹配")
 	}
 
@@ -413,7 +413,7 @@ func (mab *memoryAddrBook) ConsumePeerRecord(recordEnvelope *record.Envelope, tt
 		return false, nil
 	}
 	if !found && len(mab.signedPeerRecords) >= mab.maxSignedPeerRecords { // 检查记录数量
-		log.Errorf("签名对等记录数量过多")
+		log.Debugf("签名对等记录数量过多")
 		return false, errors.New("签名对等记录数量过多")
 	}
 	mab.signedPeerRecords[rec.PeerID] = &peerRecordState{ // 保存记录状态
@@ -591,7 +591,7 @@ func (mab *memoryAddrBook) Addrs(p peer.ID) []ma.Multiaddr {
 	mab.mu.RLock()                        // 加读锁
 	defer mab.mu.RUnlock()                // 解锁
 	if _, ok := mab.addrs.Addrs[p]; !ok { // 如果对等节点不存在
-		log.Errorf("对等节点不存在: %v", p)
+		log.Debugf("对等节点不存在: %v", p)
 		return nil
 	}
 	return validAddrs(mab.clock.Now(), mab.addrs.Addrs[p]) // 返回有效地址
@@ -634,13 +634,13 @@ func (mab *memoryAddrBook) GetPeerRecord(p peer.ID) *record.Envelope {
 	}
 	// 记录可能已过期,但尚未被垃圾回收
 	if len(validAddrs(mab.clock.Now(), mab.addrs.Addrs[p])) == 0 { // 如果没有有效地址
-		log.Errorf("没有有效地址")
+		log.Debugf("没有有效地址")
 		return nil
 	}
 
 	state := mab.signedPeerRecords[p] // 获取签名记录状态
 	if state == nil {                 // 如果状态不存在
-		log.Errorf("签名记录状态不存在")
+		log.Debugf("签名记录状态不存在")
 		return nil
 	}
 	return state.Envelope // 返回信封

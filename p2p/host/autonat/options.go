@@ -71,7 +71,7 @@ const maxRefreshInterval = 24 * time.Hour
 func EnableService(dialer network.Network) Option {
 	return func(c *config) error {
 		if dialer == c.host.Network() || dialer.Peerstore() == c.host.Peerstore() {
-			log.Errorf("拨号器不应该是主机的拨号器")
+			log.Debugf("拨号器不应该是主机的拨号器")
 			return errors.New("拨号器不应该是主机的拨号器")
 		}
 		c.dialer = dialer
@@ -103,7 +103,7 @@ func WithReachability(reachability network.Reachability) Option {
 func UsingAddresses(addrFunc AddrFunc) Option {
 	return func(c *config) error {
 		if addrFunc == nil {
-			log.Errorf("提供的地址函数无效")
+			log.Debugf("提供的地址函数无效")
 			return errors.New("提供的地址函数无效")
 		}
 		c.addressFunc = addrFunc

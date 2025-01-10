@@ -145,7 +145,7 @@ func NewDefaultLimiterFromJSON(in io.Reader) (Limiter, error) {
 func NewLimiterFromJSON(in io.Reader, defaults ConcreteLimitConfig) (Limiter, error) {
 	cfg, err := readLimiterConfigFromJSON(in, defaults) // 读取并解析 JSON 配置
 	if err != nil {
-		log.Errorf("读取并解析 JSON 配置失败: %v", err)
+		log.Debugf("读取并解析 JSON 配置失败: %v", err)
 		return nil, err
 	}
 	return &fixedLimiter{cfg}, nil // 返回固定限制器
@@ -162,7 +162,7 @@ func NewLimiterFromJSON(in io.Reader, defaults ConcreteLimitConfig) (Limiter, er
 func readLimiterConfigFromJSON(in io.Reader, defaults ConcreteLimitConfig) (ConcreteLimitConfig, error) {
 	var cfg PartialLimitConfig                               // 声明部分限制配置
 	if err := json.NewDecoder(in).Decode(&cfg); err != nil { // 解码 JSON 到配置
-		log.Errorf("解码 JSON 到配置失败: %v", err)
+		log.Debugf("解码 JSON 到配置失败: %v", err)
 		return ConcreteLimitConfig{}, err
 	}
 	return cfg.Build(defaults), nil // 使用默认值构建完整配置

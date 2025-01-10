@@ -178,7 +178,7 @@ func (nmgr *natManager) background(ctx context.Context) {
 	// 发现 NAT 设备
 	natInstance, err := discoverNAT(discoverCtx)
 	if err != nil {
-		log.Errorf("发现 NAT 错误: %v", err)
+		log.Debugf("发现 NAT 错误: %v", err)
 		return
 	}
 
@@ -327,7 +327,7 @@ func (nmgr *natManager) GetMapping(addr ma.Multiaddr) ma.Multiaddr {
 	// 转换为网络地址
 	naddr, err := manet.ToNetAddr(transport)
 	if err != nil {
-		log.Errorf("解析网络多地址 %q 错误: %v", transport, err)
+		log.Debugf("解析网络多地址 %q 错误: %v", transport, err)
 		return nil
 	}
 

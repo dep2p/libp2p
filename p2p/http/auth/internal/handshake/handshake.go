@@ -126,7 +126,7 @@ func (p *params) parsePeerIDAuthSchemeParams(headerVal []byte) error {
 //   - err: 分割错误
 func splitAuthHeaderParams(data []byte, atEOF bool) (advance int, token []byte, err error) {
 	if len(data) == 0 && atEOF {
-		log.Errorf("数据为空且到达文件末尾")
+		log.Debugf("数据为空且到达文件末尾")
 		return 0, nil, bufio.ErrFinalToken
 	}
 
@@ -231,7 +231,7 @@ type sigParam struct {
 //   - error: 验证错误
 func verifySig(publicKey crypto.PubKey, prefix string, signedParts []sigParam, sig []byte) error {
 	if publicKey == nil {
-		log.Errorf("没有用于验证签名的公钥")
+		log.Debugf("没有用于验证签名的公钥")
 		return fmt.Errorf("没有用于验证签名的公钥")
 	}
 
@@ -244,11 +244,11 @@ func verifySig(publicKey crypto.PubKey, prefix string, signedParts []sigParam, s
 	}
 	ok, err := publicKey.Verify(buf, sig)
 	if err != nil {
-		log.Errorf("验证签名失败: %v", err)
+		log.Debugf("验证签名失败: %v", err)
 		return err
 	}
 	if !ok {
-		log.Errorf("签名验证失败")
+		log.Debugf("签名验证失败")
 		return fmt.Errorf("签名验证失败")
 	}
 
@@ -266,7 +266,7 @@ func verifySig(publicKey crypto.PubKey, prefix string, signedParts []sigParam, s
 //   - error: 签名错误
 func sign(privKey crypto.PrivKey, prefix string, partsToSign []sigParam) ([]byte, error) {
 	if privKey == nil {
-		log.Errorf("没有可用于签名的私钥")
+		log.Debugf("没有可用于签名的私钥")
 		return nil, fmt.Errorf("没有可用于签名的私钥")
 	}
 	b := pool.Get(4096)
