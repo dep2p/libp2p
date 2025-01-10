@@ -112,7 +112,7 @@ func (id ID) MarshalText() ([]byte, error) {
 func (id *ID) UnmarshalText(data []byte) error {
 	pid, err := Decode(string(data))
 	if err != nil {
-		log.Errorf("反序列化失败: %v", err)
+		log.Debugf("反序列化失败: %v", err)
 		return err
 	}
 	*id = pid

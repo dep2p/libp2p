@@ -79,7 +79,7 @@ func Seal(rec Record, privateKey crypto.PrivKey) (*Envelope, error) {
 	// 创建未签名的数据
 	unsigned, err := makeUnsigned(domain, payloadType, payload)
 	if err != nil {
-		log.Errorf("创建未签名数据失败: %v", err)
+		log.Debugf("创建未签名数据失败: %v", err)
 		return nil, err
 	}
 	defer pool.Put(unsigned)
@@ -87,7 +87,7 @@ func Seal(rec Record, privateKey crypto.PrivKey) (*Envelope, error) {
 	// 使用私钥签名
 	sig, err := privateKey.Sign(unsigned)
 	if err != nil {
-		log.Errorf("签名失败: %v", err)
+		log.Debugf("签名失败: %v", err)
 		return nil, err
 	}
 
@@ -177,13 +177,13 @@ func ConsumeTypedEnvelope(data []byte, destRecord Record) (envelope *Envelope, e
 func UnmarshalEnvelope(data []byte) (*Envelope, error) {
 	var e pb.Envelope
 	if err := proto.Unmarshal(data, &e); err != nil {
-		log.Errorf("反序列化失败: %v", err)
+		log.Debugf("反序列化失败: %v", err)
 		return nil, err
 	}
 
 	key, err := crypto.PublicKeyFromProto(e.PublicKey)
 	if err != nil {
-		log.Errorf("反序列化失败: %v", err)
+		log.Debugf("反序列化失败: %v", err)
 		return nil, err
 	}
 
@@ -203,7 +203,7 @@ func (e *Envelope) Marshal() (res []byte, err error) {
 	defer func() { catch.HandlePanic(recover(), &err, "libp2p envelope marshal") }()
 	key, err := crypto.PublicKeyToProto(e.PublicKey)
 	if err != nil {
-		log.Errorf("序列化失败: %v", err)
+		log.Debugf("序列化失败: %v", err)
 		return nil, err
 	}
 
@@ -268,7 +268,7 @@ func (e *Envelope) TypedRecord(dest Record) error {
 func (e *Envelope) validate(domain string) error {
 	unsigned, err := makeUnsigned(domain, e.PayloadType, e.RawPayload)
 	if err != nil {
-		log.Errorf("创建未签名数据失败: %v", err)
+		log.Debugf("创建未签名数据失败: %v", err)
 		return err
 	}
 	defer pool.Put(unsigned)
@@ -279,7 +279,7 @@ func (e *Envelope) validate(domain string) error {
 		return err
 	}
 	if !valid {
-		log.Errorf("签名无效")
+		log.Debugf("签名无效")
 		return ErrInvalidSignature
 	}
 	return nil

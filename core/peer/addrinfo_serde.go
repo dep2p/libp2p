@@ -49,7 +49,7 @@ func (pi *AddrInfo) UnmarshalJSON(b []byte) (err error) {
 	// 解析JSON数据到临时结构体
 	var data addrInfoJson
 	if err := json.Unmarshal(b, &data); err != nil {
-		log.Errorf("反序列化失败: %v", err)
+		log.Debugf("反序列化失败: %v", err)
 		return err
 	}
 
@@ -58,7 +58,7 @@ func (pi *AddrInfo) UnmarshalJSON(b []byte) (err error) {
 	for i, addr := range data.Addrs {
 		maddr, err := ma.NewMultiaddr(addr)
 		if err != nil {
-			log.Errorf("创建多地址失败: %v", err)
+			log.Debugf("创建多地址失败: %v", err)
 			return err
 		}
 		addrs[i] = maddr

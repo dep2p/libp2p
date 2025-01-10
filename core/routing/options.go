@@ -28,7 +28,7 @@ func (opts *Options) Apply(options ...Option) error {
 	// 遍历所有选项并依次应用
 	for _, o := range options {
 		if err := o(opts); err != nil {
-			log.Errorf("应用选项失败: %v", err)
+			log.Debugf("应用选项失败: %v", err)
 			return err
 		}
 	}

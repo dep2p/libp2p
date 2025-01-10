@@ -20,7 +20,7 @@ import (
 func KeyPairFromStdKey(priv crypto.PrivateKey) (PrivKey, PubKey, error) {
 	// 检查私钥是否为空
 	if priv == nil {
-		log.Errorf("私钥为空")
+		log.Debugf("私钥为空")
 		return nil, nil, ErrNilPrivateKey
 	}
 
@@ -61,7 +61,7 @@ func KeyPairFromStdKey(priv crypto.PrivateKey) (PrivKey, PubKey, error) {
 func PrivKeyToStdKey(priv PrivKey) (crypto.PrivateKey, error) {
 	// 检查私钥是否为空
 	if priv == nil {
-		log.Errorf("私钥为空")
+		log.Debugf("私钥为空")
 		return nil, ErrNilPrivateKey
 	}
 
@@ -90,7 +90,7 @@ func PrivKeyToStdKey(priv PrivKey) (crypto.PrivateKey, error) {
 func PubKeyToStdKey(pub PubKey) (crypto.PublicKey, error) {
 	// 检查公钥是否为空
 	if pub == nil {
-		log.Errorf("公钥为空")
+		log.Debugf("公钥为空")
 		return nil, ErrNilPublicKey
 	}
 

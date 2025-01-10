@@ -177,39 +177,39 @@ type Config struct {
 func (cfg *Config) makeSwarm(eventBus event.Bus, enableMetrics bool) (*swarm.Swarm, error) {
 	// 检查是否配置了对等点存储
 	if cfg.Peerstore == nil {
-		log.Errorf("未指定 peerstore")
+		log.Debugf("未指定 peerstore")
 		return nil, fmt.Errorf("未指定 peerstore")
 	}
 
 	// 尽早检查这一点。防止我们在没有验证这一点的情况下就开始。
 	// 检查是否配置了私有网络保护器
 	if pnet.ForcePrivateNetwork && len(cfg.PSK) == 0 {
-		log.Error("试图创建一个没有私有网络保护器的 libp2p 节点,但环境强制使用私有网络")
+		log.Debugf("试图创建一个没有私有网络保护器的 libp2p 节点,但环境强制使用私有网络")
 		// 注意:这也在升级器本身中检查,所以即使你不使用 libp2p 构造函数,它也会被强制执行。
 		return nil, pnet.ErrNotInPrivateNetwork
 	}
 
 	// 检查是否配置了对等密钥
 	if cfg.PeerKey == nil {
-		log.Errorf("未指定对等密钥")
+		log.Debugf("未指定对等密钥")
 		return nil, fmt.Errorf("未指定对等密钥")
 	}
 
 	// 从公钥生成对等 ID
 	pid, err := peer.IDFromPublicKey(cfg.PeerKey.GetPublic())
 	if err != nil {
-		log.Errorf("从公钥生成对等 ID失败: %v", err)
+		log.Debugf("从公钥生成对等 ID失败: %v", err)
 		return nil, err
 	}
 
 	// 将私钥添加到对等点存储
 	if err := cfg.Peerstore.AddPrivKey(pid, cfg.PeerKey); err != nil {
-		log.Errorf("将私钥添加到对等点存储失败: %v", err)
+		log.Debugf("将私钥添加到对等点存储失败: %v", err)
 		return nil, err
 	}
 	// 将公钥添加到对等点存储
 	if err := cfg.Peerstore.AddPubKey(pid, cfg.PeerKey.GetPublic()); err != nil {
-		log.Errorf("将公钥添加到对等点存储失败: %v", err)
+		log.Debugf("将公钥添加到对等点存储失败: %v", err)
 		return nil, err
 	}
 
@@ -261,14 +261,14 @@ func (cfg *Config) makeAutoNATV2Host() (host.Host, error) {
 	// 生成新的 Ed25519 密钥对用于 AutoNAT
 	autonatPrivKey, _, err := crypto.GenerateEd25519Key(rand.Reader)
 	if err != nil {
-		log.Errorf("生成 Ed25519 密钥对失败: %v", err)
+		log.Debugf("生成 Ed25519 密钥对失败: %v", err)
 		return nil, err
 	}
 
 	// 创建内存中的对等点存储
 	ps, err := pstoremem.NewPeerstore()
 	if err != nil {
-		log.Errorf("创建内存中的对等点存储失败: %v", err)
+		log.Debugf("创建内存中的对等点存储失败: %v", err)
 		return nil, err
 	}
 
@@ -297,7 +297,7 @@ func (cfg *Config) makeAutoNATV2Host() (host.Host, error) {
 	// 添加传输层配置
 	fxopts, err := autoNatCfg.addTransports()
 	if err != nil {
-		log.Errorf("添加传输层配置失败: %v", err)
+		log.Debugf("添加传输层配置失败: %v", err)
 		return nil, err
 	}
 
@@ -316,7 +316,7 @@ func (cfg *Config) makeAutoNATV2Host() (host.Host, error) {
 				}})
 			sw, err := autoNatCfg.makeSwarm(b, false)
 			if err != nil {
-				log.Errorf("创建 Swarm 实例失败: %v", err)
+				log.Debugf("创建 Swarm 实例失败: %v", err)
 				return nil, err
 			}
 			return sw, nil
@@ -342,12 +342,12 @@ func (cfg *Config) makeAutoNATV2Host() (host.Host, error) {
 	// 创建并启动应用
 	app := fx.New(fxopts...)
 	if err := app.Err(); err != nil {
-		log.Errorf("创建应用失败: %v", err)
+		log.Debugf("创建应用失败: %v", err)
 		return nil, err
 	}
 	err = app.Start(context.Background())
 	if err != nil {
-		log.Errorf("启动应用失败: %v", err)
+		log.Debugf("启动应用失败: %v", err)
 		return nil, err
 	}
 
@@ -398,7 +398,7 @@ func (cfg *Config) addTransports() ([]fx.Option, error) {
 					if _, err := addr.ValueForProtocol(ma.P_QUIC_V1); err == nil {
 						netw, addr, err := manet.DialArgs(addr)
 						if err != nil {
-							log.Errorf("获取网络和地址失败: %v", err)
+							log.Debugf("获取网络和地址失败: %v", err)
 							return false
 						}
 						quicAddrPorts[netw+"_"+addr] = struct{}{}
@@ -455,7 +455,7 @@ func (cfg *Config) addTransports() ([]fx.Option, error) {
 			fx.Annotate(
 				func(secs []sec.SecureTransport) ([]sec.SecureTransport, error) {
 					if len(secs) != len(cfg.SecurityTransports) {
-						log.Errorf("安全传输长度不一致")
+						log.Debugf("安全传输长度不一致")
 						return nil, errors.New("安全传输长度不一致")
 					}
 					t := make([]sec.SecureTransport, 0, len(secs))
@@ -489,7 +489,7 @@ func (cfg *Config) addTransports() ([]fx.Option, error) {
 				}
 				cm, err := quicreuse.NewConnManager(key, tokenGenerator, opts...)
 				if err != nil {
-					log.Errorf("创建 QUIC 连接管理器失败: %v", err)
+					log.Debugf("创建 QUIC 连接管理器失败: %v", err)
 					return nil, err
 				}
 				lifecycle.Append(fx.StopHook(cm.Close))
@@ -504,7 +504,7 @@ func (cfg *Config) addTransports() ([]fx.Option, error) {
 			func(swrm *swarm.Swarm, tpts []transport.Transport) error {
 				for _, t := range tpts {
 					if err := swrm.AddTransport(t); err != nil {
-						log.Errorf("添加传输层到 Swarm 失败: %v", err)
+						log.Debugf("添加传输层到 Swarm 失败: %v", err)
 						return err
 					}
 				}
@@ -538,7 +538,7 @@ func (cfg *Config) newBasicHost(swrm *swarm.Swarm, eventBus event.Bus) (*bhost.B
 	if cfg.EnableAutoNATv2 {
 		ah, err := cfg.makeAutoNATV2Host()
 		if err != nil {
-			log.Errorf("创建 AutoNAT v2 主机失败: %v", err)
+			log.Debugf("创建 AutoNAT v2 主机失败: %v", err)
 			return nil, err
 		}
 		autonatv2Dialer = ah
@@ -566,7 +566,7 @@ func (cfg *Config) newBasicHost(swrm *swarm.Swarm, eventBus event.Bus) (*bhost.B
 
 	// 检查创建过程中是否有错误
 	if err != nil {
-		log.Errorf("创建基础主机失败: %v", err)
+		log.Debugf("创建基础主机失败: %v", err)
 		return nil, err
 	}
 
@@ -587,7 +587,7 @@ func (cfg *Config) newBasicHost(swrm *swarm.Swarm, eventBus event.Bus) (*bhost.B
 func (cfg *Config) NewNode() (host.Host, error) {
 	// 检查自动中继配置是否有效
 	if cfg.EnableAutoRelay && !cfg.Relay {
-		log.Errorf("无法启用自动中继;中继未启用")
+		log.Debugf("无法启用自动中继;中继未启用")
 		return nil, fmt.Errorf("无法启用自动中继;中继未启用")
 	}
 	// 如果可能,检查资源管理器连接限制是否高于连接管理器中设置的限制。
@@ -620,7 +620,7 @@ func (cfg *Config) NewNode() (host.Host, error) {
 		fx.Provide(func(eventBus event.Bus, _ *quicreuse.ConnManager, lifecycle fx.Lifecycle) (*swarm.Swarm, error) {
 			sw, err := cfg.makeSwarm(eventBus, !cfg.DisableMetrics)
 			if err != nil {
-				log.Errorf("创建 Swarm 实例失败: %v", err)
+				log.Debugf("创建 Swarm 实例失败: %v", err)
 				return nil, err
 			}
 			lifecycle.Append(fx.Hook{
@@ -652,7 +652,7 @@ func (cfg *Config) NewNode() (host.Host, error) {
 	// 添加传输层选项
 	transportOpts, err := cfg.addTransports()
 	if err != nil {
-		log.Errorf("添加传输层选项失败: %v", err)
+		log.Debugf("添加传输层选项失败: %v", err)
 		return nil, err
 	}
 	fxopts = append(fxopts, transportOpts...)
@@ -680,7 +680,7 @@ func (cfg *Config) NewNode() (host.Host, error) {
 
 				ar, err := autorelay.NewAutoRelay(h, cfg.AutoRelayOpts...)
 				if err != nil {
-					log.Errorf("创建自动中继失败: %v", err)
+					log.Debugf("创建自动中继失败: %v", err)
 					return err
 				}
 				lifecycle.Append(fx.StartStopHook(ar.Start, ar.Close))
@@ -709,13 +709,13 @@ func (cfg *Config) NewNode() (host.Host, error) {
 	// 创建并启动应用
 	app := fx.New(fxopts...)
 	if err := app.Start(context.Background()); err != nil {
-		log.Errorf("启动应用失败: %v", err)
+		log.Debugf("启动应用失败: %v", err)
 		return nil, err
 	}
 
 	// 添加 AutoNAT 支持
 	if err := cfg.addAutoNAT(bh); err != nil {
-		log.Errorf("添加 AutoNAT 支持失败: %v", err)
+		log.Debugf("添加 AutoNAT 支持失败: %v", err)
 		app.Stop(context.Background())
 		if cfg.Routing != nil {
 			rh.Close()
@@ -777,14 +777,14 @@ func (cfg *Config) addAutoNAT(h *bhost.BasicHost) error {
 		// 生成服务专用的 Ed25519 密钥对
 		autonatPrivKey, _, err := crypto.GenerateEd25519Key(rand.Reader)
 		if err != nil {
-			log.Errorf("生成服务专用的 Ed25519 密钥对失败: %v", err)
+			log.Debugf("生成服务专用的 Ed25519 密钥对失败: %v", err)
 			return err
 		}
 
 		// 创建内存对等存储
 		ps, err := pstoremem.NewPeerstore()
 		if err != nil {
-			log.Errorf("创建内存对等存储失败: %v", err)
+			log.Debugf("创建内存对等存储失败: %v", err)
 			return err
 		}
 
@@ -812,7 +812,7 @@ func (cfg *Config) addAutoNAT(h *bhost.BasicHost) error {
 		// 添加传输层配置
 		fxopts, err := autoNatCfg.addTransports()
 		if err != nil {
-			log.Errorf("添加传输层配置失败: %v", err)
+			log.Debugf("添加传输层配置失败: %v", err)
 			return err
 		}
 		var dialer *swarm.Swarm
@@ -838,12 +838,12 @@ func (cfg *Config) addAutoNAT(h *bhost.BasicHost) error {
 		// 创建并启动应用
 		app := fx.New(fxopts...)
 		if err := app.Err(); err != nil {
-			log.Errorf("创建应用失败: %v", err)
+			log.Debugf("创建应用失败: %v", err)
 			return err
 		}
 		err = app.Start(context.Background())
 		if err != nil {
-			log.Errorf("启动应用失败: %v", err)
+			log.Debugf("启动应用失败: %v", err)
 			return err
 		}
 
@@ -863,7 +863,7 @@ func (cfg *Config) addAutoNAT(h *bhost.BasicHost) error {
 	// 创建 AutoNAT 实例
 	autonat, err := autonat.New(h, autonatOpts...)
 	if err != nil {
-		log.Errorf("autonat 初始化失败: %v", err)
+		log.Debugf("autonat 初始化失败: %v", err)
 		return err
 	}
 
@@ -892,7 +892,7 @@ func (cfg *Config) Apply(opts ...Option) error {
 			continue
 		}
 		if err := opt(cfg); err != nil {
-			log.Errorf("应用配置选项失败: %v", err)
+			log.Debugf("应用配置选项失败: %v", err)
 			return err
 		}
 	}

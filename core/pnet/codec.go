@@ -36,7 +36,7 @@ func readHeader(r *bufio.Reader) ([]byte, error) {
 	// 读取一行直到遇到换行符
 	header, err := r.ReadBytes('\n')
 	if err != nil {
-		log.Errorf("读取头部信息失败: %v", err)
+		log.Debugf("读取头部信息失败: %v", err)
 		return nil, err
 	}
 
@@ -55,12 +55,12 @@ func expectHeader(r *bufio.Reader, expected []byte) error {
 	// 读取头部信息
 	header, err := readHeader(r)
 	if err != nil {
-		log.Errorf("读取头部信息失败: %v", err)
+		log.Debugf("读取头部信息失败: %v", err)
 		return err
 	}
 	// 比较头部是否匹配
 	if !bytes.Equal(header, expected) {
-		log.Errorf("预期文件头为%s, 实际为%s", expected, header)
+		log.Debugf("预期文件头为%s, 实际为%s", expected, header)
 		return fmt.Errorf("预期文件头为%s, 实际为%s", expected, header)
 	}
 	return nil
@@ -78,13 +78,13 @@ func DecodeV1PSK(in io.Reader) (PSK, error) {
 	reader := bufio.NewReader(in)
 	// 检查文件头是否为 V1 PSK
 	if err := expectHeader(reader, pathPSKv1); err != nil {
-		log.Errorf("检查文件头失败: %v", err)
+		log.Debugf("检查文件头失败: %v", err)
 		return nil, err
 	}
 	// 读取编码类型头
 	header, err := readHeader(reader)
 	if err != nil {
-		log.Errorf("读取编码类型头失败: %v", err)
+		log.Debugf("读取编码类型头失败: %v", err)
 		return nil, err
 	}
 
@@ -98,13 +98,13 @@ func DecodeV1PSK(in io.Reader) (PSK, error) {
 	case pathBin:
 		decoder = reader
 	default:
-		log.Errorf("未知编码: %s", header)
+		log.Debugf("未知编码: %s", header)
 		return nil, fmt.Errorf("未知编码: %s", header)
 	}
 	// 读取 32 字节的 PSK
 	out := make([]byte, 32)
 	if _, err = io.ReadFull(decoder, out[:]); err != nil {
-		log.Errorf("读取PSK失败: %v", err)
+		log.Debugf("读取PSK失败: %v", err)
 		return nil, err
 	}
 	return out, nil

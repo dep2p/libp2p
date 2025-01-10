@@ -30,7 +30,7 @@ func GenerateSecp256k1Key(src io.Reader) (PrivKey, PubKey, error) {
 	// 生成私钥
 	privk, err := secp256k1.GeneratePrivateKey()
 	if err != nil {
-		log.Errorf("生成Secp256k1私钥失败: %v", err)
+		log.Debugf("生成Secp256k1私钥失败: %v", err)
 		return nil, nil, err
 	}
 
@@ -71,7 +71,7 @@ func UnmarshalSecp256k1PublicKey(data []byte) (_k PubKey, err error) {
 	// 解析公钥
 	k, err := secp256k1.ParsePubKey(data)
 	if err != nil {
-		log.Errorf("解析Secp256k1公钥失败: %v", err)
+		log.Debugf("解析Secp256k1公钥失败: %v", err)
 		return nil, err
 	}
 

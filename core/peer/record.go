@@ -75,7 +75,7 @@ func PeerRecordFromProtobuf(msg *pb.PeerRecord) (*PeerRecord, error) {
 
 	var id ID
 	if err := id.UnmarshalBinary(msg.PeerId); err != nil {
-		log.Errorf("反序列化失败: %v", err)
+		log.Debugf("反序列化失败: %v", err)
 		return nil, err
 	}
 
@@ -130,7 +130,7 @@ func (r *PeerRecord) Codec() []byte {
 //   - error: 如果发生错误，返回错误信息
 func (r *PeerRecord) UnmarshalRecord(bytes []byte) (err error) {
 	if r == nil {
-		log.Errorf("无法反序列化PeerRecord到空接收器")
+		log.Debugf("无法反序列化PeerRecord到空接收器")
 		return fmt.Errorf("无法反序列化PeerRecord到空接收器")
 	}
 
@@ -139,13 +139,13 @@ func (r *PeerRecord) UnmarshalRecord(bytes []byte) (err error) {
 	var msg pb.PeerRecord
 	err = proto.Unmarshal(bytes, &msg)
 	if err != nil {
-		log.Errorf("反序列化失败: %v", err)
+		log.Debugf("反序列化失败: %v", err)
 		return err
 	}
 
 	rPtr, err := PeerRecordFromProtobuf(&msg)
 	if err != nil {
-		log.Errorf("反序列化失败: %v", err)
+		log.Debugf("反序列化失败: %v", err)
 		return err
 	}
 	*r = *rPtr
@@ -162,7 +162,7 @@ func (r *PeerRecord) MarshalRecord() (res []byte, err error) {
 
 	msg, err := r.ToProtobuf()
 	if err != nil {
-		log.Errorf("序列化失败: %v", err)
+		log.Debugf("序列化失败: %v", err)
 		return nil, err
 	}
 	return proto.Marshal(msg)
@@ -202,7 +202,7 @@ func (r *PeerRecord) Equal(other *PeerRecord) bool {
 func (r *PeerRecord) ToProtobuf() (*pb.PeerRecord, error) {
 	idBytes, err := r.PeerID.MarshalBinary()
 	if err != nil {
-		log.Errorf("序列化失败: %v", err)
+		log.Debugf("序列化失败: %v", err)
 		return nil, err
 	}
 	return &pb.PeerRecord{

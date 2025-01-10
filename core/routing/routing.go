@@ -160,7 +160,7 @@ func GetPublicKey(r ValueStore, ctx context.Context, p peer.ID) (ci.PubKey, erro
 	case nil:
 		return k, nil
 	default:
-		log.Errorf("获取公钥失败: %v", err)
+		log.Debugf("获取公钥失败: %v", err)
 		return nil, err
 	}
 
@@ -173,7 +173,7 @@ func GetPublicKey(r ValueStore, ctx context.Context, p peer.ID) (ci.PubKey, erro
 	key := KeyForPublicKey(p)
 	pkval, err := r.GetValue(ctx, key)
 	if err != nil {
-		log.Errorf("从值存储中获取公钥失败: %v", err)
+		log.Debugf("从值存储中获取公钥失败: %v", err)
 		return nil, err
 	}
 

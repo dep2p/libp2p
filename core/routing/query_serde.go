@@ -38,7 +38,7 @@ func (qe *QueryEvent) UnmarshalJSON(b []byte) error {
 	// 将 JSON 数据解析到临时结构体
 	err := json.Unmarshal(b, &temp)
 	if err != nil {
-		log.Errorf("反序列化失败: %v", err)
+		log.Debugf("反序列化失败: %v", err)
 		return err
 	}
 
@@ -46,7 +46,7 @@ func (qe *QueryEvent) UnmarshalJSON(b []byte) error {
 	if len(temp.ID) > 0 {
 		pid, err := peer.Decode(temp.ID)
 		if err != nil {
-			log.Errorf("解码失败: %v", err)
+			log.Debugf("解码失败: %v", err)
 			return err
 		}
 		qe.ID = pid

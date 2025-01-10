@@ -34,7 +34,7 @@ func GenerateEd25519Key(src io.Reader) (PrivKey, PubKey, error) {
 	// 使用提供的随机数生成器生成密钥对
 	pub, priv, err := ed25519.GenerateKey(src)
 	if err != nil {
-		log.Errorf("生成 ed25519 密钥对失败: %v", err)
+		log.Debugf("生成 ed25519 密钥对失败: %v", err)
 		return nil, nil, err
 	}
 
@@ -169,7 +169,7 @@ func (k *Ed25519PublicKey) Verify(data []byte, sig []byte) (success bool, err er
 //   - error: 解析过程中的错误,如果成功则为 nil
 func UnmarshalEd25519PublicKey(data []byte) (PubKey, error) {
 	if len(data) != 32 {
-		log.Errorf("解析 ed25519 公钥失败: 预期数据长度为 32, 实际长度为 %d", len(data))
+		log.Debugf("解析 ed25519 公钥失败: 预期数据长度为 32, 实际长度为 %d", len(data))
 		return nil, errors.New("预期 ed25519 公钥数据长度为 32")
 	}
 
@@ -192,7 +192,7 @@ func UnmarshalEd25519PrivateKey(data []byte) (PrivKey, error) {
 		redundantPk := data[ed25519.PrivateKeySize:]
 		pk := data[ed25519.PrivateKeySize-ed25519.PublicKeySize : ed25519.PrivateKeySize]
 		if subtle.ConstantTimeCompare(pk, redundantPk) == 0 {
-			log.Errorf("预期冗余的 ed25519 公钥应该是冗余的")
+			log.Debugf("预期冗余的 ed25519 公钥应该是冗余的")
 			return nil, errors.New("预期冗余的 ed25519 公钥应该是冗余的")
 		}
 
@@ -202,7 +202,7 @@ func UnmarshalEd25519PrivateKey(data []byte) (PrivKey, error) {
 		data = newKey
 	case ed25519.PrivateKeySize:
 	default:
-		log.Errorf(
+		log.Debugf(
 			"预期 ed25519 数据长度为 %d 或 %d, 实际长度为 %d",
 			ed25519.PrivateKeySize,
 			ed25519.PrivateKeySize+ed25519.PublicKeySize,

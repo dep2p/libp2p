@@ -152,7 +152,7 @@ func AddrInfoFromP2pAddr(m ma.Multiaddr) (*AddrInfo, error) {
 func AddrInfoToP2pAddrs(pi *AddrInfo) ([]ma.Multiaddr, error) {
 	p2ppart, err := ma.NewComponent("p2p", pi.ID.String())
 	if err != nil {
-		log.Errorf("创建p2p多地址失败: %v", err)
+		log.Debugf("创建p2p多地址失败: %v", err)
 		return nil, err
 	}
 	if len(pi.Addrs) == 0 {

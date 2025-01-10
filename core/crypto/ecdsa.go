@@ -70,7 +70,7 @@ func GenerateECDSAKeyPair(src io.Reader) (PrivKey, PubKey, error) {
 func GenerateECDSAKeyPairWithCurve(curve elliptic.Curve, src io.Reader) (PrivKey, PubKey, error) {
 	priv, err := ecdsa.GenerateKey(curve, src)
 	if err != nil {
-		log.Errorf("生成 ECDSA 密钥对失败: %v", err)
+		log.Debugf("生成 ECDSA 密钥对失败: %v", err)
 		return nil, nil, err
 	}
 
@@ -87,7 +87,7 @@ func GenerateECDSAKeyPairWithCurve(curve elliptic.Curve, src io.Reader) (PrivKey
 //   - error: 错误信息
 func ECDSAKeyPairFromKey(priv *ecdsa.PrivateKey) (PrivKey, PubKey, error) {
 	if priv == nil {
-		log.Errorf("私钥为空")
+		log.Debugf("私钥为空")
 		return nil, nil, ErrNilPrivateKey
 	}
 
@@ -141,7 +141,7 @@ func UnmarshalECDSAPrivateKey(data []byte) (res PrivKey, err error) {
 
 	priv, err := x509.ParseECPrivateKey(data)
 	if err != nil {
-		log.Errorf("解析 ECDSA 私钥失败: %v", err)
+		log.Debugf("解析 ECDSA 私钥失败: %v", err)
 		return nil, err
 	}
 
@@ -160,13 +160,13 @@ func UnmarshalECDSAPublicKey(data []byte) (key PubKey, err error) {
 
 	pubIfc, err := x509.ParsePKIXPublicKey(data)
 	if err != nil {
-		log.Errorf("解析 ECDSA 公钥失败: %v", err)
+		log.Debugf("解析 ECDSA 公钥失败: %v", err)
 		return nil, err
 	}
 
 	pub, ok := pubIfc.(*ecdsa.PublicKey)
 	if !ok {
-		log.Errorf("解析 ECDSA 公钥失败: %v", ErrNotECDSAPubKey)
+		log.Debugf("解析 ECDSA 公钥失败: %v", ErrNotECDSAPubKey)
 		return nil, ErrNotECDSAPubKey
 	}
 
@@ -211,7 +211,7 @@ func (ePriv *ECDSAPrivateKey) Sign(data []byte) (sig []byte, err error) {
 	hash := sha256.Sum256(data)
 	r, s, err := ecdsa.Sign(rand.Reader, ePriv.priv, hash[:])
 	if err != nil {
-		log.Errorf("ECDSA 签名失败: %v", err)
+		log.Debugf("ECDSA 签名失败: %v", err)
 		return nil, err
 	}
 
@@ -267,14 +267,14 @@ func (ePub *ECDSAPublicKey) Verify(data, sigBytes []byte) (success bool, err err
 
 		// 额外的安全检查
 		if err != nil {
-			log.Errorf("ECDSA 签名验证失败: %v", err)
+			log.Debugf("ECDSA 签名验证失败: %v", err)
 			success = false
 		}
 	}()
 
 	sig := new(ECDSASig)
 	if _, err := asn1.Unmarshal(sigBytes, sig); err != nil {
-		log.Errorf("ECDSA 签名验证失败: %v", err)
+		log.Debugf("ECDSA 签名验证失败: %v", err)
 		return false, err
 	}
 

@@ -82,12 +82,12 @@ func (t *Transport) SecureInbound(_ context.Context, insecure net.Conn, p peer.I
 	}
 
 	if err := conn.runHandshakeSync(); err != nil {
-		log.Errorf("握手失败: %v", err)
+		log.Debugf("握手失败: %v", err)
 		return nil, err
 	}
 
 	if p != "" && p != conn.remote {
-		log.Errorf("远程对等节点发送了意外的对等节点 ID。预期=%s 收到=%s", p, conn.remote)
+		log.Debugf("远程对等节点发送了意外的对等节点 ID。预期=%s 收到=%s", p, conn.remote)
 		return nil, fmt.Errorf("远程对等节点发送了意外的对等节点 ID。预期=%s 收到=%s", p, conn.remote)
 	}
 
@@ -114,12 +114,12 @@ func (t *Transport) SecureOutbound(_ context.Context, insecure net.Conn, p peer.
 	}
 
 	if err := conn.runHandshakeSync(); err != nil {
-		log.Errorf("握手失败: %v", err)
+		log.Debugf("握手失败: %v", err)
 		return nil, err
 	}
 
 	if p != conn.remote {
-		log.Errorf("远程对等节点发送了意外的对等节点 ID。预期=%s 收到=%s", p, conn.remote)
+		log.Debugf("远程对等节点发送了意外的对等节点 ID。预期=%s 收到=%s", p, conn.remote)
 		return nil, fmt.Errorf("远程对等节点发送了意外的对等节点 ID。预期=%s 收到=%s", p, conn.remote)
 	}
 
@@ -149,12 +149,12 @@ type Conn struct {
 func makeExchangeMessage(pubkey ci.PubKey) (*pb.Exchange, error) {
 	keyMsg, err := ci.PublicKeyToProto(pubkey)
 	if err != nil {
-		log.Errorf("公钥序列化失败: %v", err)
+		log.Debugf("公钥序列化失败: %v", err)
 		return nil, err
 	}
 	id, err := peer.IDFromPublicKey(pubkey)
 	if err != nil {
-		log.Errorf("从公钥创建对等节点ID失败: %v", err)
+		log.Debugf("从公钥创建对等节点ID失败: %v", err)
 		return nil, err
 	}
 
@@ -176,34 +176,34 @@ func (ic *Conn) runHandshakeSync() error {
 	// 生成交换消息
 	msg, err := makeExchangeMessage(ic.localPubKey)
 	if err != nil {
-		log.Errorf("创建交换消息失败: %v", err)
+		log.Debugf("创建交换消息失败: %v", err)
 		return err
 	}
 
 	// 发送我们的交换消息并读取对方的
 	remoteMsg, err := readWriteMsg(ic.Conn, msg)
 	if err != nil {
-		log.Errorf("读取交换消息失败: %v", err)
+		log.Debugf("读取交换消息失败: %v", err)
 		return err
 	}
 
 	// 从消息中提取远程 ID 和公钥
 	remotePubkey, err := ci.PublicKeyFromProto(remoteMsg.Pubkey)
 	if err != nil {
-		log.Errorf("从公钥创建对等节点ID失败: %v", err)
+		log.Debugf("从公钥创建对等节点ID失败: %v", err)
 		return err
 	}
 
 	remoteID, err := peer.IDFromBytes(remoteMsg.Id)
 	if err != nil {
-		log.Errorf("从公钥创建对等节点ID失败: %v", err)
+		log.Debugf("从公钥创建对等节点ID失败: %v", err)
 		return err
 	}
 
 	// 验证 ID 是否与公钥匹配
 	if !remoteID.MatchesPublicKey(remotePubkey) {
 		calculatedID, _ := peer.IDFromPublicKey(remotePubkey)
-		log.Errorf("远程对等节点 ID 与公钥不匹配。id=%s 计算得到的_id=%s", remoteID, calculatedID)
+		log.Debugf("远程对等节点 ID 与公钥不匹配。id=%s 计算得到的_id=%s", remoteID, calculatedID)
 		return fmt.Errorf("远程对等节点 ID 与公钥不匹配。id=%s 计算得到的_id=%s", remoteID, calculatedID)
 	}
 
@@ -226,7 +226,7 @@ func readWriteMsg(rw io.ReadWriter, out *pb.Exchange) (*pb.Exchange, error) {
 
 	outBytes, err := proto.Marshal(out)
 	if err != nil {
-		log.Errorf("序列化失败: %v", err)
+		log.Debugf("序列化失败: %v", err)
 		return nil, err
 	}
 	wresult := make(chan error)
@@ -242,12 +242,12 @@ func readWriteMsg(rw io.ReadWriter, out *pb.Exchange) (*pb.Exchange, error) {
 	err2 := <-wresult
 
 	if err1 != nil {
-		log.Errorf("读取消息失败: %v", err1)
+		log.Debugf("读取消息失败: %v", err1)
 		return nil, err1
 	}
 	if err2 != nil {
 		r.ReleaseMsg(b)
-		log.Errorf("写入消息失败: %v", err2)
+		log.Debugf("写入消息失败: %v", err2)
 		return nil, err2
 	}
 	inMsg := new(pb.Exchange)

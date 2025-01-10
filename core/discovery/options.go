@@ -33,7 +33,7 @@ func (opts *Options) Apply(options ...Option) error {
 	for _, o := range options {
 		// 执行选项函数,如果返回错误则直接返回
 		if err := o(opts); err != nil {
-			log.Errorf("应用选项失败: %v", err)
+			log.Debugf("应用选项失败: %v", err)
 			return err
 		}
 	}
