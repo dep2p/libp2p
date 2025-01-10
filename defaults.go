@@ -70,7 +70,7 @@ var DefaultPeerstore Option = func(cfg *Config) error {
 	// 创建新的内存对等点存储
 	ps, err := pstoremem.NewPeerstore()
 	if err != nil {
-		log.Errorf("创建内存对等点存储失败: %s", err)
+		log.Debugf("创建内存对等点存储失败: %s", err)
 		return err
 	}
 	return cfg.Apply(Peerstore(ps))

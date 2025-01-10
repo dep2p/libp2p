@@ -45,7 +45,7 @@ func ListenAddrStrings(s ...string) Option {
 			// 将地址字符串解析为multiaddr
 			a, err := ma.NewMultiaddr(addrstr)
 			if err != nil {
-				log.Errorf("解析地址失败: %s", err)
+				log.Debugf("解析地址失败: %s", err)
 				return err
 			}
 			// 添加到监听地址列表
@@ -86,7 +86,7 @@ func Security(name string, constructor interface{}) Option {
 	return func(cfg *Config) error {
 		// 检查是否启用了不安全模式
 		if cfg.Insecure {
-			log.Errorf("不能在不安全的libp2p配置中使用安全传输")
+			log.Debugf("不能在不安全的libp2p配置中使用安全传输")
 			return fmt.Errorf("不能在不安全的libp2p配置中使用安全传输")
 		}
 		// 添加安全传输配置
@@ -99,7 +99,7 @@ func Security(name string, constructor interface{}) Option {
 // 它与所有其他传输安全协议不兼容
 var NoSecurity Option = func(cfg *Config) error {
 	if len(cfg.SecurityTransports) > 0 {
-		log.Errorf("不能在不安全的libp2p配置中使用安全传输")
+		log.Debugf("不能在不安全的libp2p配置中使用安全传输")
 		return fmt.Errorf("不能在不安全的libp2p配置中使用安全传输")
 	}
 	cfg.Insecure = true
@@ -136,7 +136,7 @@ func QUICReuse(constructor interface{}, opts ...quicreuse.Option) Option {
 
 		// 检查构造函数是否支持选项
 		if !isVariadic && len(opts) > 0 {
-			log.Errorf("QUIC构造函数不接受任何选项")
+			log.Debugf("QUIC构造函数不接受任何选项")
 			return errors.New("QUIC构造函数不接受任何选项")
 		}
 
@@ -189,14 +189,14 @@ func Transport(constructor interface{}, opts ...interface{}) Option {
 
 		// 检查构造函数是否支持选项
 		if !isVariadic && len(opts) > 0 {
-			log.Errorf("传输构造函数不接受任何选项")
+			log.Debugf("传输构造函数不接受任何选项")
 			return errors.New("传输构造函数不接受任何选项")
 		}
 		if isVariadic && numParams >= 1 {
 			paramType := typ.In(numParams - 1).Elem()
 			for _, opt := range opts {
 				if typ := reflect.TypeOf(opt); !typ.AssignableTo(paramType) {
-					log.Errorf("类型为 %s 的传输选项不能赋值给 %s", typ, paramType)
+					log.Debugf("类型为 %s 的传输选项不能赋值给 %s", typ, paramType)
 					return fmt.Errorf("类型为 %s 的传输选项不能赋值给 %s", typ, paramType)
 				}
 			}
@@ -240,7 +240,7 @@ func Transport(constructor interface{}, opts ...interface{}) Option {
 func Peerstore(ps peerstore.Peerstore) Option {
 	return func(cfg *Config) error {
 		if cfg.Peerstore != nil {
-			log.Errorf("不能指定多个peerstore选项")
+			log.Debugf("不能指定多个peerstore选项")
 			return fmt.Errorf("不能指定多个peerstore选项")
 		}
 
@@ -258,7 +258,7 @@ func Peerstore(ps peerstore.Peerstore) Option {
 func PrivateNetwork(psk pnet.PSK) Option {
 	return func(cfg *Config) error {
 		if cfg.PSK != nil {
-			log.Errorf("不能指定多个私有网络选项")
+			log.Debugf("不能指定多个私有网络选项")
 			return fmt.Errorf("不能指定多个私有网络选项")
 		}
 
@@ -276,7 +276,7 @@ func PrivateNetwork(psk pnet.PSK) Option {
 func BandwidthReporter(rep metrics.Reporter) Option {
 	return func(cfg *Config) error {
 		if cfg.Reporter != nil {
-			log.Errorf("不能指定多个带宽报告器选项")
+			log.Debugf("不能指定多个带宽报告器选项")
 			return fmt.Errorf("不能指定多个带宽报告器选项")
 		}
 
@@ -294,7 +294,7 @@ func BandwidthReporter(rep metrics.Reporter) Option {
 func Identity(sk crypto.PrivKey) Option {
 	return func(cfg *Config) error {
 		if cfg.PeerKey != nil {
-			log.Errorf("不能指定多个身份")
+			log.Debugf("不能指定多个身份")
 			return fmt.Errorf("不能指定多个身份")
 		}
 
@@ -313,7 +313,7 @@ func Identity(sk crypto.PrivKey) Option {
 func ConnectionManager(connman connmgr.ConnManager) Option {
 	return func(cfg *Config) error {
 		if cfg.ConnManager != nil {
-			log.Errorf("不能指定多个连接管理器")
+			log.Debugf("不能指定多个连接管理器")
 			return fmt.Errorf("不能指定多个连接管理器")
 		}
 		cfg.ConnManager = connman
@@ -330,7 +330,7 @@ func ConnectionManager(connman connmgr.ConnManager) Option {
 func AddrsFactory(factory config.AddrsFactory) Option {
 	return func(cfg *Config) error {
 		if cfg.AddrsFactory != nil {
-			log.Errorf("不能指定多个地址工厂")
+			log.Debugf("不能指定多个地址工厂")
 			return fmt.Errorf("不能指定多个地址工厂")
 		}
 		cfg.AddrsFactory = factory
@@ -493,7 +493,7 @@ func AutoNATServiceRateLimit(global, perPeer int, interval time.Duration) Option
 func ConnectionGater(cg connmgr.ConnectionGater) Option {
 	return func(cfg *Config) error {
 		if cfg.ConnectionGater != nil {
-			log.Errorf("不能配置多个连接门控器,或者不能同时配置Filters和ConnectionGater")
+			log.Debugf("不能配置多个连接门控器,或者不能同时配置Filters和ConnectionGater")
 			return errors.New("不能配置多个连接门控器,或者不能同时配置Filters和ConnectionGater")
 		}
 		cfg.ConnectionGater = cg
@@ -511,7 +511,7 @@ func ConnectionGater(cg connmgr.ConnectionGater) Option {
 func ResourceManager(rcmgr network.ResourceManager) Option {
 	return func(cfg *Config) error {
 		if cfg.ResourceManager != nil {
-			log.Errorf("不能配置多个资源管理器")
+			log.Debugf("不能配置多个资源管理器")
 			return errors.New("不能配置多个资源管理器")
 		}
 		cfg.ResourceManager = rcmgr
@@ -537,7 +537,7 @@ func NATPortMap() Option {
 func NATManager(nm config.NATManagerC) Option {
 	return func(cfg *Config) error {
 		if cfg.NATManager != nil {
-			log.Errorf("不能指定多个NAT管理器")
+			log.Debugf("不能指定多个NAT管理器")
 			return fmt.Errorf("不能指定多个NAT管理器")
 		}
 		cfg.NATManager = nm
@@ -567,7 +567,7 @@ func Ping(enable bool) Option {
 func Routing(rt config.RoutingC) Option {
 	return func(cfg *Config) error {
 		if cfg.Routing != nil {
-			log.Errorf("不能指定多个路由选项")
+			log.Debugf("不能指定多个路由选项")
 			return fmt.Errorf("不能指定多个路由选项")
 		}
 		cfg.Routing = rt
@@ -680,7 +680,7 @@ func EnableHolePunching(opts ...holepunch.Option) Option {
 func WithDialTimeout(t time.Duration) Option {
 	return func(cfg *Config) error {
 		if t <= 0 {
-			log.Errorf("拨号超时时间必须为正数")
+			log.Debugf("拨号超时时间必须为正数")
 			return errors.New("拨号超时时间必须为正数")
 		}
 		cfg.DialTimeout = t
@@ -707,15 +707,15 @@ func DisableMetrics() Option {
 func PrometheusRegisterer(reg prometheus.Registerer) Option {
 	return func(cfg *Config) error {
 		if cfg.DisableMetrics {
-			log.Errorf("指标被禁用时不能设置注册器")
+			log.Debugf("指标被禁用时不能设置注册器")
 			return errors.New("指标被禁用时不能设置注册器")
 		}
 		if cfg.PrometheusRegisterer != nil {
-			log.Errorf("注册器已设置")
+			log.Debugf("注册器已设置")
 			return errors.New("注册器已设置")
 		}
 		if reg == nil {
-			log.Errorf("注册器不能为空")
+			log.Debugf("注册器不能为空")
 			return errors.New("注册器不能为空")
 		}
 		cfg.PrometheusRegisterer = reg
@@ -734,7 +734,7 @@ func PrometheusRegisterer(reg prometheus.Registerer) Option {
 func DialRanker(d network.DialRanker) Option {
 	return func(cfg *Config) error {
 		if cfg.DialRanker != nil {
-			log.Errorf("拨号排序器已配置")
+			log.Debugf("拨号排序器已配置")
 			return errors.New("拨号排序器已配置")
 		}
 		cfg.DialRanker = d
