@@ -96,7 +96,6 @@ func (pk *RsaPublicKey) Type() pb.KeyType {
 //   - error: 错误信息
 func (pk *RsaPublicKey) Raw() (res []byte, err error) {
 	defer func() { catch.HandlePanic(recover(), &err, "RSA public-key marshaling") }()
-	log.Infof("RSA公钥编码")
 	return x509.MarshalPKIXPublicKey(&pk.k)
 }
 
@@ -127,7 +126,7 @@ func (pk *RsaPublicKey) Equals(k Key) bool {
 //   - error: 错误信息
 func (sk *RsaPrivateKey) Sign(message []byte) (sig []byte, err error) {
 	defer func() { catch.HandlePanic(recover(), &err, "RSA signing") }()
-	log.Infof("RSA签名")
+	// log.Infof("RSA签名")
 	// 计算消息的SHA256哈希
 	hashed := sha256.Sum256(message)
 	// 使用PKCS1v15进行签名
@@ -154,7 +153,7 @@ func (sk *RsaPrivateKey) Type() pb.KeyType {
 //   - error: 错误信息
 func (sk *RsaPrivateKey) Raw() (res []byte, err error) {
 	defer func() { catch.HandlePanic(recover(), &err, "RSA private-key marshaling") }()
-	log.Infof("RSA私钥编码")
+	// log.Infof("RSA私钥编码")
 	b := x509.MarshalPKCS1PrivateKey(&sk.sk)
 	return b, nil
 }
@@ -189,7 +188,7 @@ func (sk *RsaPrivateKey) Equals(k Key) bool {
 //   - error: 错误信息
 func UnmarshalRsaPrivateKey(b []byte) (key PrivKey, err error) {
 	defer func() { catch.HandlePanic(recover(), &err, "RSA private-key unmarshaling") }()
-	log.Infof("RSA私钥反序列化")
+	// log.Infof("RSA私钥反序列化")
 	// 解析PKCS1格式的私钥
 	sk, err := x509.ParsePKCS1PrivateKey(b)
 	if err != nil {
