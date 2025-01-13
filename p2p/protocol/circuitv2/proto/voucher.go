@@ -98,6 +98,6 @@ func (rv *ReservationVoucher) UnmarshalRecord(blob []byte) error {
 
 	// 从Unix时间戳解析过期时间
 	rv.Expiration = time.Unix(int64(pbrv.GetExpiration()), 0)
-	log.Infof("反序列化预约凭证成功: %+v", rv)
+	// log.Infof("反序列化预约凭证成功: %+v", rv)
 	return nil
 }
