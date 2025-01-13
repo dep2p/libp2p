@@ -146,7 +146,7 @@ func (s *stream) SetWriteDeadline(t time.Time) error {
 	defer s.mx.Unlock()
 	s.writeDeadline = t
 	s.notifyWriteStateChanged()
-	log.Infof("设置写入截止时间: %s", t)
+	// log.Infof("设置写入截止时间: %s", t)
 	return nil
 }
 
