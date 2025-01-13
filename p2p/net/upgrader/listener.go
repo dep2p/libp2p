@@ -86,7 +86,7 @@ func (l *listener) handleIncoming() {
 		if err != nil {
 			// 注意: 函数可能暂停接受循环
 			if catcher.IsTemporary(err) {
-				log.Infof("临时接受错误: %s", err)
+				// log.Infof("临时接受错误: %s", err)
 				continue
 			}
 			l.err = err
