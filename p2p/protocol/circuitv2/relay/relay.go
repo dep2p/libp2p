@@ -186,7 +186,7 @@ func (r *Relay) Close() error {
 // 参数:
 //   - s: network.Stream 网络流对象
 func (r *Relay) handleStream(s network.Stream) {
-	log.Infof("收到来自 %s 的新中继流", s.Conn().RemotePeer())
+	// log.Infof("收到来自 %s 的新中继流", s.Conn().RemotePeer())
 
 	// 设置流的服务名称
 	if err := s.Scope().SetService(ServiceName); err != nil {
@@ -531,7 +531,7 @@ func (r *Relay) handleConnect(s network.Stream, msg *pbv2.HopMessage) pbv2.Statu
 	// 重置超时
 	bs.SetDeadline(time.Time{})
 
-	log.Infof("正在从 %s 中继连接到 %s", src, dest.ID)
+	// log.Infof("正在从 %s 中继连接到 %s", src, dest.ID)
 
 	// 创建并发计数器
 	var goroutines atomic.Int32
