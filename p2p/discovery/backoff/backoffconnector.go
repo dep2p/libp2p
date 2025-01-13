@@ -107,7 +107,7 @@ func (c *BackoffConnector) Connect(ctx context.Context, peerCh <-chan peer.AddrI
 			}(pi)
 
 		case <-ctx.Done():
-			log.Infof("发现: 退避连接器上下文错误 %v", ctx.Err())
+			// log.Infof("发现: 退避连接器上下文错误 %v", ctx.Err())
 			return
 		}
 	}
