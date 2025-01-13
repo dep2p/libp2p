@@ -23,7 +23,7 @@ func init() {
 	// 如果值为 false/f/0,则禁用端口重用
 	if v == "false" || v == "f" || v == "0" {
 		EnvReuseportVal = false
-		log.Infof("端口重用已禁用 (LIBP2P_TCP_REUSEPORT=%s)", v)
+		// log.Infof("端口重用已禁用 (LIBP2P_TCP_REUSEPORT=%s)", v)
 	}
 }
 
