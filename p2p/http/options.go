@@ -1,4 +1,4 @@
-package libp2phttp
+package dep2phttp
 
 // RoundTripperOption 是一个函数类型,用于配置 RoundTripper 选项
 // 参数:
@@ -17,7 +17,7 @@ type roundTripperOpts struct {
 }
 
 // PreferHTTPTransport 告诉 RoundTripper 构造器优先使用 HTTP 传输
-// (而不是 libp2p 流传输)。这在需要利用 HTTP 缓存等场景下很有用。
+// (而不是 dep2p 流传输)。这在需要利用 HTTP 缓存等场景下很有用。
 // 参数:
 //   - o: roundTripperOpts - RoundTripper 选项
 //
@@ -31,7 +31,7 @@ func PreferHTTPTransport(o roundTripperOpts) roundTripperOpts {
 
 // ServerMustAuthenticatePeerID 告诉 RoundTripper 构造器必须验证服务器的对等节点 ID。
 // 注意:目前这意味着我们不能使用原生 HTTP 传输(HTTP 对等节点 ID 验证尚未实现:
-// https://github.com/libp2p/specs/pull/564)。
+// https://github.com/dep2p/specs/pull/564)。
 // 参数:
 //   - o: roundTripperOpts - RoundTripper 选项
 //

@@ -1,7 +1,7 @@
 package mocknet
 
 import (
-	"github.com/dep2p/libp2p/core/network"
+	"github.com/dep2p/core/network"
 )
 
 // StreamComplement 返回给定流的另一端

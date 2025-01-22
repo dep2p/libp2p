@@ -10,9 +10,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/p2p/http/auth/internal/handshake"
+	"github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/p2p/http/auth/internal/handshake"
 )
 
 // hmacPool 是一个 HMAC 哈希函数的对象池
@@ -76,7 +76,7 @@ type ServerPeerIDAuth struct {
 }
 
 // ServeHTTP 实现了 http.Handler 接口
-// 使用 libp2p 对等节点身份认证方案验证请求
+// 使用 dep2p 对等节点身份认证方案验证请求
 // 如果设置了 Next 处理函数，将在认证成功后调用它
 // 参数:
 //   - w: HTTP 响应写入器

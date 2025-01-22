@@ -4,15 +4,15 @@ import (
 	"context"
 	"net"
 
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/protocol"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/protocol"
 )
 
-// listener 是一个 net.Listener 的实现,用于处理来自 libp2p 连接的 http 标记流
+// listener 是一个 net.Listener 的实现,用于处理来自 dep2p 连接的 http 标记流
 // 可以通过 Listen() 函数创建一个 listener
 type listener struct {
-	host     host.Host           // libp2p 主机实例
+	host     host.Host           // dep2p 主机实例
 	ctx      context.Context     // 上下文对象,用于控制生命周期
 	tag      protocol.ID         // 协议标识符
 	cancel   func()              // 取消函数,用于停止监听
@@ -24,7 +24,7 @@ type listener struct {
 }
 
 // Accept 返回此监听器的下一个连接
-// 如果没有连接,它会阻塞。在底层,连接是 libp2p 流
+// 如果没有连接,它会阻塞。在底层,连接是 dep2p 流
 // 返回值:
 //   - net.Conn: 新的网络连接
 //   - error: 接收过程中的错误
@@ -46,7 +46,7 @@ func (l *listener) Close() error {
 	return nil
 }
 
-// Addr 返回此监听器的地址,即其 libp2p 对等点 ID
+// Addr 返回此监听器的地址,即其 dep2p 对等点 ID
 // 返回值:
 //   - net.Addr: 监听器的网络地址
 func (l *listener) Addr() net.Addr {
@@ -54,10 +54,10 @@ func (l *listener) Addr() net.Addr {
 }
 
 // Listen 提供一个标准的 net.Listener,准备接受"连接"
-// 在底层,这些连接是带有给定 protocol.ID 标记的 libp2p 流
+// 在底层,这些连接是带有给定 protocol.ID 标记的 dep2p 流
 //
 // 参数:
-//   - h host.Host: libp2p 主机实例
+//   - h host.Host: dep2p 主机实例
 //   - tag protocol.ID: 协议标识符
 //   - opts ...ListenerOption: 监听器选项列表
 //

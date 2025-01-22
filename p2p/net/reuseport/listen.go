@@ -3,9 +3,9 @@ package reuseport
 import (
 	"net"
 
-	"github.com/libp2p/go-reuseport"
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	"github.com/dep2p/libp2p/reuseport"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // listener 结构体封装了一个 manet.Listener 和对应的网络对象

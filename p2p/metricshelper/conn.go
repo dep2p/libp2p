@@ -1,6 +1,6 @@
 package metricshelper
 
-import ma "github.com/multiformats/go-multiaddr"
+import ma "github.com/dep2p/multiformats/multiaddr"
 
 // 支持的传输协议列表,包括中继、WebRTC、WebRTC直连、WebTransport、QUIC、QUIC v1、WSS、WS、TCP
 var transports = [...]int{ma.P_CIRCUIT, ma.P_WEBRTC, ma.P_WEBRTC_DIRECT, ma.P_WEBTRANSPORT, ma.P_QUIC, ma.P_QUIC_V1, ma.P_WSS, ma.P_WS, ma.P_TCP}

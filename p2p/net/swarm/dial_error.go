@@ -5,9 +5,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/peer"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // maxDialDialErrors 是我们记录的最大拨号错误数量

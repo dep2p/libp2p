@@ -5,8 +5,8 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
 )
 
 // dialWorkerFunc 用于 dialSync 生成新的拨号工作器

@@ -3,9 +3,9 @@ package upgrader
 import (
 	"fmt"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/protocol"
-	"github.com/dep2p/libp2p/core/transport"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/protocol"
+	"github.com/dep2p/core/transport"
 )
 
 // transportConn 实现了一个传输层连接

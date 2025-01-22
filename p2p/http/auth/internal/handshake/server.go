@@ -10,8 +10,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/peer"
 )
 
 var (

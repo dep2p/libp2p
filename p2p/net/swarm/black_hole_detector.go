@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"sync"
 
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // BlackHoleState 表示黑洞检测器的状态

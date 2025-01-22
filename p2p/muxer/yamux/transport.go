@@ -5,9 +5,9 @@ import (
 	"math"
 	"net"
 
-	"github.com/dep2p/libp2p/core/network"
+	"github.com/dep2p/core/network"
 
-	"github.com/libp2p/go-yamux/v4"
+	"github.com/dep2p/libp2p/yamux"
 )
 
 // 默认的传输层实例

@@ -12,17 +12,17 @@ import (
 
 	"slices"
 
-	"github.com/dep2p/libp2p/core/connmgr"
-	"github.com/dep2p/libp2p/core/event"
-	"github.com/dep2p/libp2p/core/metrics"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/peerstore"
-	"github.com/dep2p/libp2p/core/transport"
+	"github.com/dep2p/core/connmgr"
+	"github.com/dep2p/core/event"
+	"github.com/dep2p/core/metrics"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/peerstore"
+	"github.com/dep2p/core/transport"
 
 	logging "github.com/dep2p/log"
-	ma "github.com/multiformats/go-multiaddr"
-	madns "github.com/multiformats/go-multiaddr-dns"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	madns "github.com/dep2p/multiformats/multiaddr/dns"
 )
 
 // 默认拨号超时时间

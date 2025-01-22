@@ -4,7 +4,7 @@ import (
 	"context"
 	"net"
 
-	"github.com/libp2p/go-reuseport"
+	"github.com/dep2p/libp2p/reuseport"
 )
 
 // 默认的回退拨号器

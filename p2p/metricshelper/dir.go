@@ -1,6 +1,6 @@
 package metricshelper
 
-import "github.com/dep2p/libp2p/core/network"
+import "github.com/dep2p/core/network"
 
 // GetDirection 获取连接的方向
 // 参数:

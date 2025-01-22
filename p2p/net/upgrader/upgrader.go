@@ -7,17 +7,17 @@ import (
 	"net"
 	"time"
 
-	"github.com/dep2p/libp2p/core/connmgr"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	ipnet "github.com/dep2p/libp2p/core/pnet"
-	"github.com/dep2p/libp2p/core/protocol"
-	"github.com/dep2p/libp2p/core/sec"
-	"github.com/dep2p/libp2p/core/transport"
-	"github.com/dep2p/libp2p/p2p/net/pnet"
+	"github.com/dep2p/core/connmgr"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	ipnet "github.com/dep2p/core/pnet"
+	"github.com/dep2p/core/protocol"
+	"github.com/dep2p/core/sec"
+	"github.com/dep2p/core/transport"
+	"github.com/dep2p/p2p/net/pnet"
 
-	manet "github.com/multiformats/go-multiaddr/net"
-	mss "github.com/multiformats/go-multistream"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
+	mss "github.com/dep2p/multiformats/multistream"
 )
 
 // ErrNilPeer 在尝试升级出站连接但未指定对等点ID时返回
@@ -144,7 +144,7 @@ func New(security []sec.SecureTransport, muxers []StreamMuxer, psk ipnet.PSK, rc
 	return u, nil
 }
 
-// UpgradeListener 将传入的多地址网络监听器升级为完整的 libp2p 传输监听器
+// UpgradeListener 将传入的多地址网络监听器升级为完整的 dep2p 传输监听器
 // 参数:
 //   - t: transport.Transport 传输层对象
 //   - list: manet.Listener 多地址网络监听器
@@ -170,7 +170,7 @@ func (u *upgrader) UpgradeListener(t transport.Transport, list manet.Listener) t
 	return l
 }
 
-// Upgrade 将多地址/网络连接升级为完整的 libp2p 传输连接
+// Upgrade 将多地址/网络连接升级为完整的 dep2p 传输连接
 // 参数:
 //   - ctx: context.Context 上下文
 //   - t: transport.Transport 传输层对象

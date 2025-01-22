@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net"
 
-	ipnet "github.com/dep2p/libp2p/core/pnet"
+	ipnet "github.com/dep2p/core/pnet"
 	logging "github.com/dep2p/log"
 )
 

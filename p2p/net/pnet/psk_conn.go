@@ -7,10 +7,10 @@ import (
 	"io"
 	"net"
 
-	"github.com/dep2p/libp2p/core/pnet"
+	"github.com/dep2p/core/pnet"
 
 	"github.com/davidlazar/go-crypto/salsa20"
-	pool "github.com/libp2p/go-buffer-pool"
+	pool "github.com/dep2p/libp2p/buffer/pool"
 )
 
 // 使用缓冲池因为用户需要他们的切片返回

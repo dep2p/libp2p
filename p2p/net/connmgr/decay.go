@@ -6,8 +6,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/dep2p/libp2p/core/connmgr"
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/connmgr"
+	"github.com/dep2p/core/peer"
 
 	"github.com/benbjohnson/clock"
 )

@@ -6,12 +6,12 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/transport"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/transport"
 
 	logging "github.com/dep2p/log"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 	tec "github.com/jbenet/go-temp-err-catcher"
-	manet "github.com/multiformats/go-multiaddr/net"
 )
 
 // log 是用于记录日志的 logger 实例

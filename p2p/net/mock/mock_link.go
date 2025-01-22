@@ -4,8 +4,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
 )
 
 // link 实现了 mocknet.Link 接口,为了简单起见也实现了 network.Conn 接口

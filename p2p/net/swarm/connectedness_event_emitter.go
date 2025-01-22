@@ -4,9 +4,9 @@ import (
 	"context"
 	"sync"
 
-	"github.com/dep2p/libp2p/core/event"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/event"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
 )
 
 // connectednessEventEmitter 发送 PeerConnectednessChanged 事件。

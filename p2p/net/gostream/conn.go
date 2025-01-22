@@ -5,15 +5,15 @@ import (
 	"io"
 	"net"
 
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/protocol"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/protocol"
 )
 
-// conn 是 net.Conn 的一个实现,它封装了 libp2p 流
+// conn 是 net.Conn 的一个实现,它封装了 dep2p 流
 type conn struct {
-	// Stream 是底层的 libp2p 流
+	// Stream 是底层的 dep2p 流
 	network.Stream
 	// ignoreEOF 表示是否忽略 EOF 错误
 	ignoreEOF bool
@@ -37,9 +37,9 @@ func (c *conn) Read(b []byte) (int, error) {
 	return n, err
 }
 
-// newConn 根据给定的 libp2p 流创建一个新的连接
+// newConn 根据给定的 dep2p 流创建一个新的连接
 // 参数:
-//   - s: libp2p 流
+//   - s: dep2p 流
 //   - ignoreEOF: 是否忽略 EOF 错误
 //
 // 返回:
@@ -68,7 +68,7 @@ func (c *conn) RemoteAddr() net.Addr {
 // Dial 使用给定的主机打开到目标地址的流
 // 参数:
 //   - ctx: 上下文
-//   - h: libp2p 主机
+//   - h: dep2p 主机
 //   - pid: 目标对等点 ID
 //   - tag: 协议标识
 //

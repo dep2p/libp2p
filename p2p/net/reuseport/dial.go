@@ -3,8 +3,8 @@ package reuseport
 import (
 	"context"
 
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // Dial 使用给定的多地址建立连接,尽可能复用当前正在监听的端口

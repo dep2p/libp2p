@@ -9,15 +9,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/canonicallog"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/peerstore"
-	"github.com/dep2p/libp2p/core/transport"
+	"github.com/dep2p/core/canonicallog"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/peerstore"
+	"github.com/dep2p/core/transport"
 
-	ma "github.com/multiformats/go-multiaddr"
-	mafmt "github.com/multiformats/go-multiaddr-fmt"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	mafmt "github.com/dep2p/multiformats/multiaddr/fmt"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // 解析地址时返回的最大地址数量
@@ -798,7 +798,7 @@ func (s *Swarm) dialAddr(ctx context.Context, p peer.ID, addr ma.Multiaddr, updC
 	return connC, nil
 }
 
-// TODO 我们应该在go-libp2p/core/transport.Transport接口上有一个`IsFdConsuming() bool`方法。
+// TODO 我们应该在dep2p/core/transport.Transport接口上有一个`IsFdConsuming() bool`方法。
 // isFdConsumingAddr 检查地址是否消耗文件描述符
 //
 // 参数:

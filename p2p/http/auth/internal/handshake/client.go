@@ -6,8 +6,8 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/peer"
 	logging "github.com/dep2p/log"
 )
 

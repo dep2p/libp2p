@@ -8,13 +8,13 @@ import (
 	"sync/atomic" // 用于原子操作
 	"time"        // 用于时间相关操作
 
-	"github.com/benbjohnson/clock"         // 用于时钟模拟
-	"github.com/dep2p/libp2p/core/connmgr" // 连接管理器接口
-	"github.com/dep2p/libp2p/core/network" // 网络接口
-	"github.com/dep2p/libp2p/core/peer"    // peer相关定义
+	"github.com/benbjohnson/clock"  // 用于时钟模拟
+	"github.com/dep2p/core/connmgr" // 连接管理器接口
+	"github.com/dep2p/core/network" // 网络接口
+	"github.com/dep2p/core/peer"    // peer相关定义
 
-	logging "github.com/dep2p/log"            // 日志
-	ma "github.com/multiformats/go-multiaddr" // 多地址
+	logging "github.com/dep2p/log"               // 日志
+	ma "github.com/dep2p/multiformats/multiaddr" // 多地址
 )
 
 // 连接管理器的日志记录器

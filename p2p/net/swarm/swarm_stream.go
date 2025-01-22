@@ -6,11 +6,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/protocol"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/protocol"
 )
 
-// 验证 Stream 是否符合 go-libp2p-net Stream 接口
+// 验证 Stream 是否符合 go-dep2p-net Stream 接口
 var _ network.Stream = &Stream{}
 
 // Stream 是 swarm 使用的流类型。通常情况下,你不会直接使用这个类型

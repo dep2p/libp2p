@@ -10,14 +10,14 @@ import (
 	"io"
 	"time"
 
-	"github.com/dep2p/libp2p/core/connmgr"
-	ic "github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/peerstore"
+	"github.com/dep2p/core/connmgr"
+	ic "github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/peerstore"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // PeerOptions 定义了添加对等点时的配置选项

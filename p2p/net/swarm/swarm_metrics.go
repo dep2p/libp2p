@@ -7,17 +7,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/p2p/metricshelper"
+	"github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/p2p/metricshelper"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-// 定义 libp2p swarm 指标的命名空间
-const metricNamespace = "libp2p_swarm"
+// 定义 dep2p swarm 指标的命名空间
+const metricNamespace = "dep2p_swarm"
 
 var (
 	// 连接打开计数器
@@ -76,7 +76,7 @@ var (
 		prometheus.HistogramOpts{
 			Namespace: metricNamespace,
 			Name:      "handshake_latency_seconds",
-			Help:      "libp2p握手延迟时间",
+			Help:      "dep2p握手延迟时间",
 			Buckets:   prometheus.ExponentialBuckets(0.001, 1.3, 35),
 		},
 		[]string{"transport", "security", "muxer", "early_muxer", "ip_version"},

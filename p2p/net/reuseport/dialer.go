@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"net"
 
-	"github.com/libp2p/go-netroute"
+	"github.com/dep2p/libp2p/netroute"
 )
 
 // dialer 结构体用于管理网络连接的拨号

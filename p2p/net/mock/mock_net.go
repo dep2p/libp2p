@@ -8,16 +8,16 @@ import (
 	"sort"
 	"sync"
 
-	ic "github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/peerstore"
-	bhost "github.com/dep2p/libp2p/p2p/host/basic"
-	"github.com/dep2p/libp2p/p2p/host/eventbus"
-	"github.com/dep2p/libp2p/p2p/host/peerstore/pstoremem"
+	ic "github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/peerstore"
+	bhost "github.com/dep2p/p2p/host/basic"
+	"github.com/dep2p/p2p/host/eventbus"
+	"github.com/dep2p/p2p/host/peerstore/pstoremem"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // 被黑洞的IPv6范围（以防我们的流量泄露到互联网上）

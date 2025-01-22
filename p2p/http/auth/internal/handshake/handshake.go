@@ -12,13 +12,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dep2p/libp2p/core/crypto"
+	"github.com/dep2p/core/crypto"
 
-	pool "github.com/libp2p/go-buffer-pool"
+	pool "github.com/dep2p/libp2p/buffer/pool"
 )
 
 // PeerIDAuthScheme 定义了对等节点认证方案的名称
-const PeerIDAuthScheme = "libp2p-PeerID"
+const PeerIDAuthScheme = "dep2p-PeerID"
 
 // challengeLen 定义了挑战数据的长度
 const challengeLen = 32

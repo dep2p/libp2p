@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/dep2p/libp2p/core/network"
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	"github.com/dep2p/core/network"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // 250ms 的值来自 Happy Eyeballs RFC 8305。这是一个 RTT 的粗略估计

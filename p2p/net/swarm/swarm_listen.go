@@ -6,11 +6,11 @@ import (
 	"slices"
 	"time"
 
-	"github.com/dep2p/libp2p/core/canonicallog"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/transport"
+	"github.com/dep2p/core/canonicallog"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/transport"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // OrderedListener 接口定义了监听器的设置顺序

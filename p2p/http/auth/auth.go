@@ -1,8 +1,8 @@
 package httppeeridauth
 
 import (
-	"github.com/dep2p/libp2p/p2p/http/auth/internal/handshake"
 	logging "github.com/dep2p/log"
+	"github.com/dep2p/p2p/http/auth/internal/handshake"
 )
 
 // PeerIDAuthScheme 定义了对等节点身份认证方案

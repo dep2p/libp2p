@@ -10,7 +10,7 @@ import (
 
 	logging "github.com/dep2p/log"
 
-	"github.com/libp2p/go-nat"
+	"github.com/dep2p/libp2p/nat"
 )
 
 // ErrNoMapping 表示地址没有映射
@@ -270,7 +270,7 @@ func (nat *NAT) background() {
 //   - externalPort: int 外部端口号
 func (nat *NAT) establishMapping(ctx context.Context, protocol string, internalPort int) (externalPort int) {
 	log.Debugf("尝试端口映射: %s/%d", protocol, internalPort)
-	const comment = "libp2p"
+	const comment = "dep2p"
 
 	nat.natmu.Lock()
 	var err error

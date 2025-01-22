@@ -3,10 +3,10 @@ package yamux
 import (
 	"context"
 
-	"github.com/dep2p/libp2p/core/network"
+	"github.com/dep2p/core/network"
 	logging "github.com/dep2p/log"
 
-	"github.com/libp2p/go-yamux/v4"
+	"github.com/dep2p/libp2p/yamux"
 )
 
 var log = logging.Logger("yamux-conn")

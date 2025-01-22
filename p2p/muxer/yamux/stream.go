@@ -3,9 +3,9 @@ package yamux
 import (
 	"time"
 
-	"github.com/dep2p/libp2p/core/network"
+	"github.com/dep2p/core/network"
 
-	"github.com/libp2p/go-yamux/v4"
+	"github.com/dep2p/libp2p/yamux"
 )
 
 // stream 在 yamux.Stream 之上实现了 mux.MuxedStream 接口

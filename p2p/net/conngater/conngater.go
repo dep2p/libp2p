@@ -5,18 +5,18 @@ import (
 	"net"
 	"sync"
 
-	"github.com/dep2p/libp2p/core/connmgr"
-	"github.com/dep2p/libp2p/core/control"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/connmgr"
+	"github.com/dep2p/core/control"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
 
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 
+	"github.com/dep2p/datastore"
+	"github.com/dep2p/datastore/namespace"
+	"github.com/dep2p/datastore/query"
 	logging "github.com/dep2p/log"
-	"github.com/ipfs/go-datastore"
-	"github.com/ipfs/go-datastore/namespace"
-	"github.com/ipfs/go-datastore/query"
 )
 
 // BasicConnectionGater 实现了一个连接门控器，允许应用程序对传入和传出连接进行访问控制。
@@ -39,7 +39,7 @@ var log = logging.Logger("net-conngater")
 
 const (
 	// 数据存储命名空间
-	ns = "/libp2p/net/conngater"
+	ns = "/dep2p/net/conngater"
 	// 对等节点键前缀
 	keyPeer = "/peer/"
 	// 地址键前缀

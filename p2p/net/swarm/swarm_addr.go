@@ -3,9 +3,9 @@ package swarm
 import (
 	"time"
 
-	manet "github.com/multiformats/go-multiaddr/net"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // ListenAddresses 返回此 swarm 监听的地址列表

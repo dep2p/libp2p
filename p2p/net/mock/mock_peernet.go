@@ -7,12 +7,12 @@ import (
 	"math/rand"
 	"sync"
 
-	"github.com/dep2p/libp2p/core/connmgr"
-	"github.com/dep2p/libp2p/core/event"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/peerstore"
-	ma "github.com/multiformats/go-multiaddr"
+	"github.com/dep2p/core/connmgr"
+	"github.com/dep2p/core/event"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/peerstore"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // peernet 实现了 network.Network 接口

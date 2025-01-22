@@ -1,14 +1,14 @@
 package gostream
 
-import "github.com/dep2p/libp2p/core/peer"
+import "github.com/dep2p/core/peer"
 
-// addr 实现了 net.Addr 接口并持有一个 libp2p peer ID
+// addr 实现了 net.Addr 接口并持有一个 dep2p peer ID
 type addr struct {
 	// id 表示节点的唯一标识符
 	id peer.ID
 }
 
-// Network 返回该地址所属的网络名称 (libp2p)
+// Network 返回该地址所属的网络名称 (dep2p)
 // 参数:
 //   - a: addr 结构体指针
 //

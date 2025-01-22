@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/transport"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/transport"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // TransportForDialing 获取用于拨号给定多地址的适当传输层
@@ -117,7 +117,7 @@ func (s *Swarm) TransportForListening(a ma.Multiaddr) transport.Transport {
 //   - error 错误信息
 //
 // 注意:
-//   - 满足 go-libp2p-transport 的 Network 接口
+//   - 满足 go-dep2p-transport 的 Network 接口
 func (s *Swarm) AddTransport(t transport.Transport) error {
 	// 获取传输层支持的协议列表
 	protocols := t.Protocols()

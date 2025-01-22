@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/p2p/http/auth/internal/handshake"
+	"github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/p2p/http/auth/internal/handshake"
 )
 
 // ClientPeerIDAuth 实现了对等节点身份认证的客户端
@@ -22,7 +22,7 @@ type ClientPeerIDAuth struct {
 	tm tokenMap
 }
 
-// AuthenticatedDo 类似于 http.Client.Do,但会在需要时执行 libp2p 对等节点身份认证握手
+// AuthenticatedDo 类似于 http.Client.Do,但会在需要时执行 dep2p 对等节点身份认证握手
 // 建议传入设置了 GetBody 的 http.Request,这样在之前使用的 token 过期时可以重试请求
 //
 // 参数:
