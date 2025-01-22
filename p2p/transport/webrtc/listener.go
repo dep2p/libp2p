@@ -1,4 +1,4 @@
-package libp2pwebrtc
+package dep2pwebrtc
 
 import (
 	"context"
@@ -10,15 +10,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	tpt "github.com/dep2p/libp2p/core/transport"
-	"github.com/dep2p/libp2p/p2p/transport/webrtc/udpmux"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	tpt "github.com/dep2p/core/transport"
+	"github.com/dep2p/p2p/transport/webrtc/udpmux"
 
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
-	"github.com/multiformats/go-multibase"
-	"github.com/multiformats/go-multihash"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
+	"github.com/dep2p/multiformats/multibase"
+	"github.com/dep2p/multiformats/multihash"
 	"github.com/pion/webrtc/v4"
 )
 

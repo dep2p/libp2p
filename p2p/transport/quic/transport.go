@@ -1,4 +1,4 @@
-package libp2pquic
+package dep2pquic
 
 import (
 	"context"
@@ -10,19 +10,19 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/connmgr"
-	ic "github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/pnet"
-	tpt "github.com/dep2p/libp2p/core/transport"
-	p2ptls "github.com/dep2p/libp2p/p2p/security/tls"
-	"github.com/dep2p/libp2p/p2p/transport/quicreuse"
+	"github.com/dep2p/core/connmgr"
+	ic "github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/pnet"
+	tpt "github.com/dep2p/core/transport"
+	p2ptls "github.com/dep2p/p2p/security/tls"
+	"github.com/dep2p/p2p/transport/quicreuse"
 
 	logging "github.com/dep2p/log"
-	ma "github.com/multiformats/go-multiaddr"
-	mafmt "github.com/multiformats/go-multiaddr-fmt"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	mafmt "github.com/dep2p/multiformats/multiaddr/fmt"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 	"github.com/quic-go/quic-go"
 )
 
@@ -378,7 +378,7 @@ func (t *transport) Listen(addr ma.Multiaddr) (tpt.Listener, error) {
 		conf, _ := t.identity.ConfigForPeer("")
 		return conf, nil
 	}
-	tlsConf.NextProtos = []string{"libp2p"}
+	tlsConf.NextProtos = []string{"dep2p"}
 	udpAddr, version, err := quicreuse.FromQuicMultiaddr(addr)
 	if err != nil {
 		return nil, err

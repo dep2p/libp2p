@@ -6,7 +6,7 @@ import (
 	"net"
 	"time"
 
-	pool "github.com/libp2p/go-buffer-pool"
+	pool "github.com/dep2p/libp2p/buffer/pool"
 )
 
 // packet 表示一个网络数据包

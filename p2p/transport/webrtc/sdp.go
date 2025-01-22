@@ -1,4 +1,4 @@
-package libp2pwebrtc
+package dep2pwebrtc
 
 import (
 	"crypto"
@@ -6,7 +6,7 @@ import (
 	"net"
 	"strings"
 
-	"github.com/multiformats/go-multihash"
+	"github.com/dep2p/multiformats/multihash"
 )
 
 // clientSDP 定义了一个SDP格式字符串,用于从传入的STUN消息推断客户端的SDP offer

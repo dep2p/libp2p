@@ -1,18 +1,18 @@
-package libp2pquic
+package dep2pquic
 
 import (
 	"context"
 	"fmt"
 	"net"
 
-	ic "github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	tpt "github.com/dep2p/libp2p/core/transport"
-	p2ptls "github.com/dep2p/libp2p/p2p/security/tls"
-	"github.com/dep2p/libp2p/p2p/transport/quicreuse"
+	ic "github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	tpt "github.com/dep2p/core/transport"
+	p2ptls "github.com/dep2p/p2p/security/tls"
+	"github.com/dep2p/p2p/transport/quicreuse"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 	"github.com/quic-go/quic-go"
 )
 
@@ -104,7 +104,7 @@ func (l *listener) Accept() (tpt.CapableConn, error) {
 	}
 }
 
-// wrapConn 将 QUIC 连接包装为 libp2p 的 CapableConn
+// wrapConn 将 QUIC 连接包装为 dep2p 的 CapableConn
 // 如果包装失败,调用者负责清理连接
 // 参数:
 //   - qconn: quic.Connection QUIC 连接实例

@@ -1,14 +1,14 @@
-package libp2pquic
+package dep2pquic
 
 import (
 	"context"
 
-	ic "github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	tpt "github.com/dep2p/libp2p/core/transport"
+	ic "github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	tpt "github.com/dep2p/core/transport"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 	"github.com/quic-go/quic-go"
 )
 

@@ -1,9 +1,9 @@
-package libp2pquic
+package dep2pquic
 
 import (
 	"errors"
 
-	"github.com/dep2p/libp2p/core/network"
+	"github.com/dep2p/core/network"
 
 	"github.com/quic-go/quic-go"
 )

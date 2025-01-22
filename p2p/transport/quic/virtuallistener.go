@@ -1,12 +1,12 @@
-package libp2pquic
+package dep2pquic
 
 import (
 	"sync"
 
-	tpt "github.com/dep2p/libp2p/core/transport"
-	"github.com/dep2p/libp2p/p2p/transport/quicreuse"
+	tpt "github.com/dep2p/core/transport"
+	"github.com/dep2p/p2p/transport/quicreuse"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 	"github.com/quic-go/quic-go"
 )
 

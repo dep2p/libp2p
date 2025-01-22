@@ -11,8 +11,8 @@ import (
 	"strings"
 	"sync"
 
+	pool "github.com/dep2p/libp2p/buffer/pool"
 	logging "github.com/dep2p/log"
-	pool "github.com/libp2p/go-buffer-pool"
 	"github.com/pion/ice/v2"
 	"github.com/pion/stun"
 )
