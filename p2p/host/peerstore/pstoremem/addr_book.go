@@ -9,12 +9,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/peerstore"
-	"github.com/dep2p/libp2p/core/record"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/peerstore"
+	"github.com/dep2p/core/record"
 
 	logging "github.com/dep2p/log"
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // 日志记录器

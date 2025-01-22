@@ -33,8 +33,8 @@ func newSubSettings() subSettings {
 	if ok {
 		// 移除github.com前缀
 		file = strings.TrimPrefix(file, "github.com/")
-		// 移除版本号,例如 go-libp2p-package@v0.x.y-some-hash-123/file.go
-		// 将被缩短为 go-libp2p-package/file.go
+		// 移除版本号,例如 go-dep2p-package@v0.x.y-some-hash-123/file.go
+		// 将被缩短为 go-dep2p-package/file.go
 		if idx1 := strings.Index(file, "@"); idx1 != -1 {
 			if idx2 := strings.Index(file[idx1:], "/"); idx2 != -1 {
 				file = file[:idx1] + file[idx1+idx2:]

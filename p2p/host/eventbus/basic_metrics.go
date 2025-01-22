@@ -4,13 +4,13 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/dep2p/libp2p/p2p/metricshelper"
+	"github.com/dep2p/p2p/metricshelper"
 
 	"github.com/prometheus/client_golang/prometheus"
 )
 
 // 定义指标命名空间
-const metricNamespace = "libp2p_eventbus"
+const metricNamespace = "dep2p_eventbus"
 
 var (
 	// 已发送事件计数器

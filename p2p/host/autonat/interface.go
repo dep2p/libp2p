@@ -4,10 +4,10 @@ import (
 	"context"
 	"io"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // AutoNAT 是NAT自动发现的接口

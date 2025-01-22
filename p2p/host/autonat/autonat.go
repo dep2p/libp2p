@@ -7,15 +7,15 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/dep2p/libp2p/core/event"
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/p2p/host/eventbus"
+	"github.com/dep2p/core/event"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/p2p/host/eventbus"
 
 	logging "github.com/dep2p/log"
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // log 用于记录host-autonat相关的日志
@@ -26,7 +26,7 @@ const maxConfidence = 3
 
 // AmbientAutoNAT 实现了环境NAT自动发现
 type AmbientAutoNAT struct {
-	host host.Host // libp2p主机实例
+	host host.Host // dep2p主机实例
 
 	*config // 配置信息
 
@@ -57,7 +57,7 @@ type AmbientAutoNAT struct {
 
 // StaticAutoNAT 是一个简单的AutoNAT实现,用于单一NAT状态场景
 type StaticAutoNAT struct {
-	host         host.Host            // libp2p主机实例
+	host         host.Host            // dep2p主机实例
 	reachability network.Reachability // 可达性状态
 	service      *autoNATService      // autoNAT服务实例
 }

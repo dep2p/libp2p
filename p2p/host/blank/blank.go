@@ -5,20 +5,20 @@ import (
 	"errors"
 	"io"
 
-	"github.com/dep2p/libp2p/core/connmgr"
-	"github.com/dep2p/libp2p/core/event"
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/peerstore"
-	"github.com/dep2p/libp2p/core/protocol"
-	"github.com/dep2p/libp2p/core/record"
-	"github.com/dep2p/libp2p/p2p/host/eventbus"
+	"github.com/dep2p/core/connmgr"
+	"github.com/dep2p/core/event"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/peerstore"
+	"github.com/dep2p/core/protocol"
+	"github.com/dep2p/core/record"
+	"github.com/dep2p/p2p/host/eventbus"
 
 	logging "github.com/dep2p/log"
 
-	ma "github.com/multiformats/go-multiaddr"
-	mstream "github.com/multiformats/go-multistream"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	mstream "github.com/dep2p/multiformats/multistream"
 )
 
 // 定义日志记录器

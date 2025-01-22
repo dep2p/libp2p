@@ -5,14 +5,14 @@ import (
 	"context"
 	"encoding/gob"
 
-	"github.com/dep2p/libp2p/core/peer"
-	pstore "github.com/dep2p/libp2p/core/peerstore"
-	"github.com/dep2p/libp2p/core/protocol"
-	pool "github.com/libp2p/go-buffer-pool"
+	"github.com/dep2p/core/peer"
+	pstore "github.com/dep2p/core/peerstore"
+	"github.com/dep2p/core/protocol"
+	pool "github.com/dep2p/libp2p/buffer/pool"
 
-	ds "github.com/ipfs/go-datastore"
-	"github.com/ipfs/go-datastore/query"
-	"github.com/multiformats/go-base32"
+	ds "github.com/dep2p/datastore"
+	"github.com/dep2p/datastore/query"
+	"github.com/dep2p/multiformats/base32"
 )
 
 // 元数据存储在以下数据库键模式下:

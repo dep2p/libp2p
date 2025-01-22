@@ -9,36 +9,36 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/connmgr"
-	"github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/event"
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/peerstore"
-	"github.com/dep2p/libp2p/core/protocol"
-	"github.com/dep2p/libp2p/core/record"
-	"github.com/dep2p/libp2p/core/transport"
-	"github.com/dep2p/libp2p/p2p/host/autonat"
-	"github.com/dep2p/libp2p/p2p/host/basic/internal/backoff"
-	"github.com/dep2p/libp2p/p2p/host/eventbus"
-	"github.com/dep2p/libp2p/p2p/host/pstoremanager"
-	"github.com/dep2p/libp2p/p2p/host/relaysvc"
-	"github.com/dep2p/libp2p/p2p/protocol/autonatv2"
-	relayv2 "github.com/dep2p/libp2p/p2p/protocol/circuitv2/relay"
-	"github.com/dep2p/libp2p/p2p/protocol/holepunch"
-	"github.com/dep2p/libp2p/p2p/protocol/identify"
-	"github.com/dep2p/libp2p/p2p/protocol/ping"
-	libp2pwebrtc "github.com/dep2p/libp2p/p2p/transport/webrtc"
-	libp2pwebtransport "github.com/dep2p/libp2p/p2p/transport/webtransport"
+	"github.com/dep2p/core/connmgr"
+	"github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/event"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/peerstore"
+	"github.com/dep2p/core/protocol"
+	"github.com/dep2p/core/record"
+	"github.com/dep2p/core/transport"
+	"github.com/dep2p/p2p/host/autonat"
+	"github.com/dep2p/p2p/host/basic/internal/backoff"
+	"github.com/dep2p/p2p/host/eventbus"
+	"github.com/dep2p/p2p/host/pstoremanager"
+	"github.com/dep2p/p2p/host/relaysvc"
+	"github.com/dep2p/p2p/protocol/autonatv2"
+	relayv2 "github.com/dep2p/p2p/protocol/circuitv2/relay"
+	"github.com/dep2p/p2p/protocol/holepunch"
+	"github.com/dep2p/p2p/protocol/identify"
+	"github.com/dep2p/p2p/protocol/ping"
+	dep2pwebrtc "github.com/dep2p/p2p/transport/webrtc"
+	dep2pwebtransport "github.com/dep2p/p2p/transport/webtransport"
 	"github.com/prometheus/client_golang/prometheus"
 
-	"github.com/libp2p/go-netroute"
+	"github.com/dep2p/libp2p/netroute"
 
 	logging "github.com/dep2p/log"
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
-	msmux "github.com/multiformats/go-multistream"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
+	msmux "github.com/dep2p/multiformats/multistream"
 )
 
 // 两次地址变更检查的时间间隔
@@ -132,7 +132,7 @@ type HostOpts struct {
 	// 如果省略,这个功能将被禁用。
 	NATManager func(network.Network) NATManager
 
-	// ConnManager 是libp2p连接管理器,用于管理与其他节点的连接
+	// ConnManager 是dep2p连接管理器,用于管理与其他节点的连接
 	ConnManager connmgr.ConnManager
 
 	// EnablePing 指示是否实例化ping服务,用于检测节点之间的连通性
@@ -1016,10 +1016,10 @@ func (h *BasicHost) Addrs() []ma.Multiaddr {
 //   - ma.Multiaddr 规范化后的多地址
 func (h *BasicHost) NormalizeMultiaddr(addr ma.Multiaddr) ma.Multiaddr {
 	// 检查是否为 webtransport 地址
-	ok, n := libp2pwebtransport.IsWebtransportMultiaddr(addr)
+	ok, n := dep2pwebtransport.IsWebtransportMultiaddr(addr)
 	if !ok {
 		// 检查是否为 webrtc 地址
-		ok, n = libp2pwebrtc.IsWebRTCDirectMultiaddr(addr)
+		ok, n = dep2pwebrtc.IsWebRTCDirectMultiaddr(addr)
 	}
 	if ok && n > 0 {
 		// 移除最后 n 个组件
@@ -1175,8 +1175,8 @@ func (h *BasicHost) addCertHashes(addrs []ma.Multiaddr) []ma.Multiaddr {
 	// 遍历所有地址
 	for i, addr := range addrs {
 		// 检查是否为 webtransport 或 webrtc 地址
-		wtOK, wtN := libp2pwebtransport.IsWebtransportMultiaddr(addr)
-		webrtcOK, webrtcN := libp2pwebrtc.IsWebRTCDirectMultiaddr(addr)
+		wtOK, wtN := dep2pwebtransport.IsWebtransportMultiaddr(addr)
+		webrtcOK, webrtcN := dep2pwebrtc.IsWebRTCDirectMultiaddr(addr)
 		if (wtOK && wtN == 0) || (webrtcOK && webrtcN == 0) {
 			// 获取传输
 			t := s.TransportForListening(addr)

@@ -6,13 +6,13 @@ import (
 	"io"
 	"time"
 
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/peerstore"
-	pstore "github.com/dep2p/libp2p/p2p/host/peerstore"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/peerstore"
+	pstore "github.com/dep2p/p2p/host/peerstore"
 
-	ds "github.com/ipfs/go-datastore"
-	"github.com/ipfs/go-datastore/query"
-	"github.com/multiformats/go-base32"
+	ds "github.com/dep2p/datastore"
+	"github.com/dep2p/datastore/query"
+	"github.com/dep2p/multiformats/base32"
 )
 
 // Options 是 peerstore 的配置对象

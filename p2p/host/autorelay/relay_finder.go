@@ -10,16 +10,16 @@ import (
 
 	"golang.org/x/sync/errgroup"
 
-	"github.com/dep2p/libp2p/core/event"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	basic "github.com/dep2p/libp2p/p2p/host/basic"
-	"github.com/dep2p/libp2p/p2p/host/eventbus"
-	circuitv2 "github.com/dep2p/libp2p/p2p/protocol/circuitv2/client"
-	circuitv2_proto "github.com/dep2p/libp2p/p2p/protocol/circuitv2/proto"
+	"github.com/dep2p/core/event"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	basic "github.com/dep2p/p2p/host/basic"
+	"github.com/dep2p/p2p/host/eventbus"
+	circuitv2 "github.com/dep2p/p2p/protocol/circuitv2/client"
+	circuitv2_proto "github.com/dep2p/p2p/protocol/circuitv2/proto"
 
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // 中继协议ID
@@ -96,7 +96,7 @@ var errAlreadyRunning = errors.New("中继查找器已在运行")
 func newRelayFinder(host *basic.BasicHost, peerSource PeerSource, conf *config) *relayFinder {
 	// 检查节点源函数是否为空
 	if peerSource == nil {
-		panic("无法创建新的中继查找器。需要一个节点源函数或静态中继列表。请参考 `libp2p.EnableAutoRelay` 的文档")
+		panic("无法创建新的中继查找器。需要一个节点源函数或静态中继列表。请参考 `dep2p.EnableAutoRelay` 的文档")
 	}
 
 	// 创建并返回中继查找器实例

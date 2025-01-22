@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/peer"
 
 	lru "github.com/hashicorp/golang-lru/v2"
 )

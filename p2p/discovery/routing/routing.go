@@ -4,13 +4,13 @@ import (
 	"context"
 	"time"
 
-	"github.com/dep2p/libp2p/core/discovery"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/routing"
+	"github.com/dep2p/core/discovery"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/routing"
 	logging "github.com/dep2p/log"
 
-	"github.com/ipfs/go-cid"
-	mh "github.com/multiformats/go-multihash"
+	"github.com/dep2p/cid"
+	mh "github.com/dep2p/multiformats/multihash"
 )
 
 var log = logging.Logger("discovery-routing")

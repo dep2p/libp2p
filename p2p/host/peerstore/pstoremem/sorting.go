@@ -3,9 +3,9 @@ package pstoremem
 import (
 	"bytes"
 
-	ma "github.com/multiformats/go-multiaddr"
-	mafmt "github.com/multiformats/go-multiaddr-fmt"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	mafmt "github.com/dep2p/multiformats/multiaddr/fmt"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // isFDCostlyTransport 检查地址是否使用消耗文件描述符的传输协议

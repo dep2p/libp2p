@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	ds "github.com/ipfs/go-datastore"
+	ds "github.com/dep2p/datastore"
 )
 
 // 在循环批处理中队列中的操作数达到多少时进行刷新

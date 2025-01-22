@@ -8,7 +8,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/dep2p/libp2p/core/event"
+	"github.com/dep2p/core/event"
 	logging "github.com/dep2p/log"
 )
 
@@ -602,7 +602,7 @@ func emitAndLogError(timer *time.Timer, typ reflect.Type, evt interface{}, sink 
 			<-timer.C
 		}
 	case <-timer.C:
-		log.Errorf("名为 \"%s\" 的订阅者是 %s 的慢速消费者。这可能导致 libp2p 停滞和难以调试的问题。", sink.name, typ)
+		log.Errorf("名为 \"%s\" 的订阅者是 %s 的慢速消费者。这可能导致 dep2p 停滞和难以调试的问题。", sink.name, typ)
 		// 继续阻塞因为我们无能为力
 		sink.ch <- evt
 	}

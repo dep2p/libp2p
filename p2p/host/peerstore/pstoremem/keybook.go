@@ -4,9 +4,9 @@ import (
 	"errors"
 	"sync"
 
-	ic "github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/peer"
-	pstore "github.com/dep2p/libp2p/core/peerstore"
+	ic "github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/peer"
+	pstore "github.com/dep2p/core/peerstore"
 )
 
 // memoryKeyBook 内存密钥簿实现

@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/network"
+	"github.com/dep2p/core/network"
 )
 
 // trace 用于跟踪资源管理器的事件

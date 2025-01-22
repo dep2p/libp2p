@@ -6,10 +6,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/discovery"
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/discovery"
+	"github.com/dep2p/core/peer"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // BackoffDiscovery 实现了一个带缓存和退避机制的发现服务

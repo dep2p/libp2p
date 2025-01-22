@@ -5,9 +5,9 @@ import (
 	"math"
 	"strconv"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/protocol"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/protocol"
 
 	"github.com/pbnjay/memory"
 )
@@ -19,7 +19,7 @@ type baseLimitConfig struct {
 }
 
 // ScalingLimitConfig 是用于配置默认限制的结构体。
-// {}BaseLimit 是适用于最小节点的限制(libp2p 使用 128MB 内存)和 256 个文件描述符。
+// {}BaseLimit 是适用于最小节点的限制(dep2p 使用 128MB 内存)和 256 个文件描述符。
 // {}LimitIncrease 是每增加 1GB RAM 时额外授予的限制。
 type ScalingLimitConfig struct {
 	SystemBaseLimit     BaseLimit         // 系统基础限制

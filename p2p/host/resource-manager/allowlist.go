@@ -6,10 +6,10 @@ import (
 	"net"
 	"sync"
 
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/peer"
 
-	"github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	"github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // Allowlist 白名单结构体

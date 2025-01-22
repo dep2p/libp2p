@@ -5,9 +5,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/protocol"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/protocol"
 )
 
 // ResourceScopeLimiter 是一个允许访问作用域限制的接口

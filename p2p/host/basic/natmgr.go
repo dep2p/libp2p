@@ -9,11 +9,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/network"
-	inat "github.com/dep2p/libp2p/p2p/net/nat"
+	"github.com/dep2p/core/network"
+	inat "github.com/dep2p/p2p/net/nat"
 
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // NATManager 是一个管理 NAT 设备的简单接口。

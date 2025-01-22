@@ -7,7 +7,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/dep2p/libp2p/core/network"
+	"github.com/dep2p/core/network"
 )
 
 // resources 跟踪当前资源消耗状态

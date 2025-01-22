@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/dep2p/libp2p/core/peer"
-	pstore "github.com/dep2p/libp2p/core/peerstore"
-	"github.com/dep2p/libp2p/core/protocol"
+	"github.com/dep2p/core/peer"
+	pstore "github.com/dep2p/core/peerstore"
+	"github.com/dep2p/core/protocol"
 )
 
 // protoSegment 协议段结构体,用于并发控制

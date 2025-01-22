@@ -3,14 +3,14 @@ package autorelay
 import (
 	"errors"
 
-	"github.com/dep2p/libp2p/p2p/metricshelper"
-	"github.com/dep2p/libp2p/p2p/protocol/circuitv2/client"
-	pbv2 "github.com/dep2p/libp2p/p2p/protocol/circuitv2/pb"
+	"github.com/dep2p/p2p/metricshelper"
+	"github.com/dep2p/p2p/protocol/circuitv2/client"
+	pbv2 "github.com/dep2p/p2p/protocol/circuitv2/pb"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
 // 指标命名空间
-const metricNamespace = "libp2p_autorelay"
+const metricNamespace = "dep2p_autorelay"
 
 var (
 	// 中继查找器状态指标

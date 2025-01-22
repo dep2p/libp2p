@@ -4,12 +4,12 @@ import (
 	"context"
 	"sync"
 
-	"github.com/dep2p/libp2p/core/event"
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/p2p/host/eventbus"
-	relayv2 "github.com/dep2p/libp2p/p2p/protocol/circuitv2/relay"
+	"github.com/dep2p/core/event"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/network"
 	logging "github.com/dep2p/log"
+	"github.com/dep2p/p2p/host/eventbus"
+	relayv2 "github.com/dep2p/p2p/protocol/circuitv2/relay"
 )
 
 var log = logging.Logger("host-relaysvc")

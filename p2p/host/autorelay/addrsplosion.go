@@ -3,8 +3,8 @@ package autorelay
 import (
 	"encoding/binary"
 
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // cleanupAddressSet 清理中继节点的地址集合,移除私有地址并限制地址爆炸

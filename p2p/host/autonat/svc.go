@@ -7,22 +7,22 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/peerstore"
-	"github.com/dep2p/libp2p/p2p/host/autonat/pb"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/peerstore"
+	"github.com/dep2p/p2p/host/autonat/pb"
 
-	"github.com/libp2p/go-msgio/pbio"
+	"github.com/dep2p/libp2p/msgio/pbio"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // 流超时时间为60秒
 var streamTimeout = 60 * time.Second
 
 const (
-	ServiceName = "libp2p.autonat" // 服务名称
-	maxMsgSize  = 4096             // 最大消息大小
+	ServiceName = "dep2p.autonat" // 服务名称
+	maxMsgSize  = 4096            // 最大消息大小
 )
 
 // autoNATService 为其他节点提供NAT自动检测服务

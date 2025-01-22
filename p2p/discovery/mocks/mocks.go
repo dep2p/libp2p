@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/discovery"
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/discovery"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/peer"
 	logging "github.com/dep2p/log"
 )
 
@@ -117,13 +117,13 @@ func (s *MockDiscoveryServer) FindPeers(ns string, limit int) (<-chan peer.AddrI
 
 // MockDiscoveryClient 实现了一个模拟的发现客户端
 type MockDiscoveryClient struct {
-	host   host.Host            // libp2p主机实例
+	host   host.Host            // dep2p主机实例
 	server *MockDiscoveryServer // 模拟发现服务器
 }
 
 // NewDiscoveryClient 创建一个新的模拟发现客户端
 // 参数:
-//   - h: libp2p主机实例
+//   - h: dep2p主机实例
 //   - server: 模拟发现服务器实例
 //
 // 返回值:

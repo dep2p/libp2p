@@ -1,8 +1,8 @@
 /*
-rcmgr 包是 go-libp2p 的资源管理器。
-它允许你跟踪整个 go-libp2p 进程中使用的资源。
+rcmgr 包是 go-dep2p 的资源管理器。
+它允许你跟踪整个 go-dep2p 进程中使用的资源。
 同时确保进程不会使用超过你定义的限制的资源。
-资源管理器只知道它被告知的内容，因此这个库的使用者(无论是 go-libp2p 还是 go-libp2p 的用户)有责任在实际分配资源之前与资源管理器确认。
+资源管理器只知道它被告知的内容，因此这个库的使用者(无论是 go-dep2p 还是 go-dep2p 的用户)有责任在实际分配资源之前与资源管理器确认。
 */
 package rcmgr
 
@@ -11,9 +11,9 @@ import (
 	"io"
 	"math"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/protocol"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/protocol"
 )
 
 // Limit 是一个指定基本资源限制的接口。

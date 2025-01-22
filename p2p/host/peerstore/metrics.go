@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/peer"
 )
 
 // LatencyEWMASmoothing 控制EWMA的衰减(变化速度)

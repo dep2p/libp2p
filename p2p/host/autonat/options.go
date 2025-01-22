@@ -4,13 +4,13 @@ import (
 	"errors"
 	"time"
 
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/network"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/network"
 )
 
 // config 保存 autonat 子系统的可配置选项
 type config struct {
-	host host.Host // libp2p 主机实例,用于网络通信和节点管理
+	host host.Host // dep2p 主机实例,用于网络通信和节点管理
 
 	addressFunc       AddrFunc             // 地址获取函数,用于获取本地地址
 	dialPolicy        dialPolicy           // 拨号策略,定义如何处理拨号请求
@@ -62,7 +62,7 @@ const maxRefreshInterval = 24 * time.Hour
 
 // EnableService 指定 AutoNAT 可以运行 NAT 服务来帮助其他节点确定自己的 NAT 状态。
 // 提供的 Network 不应该是传递给 New 的主机的默认网络/拨号器,因为 NAT 系统需要建立并行连接,
-// 因此会修改相关的节点存储并终止此拨号器的连接。但是提供的拨号器应该与 libp2p 网络的传输协议兼容(TCP/UDP)。
+// 因此会修改相关的节点存储并终止此拨号器的连接。但是提供的拨号器应该与 dep2p 网络的传输协议兼容(TCP/UDP)。
 // 参数:
 //   - dialer: network.Network 用于建立连接的网络拨号器
 //

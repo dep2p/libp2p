@@ -3,12 +3,12 @@ package rcmgr
 import (
 	"strings"
 
-	"github.com/dep2p/libp2p/p2p/metricshelper"
+	"github.com/dep2p/p2p/metricshelper"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-// libp2p资源管理器的指标命名空间
-const metricNamespace = "libp2p_rcmgr"
+// dep2p资源管理器的指标命名空间
+const metricNamespace = "dep2p_rcmgr"
 
 var (
 	// 连接相关指标
@@ -44,7 +44,7 @@ var (
 	// 出站节点连接指标
 	peerConnsOutbound = peerConns.With(prometheus.Labels{"dir": "outbound"})
 
-	// 用于构建当前状态的直方图。更多信息参见 https://github.com/libp2p/go-libp2p-resource-manager/pull/54#discussion_r911244757
+	// 用于构建当前状态的直方图。更多信息参见 https://github.com/dep2p/go-dep2p-resource-manager/pull/54#discussion_r911244757
 	previousPeerConns = prometheus.NewHistogramVec(prometheus.HistogramOpts{
 		Namespace: metricNamespace,
 		Name:      "previous_peer_connections", // 节点之前的连接数

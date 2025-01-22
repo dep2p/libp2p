@@ -1,9 +1,9 @@
 package rcmgr
 
 import (
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/protocol"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/protocol"
 )
 
 // MetricsReporter 是一个用于收集资源管理器操作指标的接口

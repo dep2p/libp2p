@@ -1,10 +1,10 @@
 package autonat
 
 import (
-	"github.com/dep2p/libp2p/core/network"
+	"github.com/dep2p/core/network"
 
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // 确保AmbientAutoNAT实现了network.Notifiee接口

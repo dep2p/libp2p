@@ -4,13 +4,13 @@ import (
 	"context"
 	"errors"
 
-	ic "github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/peer"
-	pstore "github.com/dep2p/libp2p/core/peerstore"
+	ic "github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/peer"
+	pstore "github.com/dep2p/core/peerstore"
 
-	ds "github.com/ipfs/go-datastore"
-	"github.com/ipfs/go-datastore/query"
-	"github.com/multiformats/go-base32"
+	ds "github.com/dep2p/datastore"
+	"github.com/dep2p/datastore/query"
+	"github.com/dep2p/multiformats/base32"
 )
 
 // 公钥和私钥存储在以下数据库键模式下:

@@ -8,14 +8,14 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/peer"
 
-	"github.com/libp2p/zeroconf/v2"
+	"github.com/dep2p/libp2p/zeroconf"
 
 	logging "github.com/dep2p/log"
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // 常量定义
@@ -47,7 +47,7 @@ type Notifee interface {
 
 // mdnsService 实现了mDNS服务
 type mdnsService struct {
-	host        host.Host // libp2p主机实例
+	host        host.Host // dep2p主机实例
 	serviceName string    // 服务名称
 	peerName    string    // 节点名称
 
@@ -63,7 +63,7 @@ type mdnsService struct {
 
 // NewMdnsService 创建一个新的mDNS服务实例
 // 参数:
-//   - host: libp2p主机实例
+//   - host: dep2p主机实例
 //   - serviceName: 服务名称,如果为空则使用默认值
 //   - notifee: 节点发现通知接口
 //
@@ -192,7 +192,7 @@ func (s *mdnsService) startServer() error {
 		s.peerName,
 		s.serviceName,
 		mdnsDomain,
-		4001, // 必须传入端口号,但libp2p只使用TXT记录
+		4001, // 必须传入端口号,但dep2p只使用TXT记录
 		s.peerName,
 		ips,
 		txts,

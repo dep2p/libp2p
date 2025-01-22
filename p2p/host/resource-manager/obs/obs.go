@@ -6,7 +6,7 @@
 package obs
 
 import (
-	rcmgr "github.com/dep2p/libp2p/p2p/host/resource-manager"
+	rcmgr "github.com/dep2p/p2p/host/resource-manager"
 )
 
 // MustRegisterWith 注册资源管理器的指标收集器

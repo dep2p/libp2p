@@ -1,7 +1,7 @@
 package autorelay
 
 import (
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // Filter 过滤掉所有中继地址

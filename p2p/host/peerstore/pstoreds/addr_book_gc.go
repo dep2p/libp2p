@@ -6,13 +6,13 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/p2p/host/peerstore/pstoreds/pb"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/p2p/host/peerstore/pstoreds/pb"
 	"google.golang.org/protobuf/proto"
 
-	ds "github.com/ipfs/go-datastore"
-	"github.com/ipfs/go-datastore/query"
-	b32 "github.com/multiformats/go-base32"
+	ds "github.com/dep2p/datastore"
+	"github.com/dep2p/datastore/query"
+	b32 "github.com/dep2p/multiformats/base32"
 )
 
 var (

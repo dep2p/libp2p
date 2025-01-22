@@ -5,14 +5,14 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/dep2p/libp2p/core/event"
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/network"
-	basic "github.com/dep2p/libp2p/p2p/host/basic"
-	"github.com/dep2p/libp2p/p2p/host/eventbus"
+	"github.com/dep2p/core/event"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/network"
+	basic "github.com/dep2p/p2p/host/basic"
+	"github.com/dep2p/p2p/host/eventbus"
 
 	logging "github.com/dep2p/log"
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // 定义日志对象
@@ -31,7 +31,7 @@ type AutoRelay struct {
 
 	relayFinder *relayFinder // 中继节点查找器
 
-	host host.Host // libp2p主机实例
+	host host.Host // dep2p主机实例
 
 	metricsTracer MetricsTracer // 指标追踪器
 }

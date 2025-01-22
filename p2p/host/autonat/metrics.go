@@ -3,9 +3,9 @@ package autonat
 import (
 	"time"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/p2p/host/autonat/pb"
-	"github.com/dep2p/libp2p/p2p/metricshelper"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/p2p/host/autonat/pb"
+	"github.com/dep2p/p2p/metricshelper"
 	"github.com/prometheus/client_golang/prometheus"
 )
 

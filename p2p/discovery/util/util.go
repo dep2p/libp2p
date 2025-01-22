@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/dep2p/libp2p/core/discovery"
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/discovery"
+	"github.com/dep2p/core/peer"
 
 	logging "github.com/dep2p/log"
 )

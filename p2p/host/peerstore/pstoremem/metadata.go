@@ -3,8 +3,8 @@ package pstoremem
 import (
 	"sync"
 
-	"github.com/dep2p/libp2p/core/peer"
-	pstore "github.com/dep2p/libp2p/core/peerstore"
+	"github.com/dep2p/core/peer"
+	pstore "github.com/dep2p/core/peerstore"
 )
 
 // memoryPeerMetadata 内存对等节点元数据实现

@@ -3,7 +3,7 @@ package rcmgr
 import (
 	"errors"
 
-	"github.com/dep2p/libp2p/core/network"
+	"github.com/dep2p/core/network"
 )
 
 // ErrStreamOrConnLimitExceeded 定义了流或连接超出限制的错误结构体

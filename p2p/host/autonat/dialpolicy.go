@@ -3,16 +3,16 @@ package autonat
 import (
 	"net"
 
-	"github.com/dep2p/libp2p/core/host"
+	"github.com/dep2p/core/host"
 
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // dialPolicy 定义了拨号策略
 type dialPolicy struct {
 	allowSelfDials bool      // 是否允许自拨号
-	host           host.Host // libp2p主机实例
+	host           host.Host // dep2p主机实例
 }
 
 // skipDial 判断是否应该跳过对某个多地址的拨号

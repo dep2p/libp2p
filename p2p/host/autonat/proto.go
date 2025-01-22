@@ -1,10 +1,10 @@
 package autonat
 
 import (
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/p2p/host/autonat/pb"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/p2p/host/autonat/pb"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // AutoNATProto 标识 autonat 服务协议的版本号

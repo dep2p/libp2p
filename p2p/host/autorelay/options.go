@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/peer"
 )
 
 // PeerSource 定义了一个函数类型,用于获取中继候选节点

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/peerstore"
-	pstore "github.com/dep2p/libp2p/p2p/host/peerstore"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/peerstore"
+	pstore "github.com/dep2p/p2p/host/peerstore"
 )
 
 // pstoremem 内存对等节点存储实现

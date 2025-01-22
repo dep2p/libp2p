@@ -8,18 +8,18 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/peer"
-	pstore "github.com/dep2p/libp2p/core/peerstore"
-	"github.com/dep2p/libp2p/core/record"
-	"github.com/dep2p/libp2p/p2p/host/peerstore/pstoreds/pb"
-	"github.com/dep2p/libp2p/p2p/host/peerstore/pstoremem"
+	"github.com/dep2p/core/peer"
+	pstore "github.com/dep2p/core/peerstore"
+	"github.com/dep2p/core/record"
+	"github.com/dep2p/p2p/host/peerstore/pstoreds/pb"
+	"github.com/dep2p/p2p/host/peerstore/pstoremem"
 
+	ds "github.com/dep2p/datastore"
+	"github.com/dep2p/datastore/query"
 	logging "github.com/dep2p/log"
+	b32 "github.com/dep2p/multiformats/base32"
+	ma "github.com/dep2p/multiformats/multiaddr"
 	"github.com/hashicorp/golang-lru/arc/v2"
-	ds "github.com/ipfs/go-datastore"
-	"github.com/ipfs/go-datastore/query"
-	b32 "github.com/multiformats/go-base32"
-	ma "github.com/multiformats/go-multiaddr"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -242,7 +242,7 @@ var _ pstore.CertifiedAddrBook = (*dsAddrBook)(nil)
 //     清除操作仅在前瞻窗口内以 Options.GCPurgeInterval 的周期执行。
 //
 //  2. 完全清除 GC(默认):以 Options.GCPurgeInterval 的周期对存储进行完整访问。当可能的 TTL 值范围较小
-//     且值本身也很极端时很有用,例如在其他 libp2p 模块中常用的 10 分钟或永久值。在这种情况下,使用前瞻窗口
+//     且值本身也很极端时很有用,例如在其他 dep2p 模块中常用的 10 分钟或永久值。在这种情况下,使用前瞻窗口
 //     优化意义不大。
 func NewAddrBook(ctx context.Context, store ds.Batching, opts Options) (ab *dsAddrBook, err error) {
 	// 创建带取消的上下文
@@ -385,7 +385,7 @@ func (ab *dsAddrBook) AddAddrs(p peer.ID, addrs []ma.Multiaddr, ttl time.Duratio
 
 // ConsumePeerRecord 添加来自签名的peer.PeerRecord(包含在record.Envelope中)的地址,
 // 这些地址将在给定的TTL后过期。
-// 更多详情参见 https://godoc.org/github.com/dep2p/libp2p/core/peerstore#CertifiedAddrBook
+// 更多详情参见 https://godoc.org/github.com/dep2p/core/peerstore#CertifiedAddrBook
 //
 // 参数:
 //   - recordEnvelope: *record.Envelope 包含PeerRecord的信封

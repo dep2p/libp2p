@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/p2p/host/autonat/pb"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/p2p/host/autonat/pb"
 
-	"github.com/libp2p/go-msgio/pbio"
+	"github.com/dep2p/libp2p/msgio/pbio"
 )
 
 // NewAutoNATClient 创建一个新的AutoNAT客户端实例
@@ -32,7 +32,7 @@ func NewAutoNATClient(h host.Host, addrFunc AddrFunc, mt MetricsTracer) Client {
 
 // client 实现了AutoNAT客户端
 type client struct {
-	h        host.Host     // libp2p主机实例,用于创建流和获取节点ID
+	h        host.Host     // dep2p主机实例,用于创建流和获取节点ID
 	addrFunc AddrFunc      // 获取地址的函数,用于获取本地地址
 	mt       MetricsTracer // 指标追踪器,用于记录指标数据
 }

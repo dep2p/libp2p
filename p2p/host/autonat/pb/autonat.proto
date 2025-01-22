@@ -2,7 +2,7 @@ syntax = "proto2";
 
 package autonat.pb;
 
-option go_package = "github.com/dep2p/libp2p/p2p/host/autonat/pb";
+option go_package = "github.com/dep2p/p2p/host/autonat/pb";
 
 message Message {
   enum MessageType {
