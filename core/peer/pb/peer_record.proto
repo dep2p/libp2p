@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package peer.pb;
 
-option go_package = "github.com/dep2p/libp2p/core/peer/pb";
+option go_package = "github.com/dep2p/core/peer/pb";
 
 // PeerRecord messages contain information that is useful to share with other peers.
 // Currently, a PeerRecord contains the public listen addresses for a peer, but this
@@ -10,7 +10,7 @@ option go_package = "github.com/dep2p/libp2p/core/peer/pb";
 //
 // PeerRecords are designed to be serialized to bytes and placed inside of
 // SignedEnvelopes before sharing with other peers.
-// See https://github.com/dep2p/libp2p/blob/master/core/record/pb/envelope.proto for
+// See https://github.com/dep2p/blob/master/core/record/pb/envelope.proto for
 // the SignedEnvelope definition.
 message PeerRecord {
 
@@ -20,7 +20,7 @@ message PeerRecord {
         bytes multiaddr = 1;
     }
 
-    // peer_id contains a libp2p peer id in its binary representation.
+    // peer_id contains a dep2p peer id in its binary representation.
     bytes peer_id = 1;
 
     // seq contains a monotonically-increasing sequence counter to order PeerRecords in time.

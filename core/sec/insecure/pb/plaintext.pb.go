@@ -7,7 +7,7 @@
 package pb
 
 import (
-	pb "github.com/dep2p/libp2p/core/crypto/pb"
+	pb "github.com/dep2p/core/crypto/pb"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"

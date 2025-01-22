@@ -1,4 +1,4 @@
-// Package peerstore provides types and interfaces for local storage of address information, metadata, and public key material about libp2p peers.
+// Package peerstore provides types and interfaces for local storage of address information, metadata, and public key material about dep2p peers.
 package peerstore
 
 import (
@@ -8,12 +8,12 @@ import (
 	"math"
 	"time"
 
-	ic "github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/protocol"
-	"github.com/dep2p/libp2p/core/record"
+	ic "github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/protocol"
+	"github.com/dep2p/core/record"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // ErrNotFound 表示在存储中未找到请求的项目

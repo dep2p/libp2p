@@ -1,4 +1,4 @@
-// Package sec 提供了 libp2p 的安全连接和传输接口
+// Package sec 提供了 dep2p 的安全连接和传输接口
 package sec
 
 import (
@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/protocol"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/protocol"
 )
 
 // SecureConn 定义了一个经过认证和加密的连接接口

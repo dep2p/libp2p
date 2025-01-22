@@ -1,7 +1,7 @@
 package peerstore
 
 import (
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/peer"
 )
 
 // AddrInfos 为每个指定的对等点ID按顺序返回一个AddrInfo

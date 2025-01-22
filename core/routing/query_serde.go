@@ -3,7 +3,7 @@ package routing
 import (
 	"encoding/json"
 
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/peer"
 )
 
 // MarshalJSON 将 QueryEvent 对象序列化为 JSON 字节数组

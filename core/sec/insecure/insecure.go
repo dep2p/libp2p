@@ -9,15 +9,15 @@ import (
 	"io"
 	"net"
 
-	ci "github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/protocol"
-	"github.com/dep2p/libp2p/core/sec"
-	"github.com/dep2p/libp2p/core/sec/insecure/pb"
+	ci "github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/protocol"
+	"github.com/dep2p/core/sec"
+	"github.com/dep2p/core/sec/insecure/pb"
 	logging "github.com/dep2p/log"
 
-	"github.com/libp2p/go-msgio"
+	"github.com/dep2p/libp2p/msgio"
 
 	"google.golang.org/protobuf/proto"
 )

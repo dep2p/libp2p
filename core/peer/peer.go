@@ -1,4 +1,4 @@
-// Package peer 实现了用于表示 libp2p 网络中对等节点的对象
+// Package peer 实现了用于表示 dep2p 网络中对等节点的对象
 package peer
 
 import (
@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"strings"
 
-	ic "github.com/dep2p/libp2p/core/crypto"
+	"github.com/dep2p/cid"
+	ic "github.com/dep2p/core/crypto"
 	logging "github.com/dep2p/log"
-	"github.com/ipfs/go-cid"
+	mc "github.com/dep2p/multiformats/multicodec"
+	mh "github.com/dep2p/multiformats/multihash"
 	b58 "github.com/mr-tron/base58/base58"
-	mc "github.com/multiformats/go-multicodec"
-	mh "github.com/multiformats/go-multihash"
 )
 
 var (
@@ -35,7 +35,7 @@ var AdvancedEnableInlining = true
 // maxInlineKeyLength 定义可以内联的最大密钥长度
 const maxInlineKeyLength = 42
 
-// ID 是 libp2p 对等节点标识
+// ID 是 dep2p 对等节点标识
 //
 // 对等节点 ID 通过对节点的公钥进行哈希并将哈希输出编码为 multihash 来派生
 // 详见 IDFromPublicKey

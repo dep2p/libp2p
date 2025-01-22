@@ -5,11 +5,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/internal/catch"
-	"github.com/dep2p/libp2p/core/peer/pb"
-	"github.com/dep2p/libp2p/core/record"
+	"github.com/dep2p/core/internal/catch"
+	"github.com/dep2p/core/peer/pb"
+	"github.com/dep2p/core/record"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 
 	"google.golang.org/protobuf/proto"
 )
@@ -23,10 +23,10 @@ func init() {
 }
 
 // PeerRecordEnvelopeDomain 是用于包含在 Envelope 中的 peer records 的域字符串
-const PeerRecordEnvelopeDomain = "libp2p-peer-record"
+const PeerRecordEnvelopeDomain = "dep2p-peer-record"
 
 // PeerRecordEnvelopePayloadType 是用于在 Envelope 中标识 peer records 的类型提示
-// 在 https://github.com/multiformats/multicodec/blob/master/table.csv 中定义，名称为 "libp2p-peer-record"
+// 在 https://github.com/multiformats/multicodec/blob/master/table.csv 中定义，名称为 "dep2p-peer-record"
 var PeerRecordEnvelopePayloadType = []byte{0x03, 0x01}
 
 // PeerRecord 包含与其他对等节点共享的广泛有用的信息
@@ -134,7 +134,7 @@ func (r *PeerRecord) UnmarshalRecord(bytes []byte) (err error) {
 		return fmt.Errorf("无法反序列化PeerRecord到空接收器")
 	}
 
-	defer func() { catch.HandlePanic(recover(), &err, "libp2p peer record unmarshal") }()
+	defer func() { catch.HandlePanic(recover(), &err, "dep2p peer record unmarshal") }()
 
 	var msg pb.PeerRecord
 	err = proto.Unmarshal(bytes, &msg)
@@ -158,7 +158,7 @@ func (r *PeerRecord) UnmarshalRecord(bytes []byte) (err error) {
 //   - []byte: 序列化后的数据
 //   - error: 如果发生错误，返回错误信息
 func (r *PeerRecord) MarshalRecord() (res []byte, err error) {
-	defer func() { catch.HandlePanic(recover(), &err, "libp2p peer record marshal") }()
+	defer func() { catch.HandlePanic(recover(), &err, "dep2p peer record marshal") }()
 
 	msg, err := r.ToProtobuf()
 	if err != nil {

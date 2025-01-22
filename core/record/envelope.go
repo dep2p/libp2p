@@ -5,17 +5,17 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/internal/catch"
-	"github.com/dep2p/libp2p/core/record/pb"
+	"github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/internal/catch"
+	"github.com/dep2p/core/record/pb"
 
-	pool "github.com/libp2p/go-buffer-pool"
+	pool "github.com/dep2p/libp2p/buffer/pool"
 
-	"github.com/multiformats/go-varint"
+	"github.com/dep2p/multiformats/varint"
 	"google.golang.org/protobuf/proto"
 )
 
-// Envelope 包含一个任意的 []byte 负载，由 libp2p 节点签名
+// Envelope 包含一个任意的 []byte 负载，由 dep2p 节点签名
 // 信封在特定的"域"上下文中签名，这是在创建和验证信封时指定的字符串
 // 必须知道用于生成信封的域字符串才能验证签名并访问负载
 type Envelope struct {
@@ -200,7 +200,7 @@ func UnmarshalEnvelope(data []byte) (*Envelope, error) {
 //   - []byte: 序列化的信封数据
 //   - error: 如果发生错误，返回错误信息
 func (e *Envelope) Marshal() (res []byte, err error) {
-	defer func() { catch.HandlePanic(recover(), &err, "libp2p envelope marshal") }()
+	defer func() { catch.HandlePanic(recover(), &err, "dep2p envelope marshal") }()
 	key, err := crypto.PublicKeyToProto(e.PublicKey)
 	if err != nil {
 		log.Debugf("序列化失败: %v", err)

@@ -3,9 +3,9 @@ package peer
 import (
 	"encoding/json"
 
-	"github.com/dep2p/libp2p/core/internal/catch"
+	"github.com/dep2p/core/internal/catch"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // addrInfoJson 用于JSON序列化和反序列化的辅助结构体
@@ -21,7 +21,7 @@ type addrInfoJson struct {
 //   - error: 如果发生错误，返回错误信息
 func (pi AddrInfo) MarshalJSON() (res []byte, err error) {
 	// 使用defer处理可能发生的panic
-	defer func() { catch.HandlePanic(recover(), &err, "libp2p addr info marshal") }()
+	defer func() { catch.HandlePanic(recover(), &err, "dep2p addr info marshal") }()
 
 	// 将Multiaddr地址列表转换为字符串数组
 	addrs := make([]string, len(pi.Addrs))
@@ -44,7 +44,7 @@ func (pi AddrInfo) MarshalJSON() (res []byte, err error) {
 //   - error: 如果发生错误，返回错误信息
 func (pi *AddrInfo) UnmarshalJSON(b []byte) (err error) {
 	// 使用defer处理可能发生的panic
-	defer func() { catch.HandlePanic(recover(), &err, "libp2p addr info unmarshal") }()
+	defer func() { catch.HandlePanic(recover(), &err, "dep2p addr info unmarshal") }()
 
 	// 解析JSON数据到临时结构体
 	var data addrInfoJson

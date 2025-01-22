@@ -4,7 +4,7 @@ package plaintext.pb;
 
 import "core/crypto/pb/crypto.proto";
 
-option go_package = "github.com/dep2p/libp2p/core/sec/insecure/pb";
+option go_package = "github.com/dep2p/core/sec/insecure/pb";
 
 message Exchange {
     optional bytes id = 1;

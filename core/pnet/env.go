@@ -2,13 +2,13 @@ package pnet
 
 import "os"
 
-// EnvKey 定义了一个环境变量名称,用于强制在 libp2p 中使用私有网络(PNet)
+// EnvKey 定义了一个环境变量名称,用于强制在 dep2p 中使用私有网络(PNet)
 // 当此环境变量的值设置为 "1" 时,ForcePrivateNetwork 变量将被设置为 true
 const EnvKey = "LIBP2P_FORCE_PNET"
 
-// ForcePrivateNetwork 是一个布尔变量,用于强制在 libp2p 中使用私有网络
-// 将此变量设置为 true 或将 LIBP2P_FORCE_PNET 环境变量设置为 true 将使 libp2p 要求使用私有网络保护器
-// 如果未提供网络保护器且此变量设置为 true,libp2p 将拒绝连接
+// ForcePrivateNetwork 是一个布尔变量,用于强制在 dep2p 中使用私有网络
+// 将此变量设置为 true 或将 LIBP2P_FORCE_PNET 环境变量设置为 true 将使 dep2p 要求使用私有网络保护器
+// 如果未提供网络保护器且此变量设置为 true,dep2p 将拒绝连接
 var ForcePrivateNetwork = false
 
 // init 初始化函数,在包被导入时自动执行

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"reflect"
 
-	"github.com/dep2p/libp2p/core/internal/catch"
+	"github.com/dep2p/core/internal/catch"
 	logging "github.com/dep2p/log"
 )
 
@@ -51,7 +51,7 @@ type Record interface {
 // 注册应在定义 Record 类型的包的 init 函数中完成:
 //
 //	package hello_record
-//	import record "github.com/dep2p/libp2p/core/record"
+//	import record "github.com/dep2p/core/record"
 //
 //	func init() {
 //	    record.RegisterType(&HelloRecord{})
@@ -72,7 +72,7 @@ func RegisterType(prototype Record) {
 //   - error: 如果发生错误，返回错误信息
 func unmarshalRecordPayload(payloadType []byte, payloadBytes []byte) (_rec Record, err error) {
 	// 使用 defer 处理 panic
-	defer func() { catch.HandlePanic(recover(), &err, "libp2p envelope record unmarshal") }()
+	defer func() { catch.HandlePanic(recover(), &err, "dep2p envelope record unmarshal") }()
 
 	// 根据负载类型创建空白 Record 实例
 	rec, err := blankRecordForPayloadType(payloadType)

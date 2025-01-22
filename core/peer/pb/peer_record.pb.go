@@ -26,11 +26,11 @@ const (
 //
 // PeerRecords are designed to be serialized to bytes and placed inside of
 // SignedEnvelopes before sharing with other peers.
-// See https://github.com/dep2p/libp2p/blob/master/core/record/pb/envelope.proto for
+// See https://github.com/dep2p/blob/master/core/record/pb/envelope.proto for
 // the SignedEnvelope definition.
 type PeerRecord struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// peer_id contains a libp2p peer id in its binary representation.
+	// peer_id contains a dep2p peer id in its binary representation.
 	PeerId []byte `protobuf:"bytes,1,opt,name=peer_id,json=peerId,proto3" json:"peer_id,omitempty"`
 	// seq contains a monotonically-increasing sequence counter to order PeerRecords in time.
 	Seq uint64 `protobuf:"varint,2,opt,name=seq,proto3" json:"seq,omitempty"`

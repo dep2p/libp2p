@@ -1,4 +1,4 @@
-// Package routing 提供了 libp2p 中的对等节点路由和内容路由接口
+// Package routing 提供了 dep2p 中的对等节点路由和内容路由接口
 
 package routing
 
@@ -6,10 +6,10 @@ import (
 	"context"
 	"errors"
 
-	ci "github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/peer"
+	cid "github.com/dep2p/cid"
+	ci "github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/peer"
 	logging "github.com/dep2p/log"
-	cid "github.com/ipfs/go-cid"
 )
 
 var log = logging.Logger("core-routing")
@@ -103,7 +103,7 @@ type ValueStore interface {
 	SearchValue(context.Context, string, ...Option) (<-chan []byte, error)
 }
 
-// Routing 组合了 libp2p 支持的不同路由类型
+// Routing 组合了 dep2p 支持的不同路由类型
 // 可以由单个组件(如 DHT)或多个针对每个任务优化的不同组件来满足
 type Routing interface {
 	ContentRouting

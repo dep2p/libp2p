@@ -1,10 +1,10 @@
-// Package protocol 提供了 libp2p 中用于协议路由和协商的核心接口。
+// Package protocol 提供了 dep2p 中用于协议路由和协商的核心接口。
 package protocol
 
 import (
 	"io"
 
-	"github.com/multiformats/go-multistream"
+	"github.com/dep2p/multiformats/multistream"
 )
 
 // HandlerFunc 是一个用户提供的函数，由 Router 用来处理协议/流

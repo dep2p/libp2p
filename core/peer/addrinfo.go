@@ -3,7 +3,7 @@ package peer
 import (
 	"fmt"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // AddrInfo 是一个小型结构体，用于传递包含一组地址和对等节点ID的信息

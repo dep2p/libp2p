@@ -1,6 +1,6 @@
 package pnet
 
-// ErrNotInPrivateNetwork 当 libp2p 在设置了 ForcePrivateNetwork 但没有 PNet Protector 的情况下尝试拨号时返回此错误
+// ErrNotInPrivateNetwork 当 dep2p 在设置了 ForcePrivateNetwork 但没有 PNet Protector 的情况下尝试拨号时返回此错误
 var ErrNotInPrivateNetwork = NewError("未配置私有网络,但环境要求必须使用私有网络")
 
 // Error 是一个接口类型，用于简化 PNet 错误的检测

@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/peer"
 )
 
 // QueryEventType 表示查询事件的类型

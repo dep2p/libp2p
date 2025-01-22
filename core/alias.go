@@ -1,16 +1,16 @@
-// Package core 通过类型别名提供对基础的、核心的 go-libp2p 原语的便捷访问。
+// Package core 通过类型别名提供对基础的、核心的 go-dep2p 原语的便捷访问。
 package core
 
 import (
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/protocol"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/protocol"
 
-	"github.com/multiformats/go-multiaddr"
+	"github.com/dep2p/multiformats/multiaddr"
 )
 
-// Multiaddr 是 github.com/multiformats/go-multiaddr 中 Multiaddr 类型的别名。
+// Multiaddr 是 github.com/dep2p/multiformats/multiaddr 中 Multiaddr 类型的别名。
 //
 // 更多信息请参考该类型的文档。
 type Multiaddr = multiaddr.Multiaddr

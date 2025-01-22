@@ -7,14 +7,14 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
 
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
-// CapableConn 表示一个提供 libp2p 所需基本功能的连接:流多路复用、加密和对等节点认证。
+// CapableConn 表示一个提供 dep2p 所需基本功能的连接:流多路复用、加密和对等节点认证。
 //
 // 这些功能可以由传输层直接提供，也可以通过"连接升级"过程来实现，该过程通过添加加密通道和流多路复用器将"原始"网络连接转换为支持这些功能的连接。
 //
@@ -35,11 +35,9 @@ type CapableConn interface {
 //
 // Dial 返回的连接和传递给 Listeners 的连接都是 CapableConn 类型，这意味着它们已经升级为支持流多路复用和连接安全(加密和认证)。
 //
-// 如果传输层实现了 `io.Closer`(可选)，libp2p 将在关闭时调用 `Close`。注意：`Dial` 和 `Listen` 可能在 `Close` 之后或与 `Close` 并发调用。
+// 如果传输层实现了 `io.Closer`(可选)，dep2p 将在关闭时调用 `Close`。注意：`Dial` 和 `Listen` 可能在 `Close` 之后或与 `Close` 并发调用。
 //
 // 除了 Transport 接口外，传输层还可以实现 Resolver 或 SkipResolver 接口。在包装/嵌入传输层时，你应该确保正确处理 Resolver/SkipResolver 接口。
-//
-// 概念性概述请参见 https://docs.libp2p.io/concepts/transport/
 type Transport interface {
 	// Dial 拨号连接远程对等节点。它应该尽可能重用本地监听器地址，但也可以选择不重用。
 	Dial(ctx context.Context, raddr ma.Multiaddr, p peer.ID) (CapableConn, error)
@@ -121,9 +119,9 @@ type TransportNetwork interface {
 
 // Upgrader 是一个多流升级器，可以将底层连接升级为完整的传输层连接(安全且多路复用)。
 type Upgrader interface {
-	// UpgradeListener 将传入的多地址网络监听器升级为完整的 libp2p 传输层监听器。
+	// UpgradeListener 将传入的多地址网络监听器升级为完整的 dep2p 传输层监听器。
 	UpgradeListener(Transport, manet.Listener) Listener
-	// Upgrade 将多地址/网络连接升级为完整的 libp2p 传输层连接。
+	// Upgrade 将多地址/网络连接升级为完整的 dep2p 传输层连接。
 	Upgrade(ctx context.Context, t Transport, maconn manet.Conn, dir network.Direction, p peer.ID, scope network.ConnManagementScope) (CapableConn, error)
 }
 
