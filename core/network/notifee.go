@@ -1,7 +1,7 @@
 package network
 
 import (
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // Notifiee 是一个接口，用于接收来自 Network 的通知。

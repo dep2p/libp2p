@@ -1,9 +1,9 @@
 package network
 
 import (
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/protocol"
-	"github.com/multiformats/go-multiaddr"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/protocol"
+	"github.com/dep2p/multiformats/multiaddr"
 )
 
 // ResourceManager 是网络资源管理子系统的接口。
@@ -56,7 +56,7 @@ import (
 //     他们也可以选择对创建或拥有的流使用适当的流范围。
 //
 // 用户可维护部分:用户可以指定自己的接口实现。
-// 我们在 go-libp2p-resource-manager 包中提供了一个规范实现。
+// 我们在 dep2p-resource-manager 包中提供了一个规范实现。
 // 该包的用户可以为各种范围指定限制,可以是静态的或动态的。
 //
 // 警告:ResourceManager 接口被视为实验性的,在后续版本中可能会更改。

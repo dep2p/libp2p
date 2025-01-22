@@ -11,8 +11,8 @@ import (
 	"io"
 	"math/big"
 
-	pb "github.com/dep2p/libp2p/core/crypto/pb"
-	"github.com/dep2p/libp2p/core/internal/catch"
+	pb "github.com/dep2p/core/crypto/pb"
+	"github.com/dep2p/core/internal/catch"
 	logging "github.com/dep2p/log"
 )
 

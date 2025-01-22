@@ -1,11 +1,11 @@
-// Package discovery 提供了libp2p的服务广告和节点发现接口
+// Package discovery 提供了dep2p的服务广告和节点发现接口
 package discovery
 
 import (
 	"context"
 	"time"
 
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/peer"
 	logging "github.com/dep2p/log"
 )
 

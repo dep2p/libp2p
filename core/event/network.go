@@ -1,8 +1,8 @@
 package event
 
 import (
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
 )
 
 // EvtPeerConnectednessChanged 应在每次与给定对等节点的"连接状态"发生变化时发出。具体来说,在以下情况下会发出此事件:
@@ -15,7 +15,7 @@ import (
 // 需要注意:
 //
 //   - 可以与给定对等节点建立多个连接。
-//   - libp2p 和网络都是异步的。
+//   - dep2p 和网络都是异步的。
 //
 // 这意味着以下所有情况都是可能的:
 //

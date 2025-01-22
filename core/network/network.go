@@ -1,6 +1,6 @@
-// Package network 提供了libp2p的核心网络抽象层。
+// Package network 提供了dep2p的核心网络抽象层。
 //
-// network包提供了与其他libp2p节点交互的高级Network接口,这是用于发起和接受远程节点连接的主要公共API。
+// network包提供了与其他dep2p节点交互的高级Network接口,这是用于发起和接受远程节点连接的主要公共API。
 package network
 
 import (
@@ -8,10 +8,10 @@ import (
 	"io"
 	"time"
 
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/peerstore"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/peerstore"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // MessageSizeMax 是网络消息的软限制(建议)最大值。

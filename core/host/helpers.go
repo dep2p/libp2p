@@ -1,6 +1,6 @@
 package host
 
-import "github.com/dep2p/libp2p/core/peer"
+import "github.com/dep2p/core/peer"
 
 // InfoFromHost 从主机获取对等节点地址信息。
 //

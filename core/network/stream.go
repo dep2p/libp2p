@@ -1,10 +1,10 @@
 package network
 
 import (
-	"github.com/dep2p/libp2p/core/protocol"
+	"github.com/dep2p/core/protocol"
 )
 
-// Stream 表示 libp2p 网络中两个代理之间的双向通道。
+// Stream 表示 dep2p 网络中两个代理之间的双向通道。
 // "代理"可以根据需要进行细分,可以是"请求->响应"对,也可以是完整的协议。
 //
 // Stream 在底层由多路复用器支持。

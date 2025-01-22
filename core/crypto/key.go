@@ -1,4 +1,4 @@
-// Package crypto 实现了libp2p使用的各种加密工具。
+// Package crypto 实现了dep2p使用的各种加密工具。
 // 包括公钥和私钥接口以及支持的密钥算法的实现。
 package crypto
 
@@ -9,7 +9,7 @@ import (
 	"errors"
 	"io"
 
-	"github.com/dep2p/libp2p/core/crypto/pb"
+	"github.com/dep2p/core/crypto/pb"
 
 	"google.golang.org/protobuf/proto"
 )
@@ -65,7 +65,7 @@ type Key interface {
 	// Equals 检查两个密钥是否相同
 	Equals(Key) bool
 
-	// Raw 返回密钥的原始字节(不包含在libp2p-crypto protobuf中)
+	// Raw 返回密钥的原始字节(不包含在dep2p-crypto protobuf中)
 	// 此函数是{Priv,Pub}KeyUnmarshaler的逆操作
 	Raw() ([]byte, error)
 

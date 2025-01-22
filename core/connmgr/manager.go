@@ -1,6 +1,6 @@
-// connmgr 包为 libp2p 提供连接跟踪和管理接口。
+// connmgr 包为 dep2p 提供连接跟踪和管理接口。
 //
-// 本包导出的 ConnManager 接口允许 libp2p 对打开的连接总数强制执行上限。
+// 本包导出的 ConnManager 接口允许 dep2p 对打开的连接总数强制执行上限。
 // 为了避免服务中断,连接可以使用元数据进行标记,并可选择性地进行"保护",以确保不会随意切断重要连接。
 package connmgr
 
@@ -8,8 +8,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
 )
 
 // SupportsDecay 评估提供的 ConnManager 是否支持衰减,如果支持,则返回 Decayer 对象。
@@ -22,7 +22,7 @@ func SupportsDecay(mgr ConnManager) (Decayer, bool) {
 // ConnManager 跟踪与对等点的连接,并允许使用者为每个对等点关联元数据。
 //
 // 它允许基于实现定义的启发式方法修剪连接。
-// ConnManager 允许 libp2p 对打开的连接总数强制执行上限。
+// ConnManager 允许 dep2p 对打开的连接总数强制执行上限。
 //
 // 支持衰减标签的 ConnManager 实现了 Decayer 接口。
 // 如果支持,请使用 SupportsDecay 函数安全地将实例转换为 Decayer。

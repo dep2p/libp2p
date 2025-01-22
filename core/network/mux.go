@@ -59,7 +59,7 @@ type MuxedStream interface {
 // MuxedConn 允许单个 net.Conn 连接承载多个逻辑独立的双向二进制数据流。
 //
 // 与 network.ConnSecurity 一起，MuxedConn 是 transport.CapableConn 接口的组件，
-// 该接口表示已被"升级"以支持 libp2p 安全通信和流多路复用功能的"原始"网络连接。
+// 该接口表示已被"升级"以支持 dep2p 安全通信和流多路复用功能的"原始"网络连接。
 type MuxedConn interface {
 	// Close 关闭流多路复用器和底层的 net.Conn。
 	io.Closer

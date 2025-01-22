@@ -17,7 +17,7 @@ const (
 
 	// NATDeviceTypeSymmetric 表示 NAT 设备是一个对称 NAT
 	// 对称 NAT 会将具有不同目标地址的出站连接映射到不同的 IP 地址和端口,即使它们来自相同的源 IP 地址和端口
-	// 在 libp2p 中,无论远程对等点的 NAT 类型如何,目前都无法通过打洞实现对称 NAT 的穿透
+	// 在 dep2p 中,无论远程对等点的 NAT 类型如何,目前都无法通过打洞实现对称 NAT 的穿透
 	NATDeviceTypeSymmetric
 )
 

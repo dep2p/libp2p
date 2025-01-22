@@ -1,7 +1,7 @@
 package event
 
 import (
-	"github.com/dep2p/libp2p/core/network"
+	"github.com/dep2p/core/network"
 )
 
 // EvtLocalReachabilityChanged 是一个事件结构体,当本地节点的可达性状态发生变化时会发出此事件。

@@ -9,8 +9,8 @@ import (
 	"errors"
 	"io"
 
-	pb "github.com/dep2p/libp2p/core/crypto/pb"
-	"github.com/dep2p/libp2p/core/internal/catch"
+	pb "github.com/dep2p/core/crypto/pb"
+	"github.com/dep2p/core/internal/catch"
 )
 
 // RsaPrivateKey RSA私钥结构体

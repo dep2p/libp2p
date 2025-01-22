@@ -4,7 +4,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/peer"
 )
 
 // Decayer 由支持衰减标签的连接管理器实现。

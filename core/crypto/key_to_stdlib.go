@@ -9,13 +9,13 @@ import (
 	"github.com/decred/dcrd/dcrec/secp256k1/v4"
 )
 
-// KeyPairFromStdKey 将标准库(和 secp256k1)的私钥包装为 libp2p/go-libp2p/core/crypto 密钥
+// KeyPairFromStdKey 将标准库(和 secp256k1)的私钥包装为 dep2p/core/crypto 密钥
 // 参数:
 //   - priv: 标准库的私钥
 //
 // 返回值:
-//   - PrivKey: libp2p 私钥
-//   - PubKey: libp2p 公钥
+//   - PrivKey: dep2p 私钥
+//   - PubKey: dep2p 公钥
 //   - error: 错误信息
 func KeyPairFromStdKey(priv crypto.PrivateKey) (PrivKey, PubKey, error) {
 	// 检查私钥是否为空
@@ -51,9 +51,9 @@ func KeyPairFromStdKey(priv crypto.PrivateKey) (PrivKey, PubKey, error) {
 	}
 }
 
-// PrivKeyToStdKey 将 libp2p/go-libp2p/core/crypto 私钥转换为标准库(和 secp256k1)私钥
+// PrivKeyToStdKey 将 dep2p/go-dep2p/core/crypto 私钥转换为标准库(和 secp256k1)私钥
 // 参数:
-//   - priv: libp2p 私钥
+//   - priv: dep2p 私钥
 //
 // 返回值:
 //   - crypto.PrivateKey: 标准库私钥
@@ -80,9 +80,9 @@ func PrivKeyToStdKey(priv PrivKey) (crypto.PrivateKey, error) {
 	}
 }
 
-// PubKeyToStdKey 将 libp2p/go-libp2p/core/crypto 公钥转换为标准库(和 secp256k1)公钥
+// PubKeyToStdKey 将 dep2p/go-dep2p/core/crypto 公钥转换为标准库(和 secp256k1)公钥
 // 参数:
-//   - pub: libp2p 公钥
+//   - pub: dep2p 公钥
 //
 // 返回值:
 //   - crypto.PublicKey: 标准库公钥

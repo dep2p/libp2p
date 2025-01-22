@@ -1,11 +1,11 @@
 package connmgr
 
 import (
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 
-	"github.com/dep2p/libp2p/core/control"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/control"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
 )
 
 // ConnectionGater 可以由支持主动入站或出站连接控制的类型实现。
@@ -26,7 +26,7 @@ import (
 //
 //	InterceptSecured 在完成安全握手并验证对等节点身份后,对入站和出站连接都会调用。
 //
-//	InterceptUpgraded 在 libp2p 完全将连接升级为安全、多路复用的通道后,
+//	InterceptUpgraded 在 dep2p 完全将连接升级为安全、多路复用的通道后,
 //	对入站和出站连接都会调用。
 //
 // 此接口可用于实现*严格/主动*的连接管理策略,例如:
@@ -70,6 +70,6 @@ type ConnectionGater interface {
 	// 当拒绝连接时,控制器可以返回一个 DisconnectReason。
 	// 更多信息请参考 ConnectionGater 类型的 godoc。
 	//
-	// 注意:go-libp2p 实现目前忽略断开连接原因。
+	// 注意:go-dep2p 实现目前忽略断开连接原因。
 	InterceptUpgraded(network.Conn) (allow bool, reason control.DisconnectReason)
 }

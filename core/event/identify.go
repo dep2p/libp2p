@@ -1,11 +1,11 @@
 package event
 
 import (
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/protocol"
-	"github.com/dep2p/libp2p/core/record"
-	"github.com/multiformats/go-multiaddr"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/protocol"
+	"github.com/dep2p/core/record"
+	"github.com/dep2p/multiformats/multiaddr"
 )
 
 // EvtPeerIdentificationCompleted 在对等节点的初始身份识别完成时发出。

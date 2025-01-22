@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"io"
 
-	pb "github.com/dep2p/libp2p/core/crypto/pb"
-	"github.com/dep2p/libp2p/core/internal/catch"
+	pb "github.com/dep2p/core/crypto/pb"
+	"github.com/dep2p/core/internal/catch"
 )
 
 // Ed25519PrivateKey 表示一个 ed25519 私钥

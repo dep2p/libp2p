@@ -1,9 +1,9 @@
-// Package metrics 提供了 libp2p 的指标收集和报告接口。
+// Package metrics 提供了 dep2p 的指标收集和报告接口。
 package metrics
 
 import (
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/protocol"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/protocol"
 )
 
 // Stats 表示带宽指标的时间点快照。

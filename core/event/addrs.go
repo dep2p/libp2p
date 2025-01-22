@@ -1,9 +1,9 @@
 package event
 
 import (
-	"github.com/dep2p/libp2p/core/record"
+	"github.com/dep2p/core/record"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // AddrAction 表示对主机监听地址执行的操作。

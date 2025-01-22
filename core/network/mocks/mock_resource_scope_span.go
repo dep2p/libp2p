@@ -4,7 +4,7 @@ package mocknetwork
 import (
 	reflect "reflect"
 
-	network "github.com/dep2p/libp2p/core/network"
+	network "github.com/dep2p/core/network"
 	gomock "go.uber.org/mock/gomock"
 )
 

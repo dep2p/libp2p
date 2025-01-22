@@ -1,6 +1,6 @@
 package event
 
-import "github.com/dep2p/libp2p/core/network"
+import "github.com/dep2p/core/network"
 
 // EvtNATDeviceTypeChanged 是一个事件结构体,当传输协议的 NAT 设备类型发生变化时会发出此事件。
 //

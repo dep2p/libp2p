@@ -6,11 +6,11 @@ import (
 	"net"
 	"strings"
 
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/peer"
 
 	logging "github.com/dep2p/log"
-	"github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	"github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // log 是一个带有跳过级别的日志记录器实例
@@ -18,7 +18,7 @@ import (
 var log = logging.WithSkip(logging.Logger("canonical-log"), 1)
 
 // LogMisbehavingPeer 记录一个行为不当的对等节点的信息
-// 协议应使用此函数来标识行为不当的对等节点,以便最终用户可以在不同协议和libp2p中轻松识别这些节点
+// 协议应使用此函数来标识行为不当的对等节点,以便最终用户可以在不同协议和dep2p中轻松识别这些节点
 //
 // 参数:
 //   - p: 对等节点ID

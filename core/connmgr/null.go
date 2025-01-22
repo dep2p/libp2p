@@ -3,8 +3,8 @@ package connmgr
 import (
 	"context"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
 )
 
 // NullConnMgr 是一个不提供任何功能的 ConnMgr。

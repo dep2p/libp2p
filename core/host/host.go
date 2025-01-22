@@ -1,19 +1,19 @@
-// Package host 提供了 libp2p 的核心 Host 接口。
+// Package host 提供了 dep2p 的核心 Host 接口。
 //
-// Host 表示对等网络中的单个 libp2p 节点。
+// Host 表示对等网络中的单个 dep2p 节点。
 package host
 
 import (
 	"context"
 
-	"github.com/dep2p/libp2p/core/connmgr"
-	"github.com/dep2p/libp2p/core/event"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/peerstore"
-	"github.com/dep2p/libp2p/core/protocol"
+	"github.com/dep2p/core/connmgr"
+	"github.com/dep2p/core/event"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/peerstore"
+	"github.com/dep2p/core/protocol"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // Host 是一个参与p2p网络的对象,它实现了协议或提供服务。
