@@ -3,9 +3,9 @@ package client
 import (
 	"time"
 
-	"github.com/dep2p/libp2p/core/network"
-	pbv2 "github.com/dep2p/libp2p/p2p/protocol/circuitv2/pb"
-	"github.com/dep2p/libp2p/p2p/protocol/circuitv2/util"
+	"github.com/dep2p/core/network"
+	pbv2 "github.com/dep2p/p2p/protocol/circuitv2/pb"
+	"github.com/dep2p/p2p/protocol/circuitv2/util"
 )
 
 // 连接超时相关常量

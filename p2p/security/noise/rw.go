@@ -4,11 +4,11 @@ import (
 	"encoding/binary"
 	"io"
 
-	pool "github.com/libp2p/go-buffer-pool"
+	pool "github.com/dep2p/libp2p/buffer/pool"
 	"golang.org/x/crypto/chacha20poly1305"
 )
 
-// MaxTransportMsgLength 是 Noise 协议规定的最大传输消息长度,包含 MAC 大小(16字节,noise-libp2p 使用 Poly1305)
+// MaxTransportMsgLength 是 Noise 协议规定的最大传输消息长度,包含 MAC 大小(16字节,noise-dep2p 使用 Poly1305)
 const MaxTransportMsgLength = 0xffff
 
 // MaxPlaintextLength 是最大有效载荷大小

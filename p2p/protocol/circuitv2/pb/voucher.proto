@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package circuit.pb;
 
-option go_package = "github.com/dep2p/libp2p/p2p/protocol/circuitv2/pb";
+option go_package = "github.com/dep2p/p2p/protocol/circuitv2/pb";
 
 message ReservationVoucher {
   // These fields are marked optional for backwards compatibility with proto2.

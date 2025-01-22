@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"strconv"
 
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // Addr 是 WebSocket 的 net.Addr 实现

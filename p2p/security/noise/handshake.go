@@ -9,23 +9,23 @@ import (
 	"runtime/debug"
 	"time"
 
-	"github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/sec"
-	"github.com/dep2p/libp2p/p2p/security/noise/pb"
+	"github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/sec"
+	"github.com/dep2p/p2p/security/noise/pb"
 
+	pool "github.com/dep2p/libp2p/buffer/pool"
 	"github.com/flynn/noise"
-	pool "github.com/libp2p/go-buffer-pool"
 	"google.golang.org/protobuf/proto"
 )
 
-// payloadSigPrefix 在使用 libp2p 身份密钥签名之前添加到 Noise 静态密钥前面的前缀
-const payloadSigPrefix = "noise-libp2p-static-key:"
+// payloadSigPrefix 在使用 dep2p 身份密钥签名之前添加到 Noise 静态密钥前面的前缀
+const payloadSigPrefix = "noise-dep2p-static-key:"
 
 // 所有 noise 会话共享一个固定的密码套件
 var cipherSuite = noise.NewCipherSuite(noise.DH25519, noise.CipherChaChaPoly, noise.HashSHA256)
 
-// runHandshake 与远程对等节点交换握手消息以建立 noise-libp2p 会话
+// runHandshake 与远程对等节点交换握手消息以建立 noise-dep2p 会话
 // 参数:
 //   - ctx: context.Context 上下文对象
 //
@@ -253,7 +253,7 @@ func (s *secureSession) readHandshakeMessage(hs *noise.HandshakeState) ([]byte, 
 	return msg, nil
 }
 
-// generateHandshakePayload 创建带有静态 noise 密钥签名的 libp2p 握手负载
+// generateHandshakePayload 创建带有静态 noise 密钥签名的 dep2p 握手负载
 // 参数:
 //   - localStatic: noise.DHKey 本地静态密钥对
 //   - ext: *pb.NoiseExtensions 扩展数据
@@ -262,10 +262,10 @@ func (s *secureSession) readHandshakeMessage(hs *noise.HandshakeState) ([]byte, 
 //   - []byte 序列化的握手负载
 //   - error 生成过程中的错误
 func (s *secureSession) generateHandshakePayload(localStatic noise.DHKey, ext *pb.NoiseExtensions) ([]byte, error) {
-	// 从握手会话获取公钥,以便我们可以用 libp2p 私钥对其签名
+	// 从握手会话获取公钥,以便我们可以用 dep2p 私钥对其签名
 	localKeyRaw, err := crypto.MarshalPublicKey(s.LocalPublicKey())
 	if err != nil {
-		log.Debugf("序列化 libp2p 身份密钥时出错: %s", err)
+		log.Debugf("序列化 dep2p 身份密钥时出错: %s", err)
 		return nil, err
 	}
 
@@ -307,15 +307,15 @@ func (s *secureSession) handleRemoteHandshakePayload(payload []byte, remoteStati
 		return nil, err
 	}
 
-	// 解包远程对等节点的公共 libp2p 密钥
+	// 解包远程对等节点的公共 dep2p 密钥
 	remotePubKey, err := crypto.UnmarshalPublicKey(nhp.GetIdentityKey())
 	if err != nil {
-		log.Debugf("解包远程对等节点的公共 libp2p 密钥时出错: %s", err)
+		log.Debugf("解包远程对等节点的公共 dep2p 密钥时出错: %s", err)
 		return nil, err
 	}
 	id, err := peer.IDFromPublicKey(remotePubKey)
 	if err != nil {
-		log.Debugf("从公共 libp2p 密钥创建对等节点 ID 时出错: %s", err)
+		log.Debugf("从公共 dep2p 密钥创建对等节点 ID 时出错: %s", err)
 		return nil, err
 	}
 
@@ -325,7 +325,7 @@ func (s *secureSession) handleRemoteHandshakePayload(payload []byte, remoteStati
 		return nil, sec.ErrPeerIDMismatch{Expected: s.remoteID, Actual: id}
 	}
 
-	// 验证负载是否由声称的远程 libp2p 密钥签名
+	// 验证负载是否由声称的远程 dep2p 密钥签名
 	sig := nhp.GetIdentitySig()
 	msg := append([]byte(payloadSigPrefix), remoteStatic...)
 	ok, err := remotePubKey.Verify(msg, sig)

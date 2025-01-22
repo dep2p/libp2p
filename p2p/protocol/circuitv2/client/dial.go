@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/peerstore"
-	pbv2 "github.com/dep2p/libp2p/p2p/protocol/circuitv2/pb"
-	"github.com/dep2p/libp2p/p2p/protocol/circuitv2/proto"
-	"github.com/dep2p/libp2p/p2p/protocol/circuitv2/util"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/peerstore"
+	pbv2 "github.com/dep2p/p2p/protocol/circuitv2/pb"
+	"github.com/dep2p/p2p/protocol/circuitv2/proto"
+	"github.com/dep2p/p2p/protocol/circuitv2/util"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // 最大消息大小

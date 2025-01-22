@@ -1,12 +1,12 @@
-package libp2pwebtransport
+package dep2pwebtransport
 
 import (
 	"context"
 
-	"github.com/dep2p/libp2p/core/network"
-	tpt "github.com/dep2p/libp2p/core/transport"
+	"github.com/dep2p/core/network"
+	tpt "github.com/dep2p/core/transport"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 	"github.com/quic-go/quic-go"
 	"github.com/quic-go/webtransport-go"
 )

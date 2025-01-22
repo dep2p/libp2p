@@ -1,4 +1,4 @@
-package libp2pwebtransport
+package dep2pwebtransport
 
 import (
 	"bytes"
@@ -17,9 +17,9 @@ import (
 
 	"golang.org/x/crypto/hkdf"
 
-	ic "github.com/dep2p/libp2p/core/crypto"
+	ic "github.com/dep2p/core/crypto"
 
-	"github.com/multiformats/go-multihash"
+	"github.com/dep2p/multiformats/multihash"
 	"github.com/quic-go/quic-go/http3"
 )
 

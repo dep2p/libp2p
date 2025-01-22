@@ -7,14 +7,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/p2p/protocol/holepunch/pb"
-	"github.com/dep2p/libp2p/p2p/protocol/identify"
-	"github.com/libp2p/go-msgio/pbio"
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/libp2p/msgio/pbio"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
+	"github.com/dep2p/p2p/protocol/holepunch/pb"
+	"github.com/dep2p/p2p/protocol/identify"
 )
 
 // ErrHolePunchActive 当另一个打洞尝试正在进行时，DirectConnect 会返回此错误
@@ -36,7 +36,7 @@ type holePuncher struct {
 	// ctxCancel 取消上下文的函数
 	ctxCancel context.CancelFunc
 
-	// host libp2p 主机
+	// host dep2p 主机
 	host host.Host
 	// refCount 引用计数
 	refCount sync.WaitGroup
@@ -64,7 +64,7 @@ type holePuncher struct {
 
 // newHolePuncher 创建新的打洞器
 // 参数:
-//   - h: host.Host libp2p 主机
+//   - h: host.Host dep2p 主机
 //   - ids: identify.IDService 身份识别服务
 //   - listenAddrs: func() []ma.Multiaddr 返回监听地址的函数
 //   - tracer: *tracer 追踪器

@@ -8,8 +8,8 @@ import (
 	"net"
 	"sync"
 
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/quic-go/quic-go"
 	quiclogging "github.com/quic-go/quic-go/logging"

@@ -9,16 +9,16 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/transport"
-	"github.com/dep2p/libp2p/p2p/net/reuseport"
-	"github.com/dep2p/libp2p/p2p/transport/tcpreuse"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/transport"
+	"github.com/dep2p/p2p/net/reuseport"
+	"github.com/dep2p/p2p/transport/tcpreuse"
 
 	logging "github.com/dep2p/log"
-	ma "github.com/multiformats/go-multiaddr"
-	mafmt "github.com/multiformats/go-multiaddr-fmt"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	mafmt "github.com/dep2p/multiformats/multiaddr/fmt"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // 默认连接超时时间

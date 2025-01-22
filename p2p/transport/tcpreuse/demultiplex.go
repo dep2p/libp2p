@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dep2p/libp2p/p2p/transport/tcpreuse/internal/sampledconn"
-	manet "github.com/multiformats/go-multiaddr/net"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
+	"github.com/dep2p/p2p/transport/tcpreuse/internal/sampledconn"
 )
 
 // 这是在握手后读取第一个数据包的前3个字节。

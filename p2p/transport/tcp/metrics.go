@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 	"github.com/marten-seemann/tcp"
 	"github.com/mikioh/tcpinfo"
-	manet "github.com/multiformats/go-multiaddr/net"
 	"github.com/prometheus/client_golang/prometheus"
 )
 

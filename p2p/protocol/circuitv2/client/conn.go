@@ -5,12 +5,12 @@ import (
 	"net"
 	"time"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	tpt "github.com/dep2p/libp2p/core/transport"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	tpt "github.com/dep2p/core/transport"
 
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // HopTagWeight 是用于携带中继跳跃流的连接管理器权重
@@ -48,7 +48,7 @@ var _ net.Addr = (*NetAddr)(nil)
 
 // Network 返回网络类型名称
 func (n *NetAddr) Network() string {
-	return "libp2p-circuit-relay"
+	return "dep2p-circuit-relay"
 }
 
 // String 返回网络地址的字符串表示

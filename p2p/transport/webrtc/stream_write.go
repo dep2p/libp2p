@@ -1,12 +1,12 @@
-package libp2pwebrtc
+package dep2pwebrtc
 
 import (
 	"errors"
 	"os"
 	"time"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/p2p/transport/webrtc/pb"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/p2p/transport/webrtc/pb"
 )
 
 // 写入关闭后再次写入的错误

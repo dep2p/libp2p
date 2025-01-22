@@ -1,4 +1,4 @@
-package libp2ptls
+package dep2ptls
 
 // extensionPrefix 定义了用于x509证书的对象标识符前缀
 var extensionPrefix = []int{1, 3, 6, 1, 4, 1, 53594}

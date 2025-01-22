@@ -1,4 +1,4 @@
-package libp2pwebtransport
+package dep2pwebtransport
 
 import (
 	"context"
@@ -7,13 +7,13 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dep2p/libp2p/core/network"
-	tpt "github.com/dep2p/libp2p/core/transport"
-	"github.com/dep2p/libp2p/p2p/security/noise"
-	"github.com/dep2p/libp2p/p2p/security/noise/pb"
-	"github.com/dep2p/libp2p/p2p/transport/quicreuse"
+	"github.com/dep2p/core/network"
+	tpt "github.com/dep2p/core/transport"
+	"github.com/dep2p/p2p/security/noise"
+	"github.com/dep2p/p2p/security/noise/pb"
+	"github.com/dep2p/p2p/transport/quicreuse"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 	"github.com/quic-go/quic-go"
 	"github.com/quic-go/quic-go/http3"
 	"github.com/quic-go/webtransport-go"

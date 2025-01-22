@@ -6,11 +6,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/peer"
-	asnutil "github.com/libp2p/go-libp2p-asn-util"
+	"github.com/dep2p/core/peer"
+	asnutil "github.com/dep2p/libp2p/asn/util"
 
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 var (

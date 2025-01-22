@@ -7,20 +7,20 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/protocol"
-	"github.com/dep2p/libp2p/p2p/protocol/holepunch/pb"
-	"github.com/dep2p/libp2p/p2p/protocol/identify"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/protocol"
+	"github.com/dep2p/libp2p/msgio/pbio"
 	logging "github.com/dep2p/log"
-	"github.com/libp2p/go-msgio/pbio"
+	"github.com/dep2p/p2p/protocol/holepunch/pb"
+	"github.com/dep2p/p2p/protocol/identify"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
-// Protocol 是用于打洞的 libp2p 协议标识
-const Protocol protocol.ID = "/libp2p/dcutr"
+// Protocol 是用于打洞的 dep2p 协议标识
+const Protocol protocol.ID = "/dep2p/dcutr"
 
 var log = logging.Logger("p2p-holepunch")
 
@@ -29,7 +29,7 @@ var StreamTimeout = 1 * time.Minute
 
 const (
 	// ServiceName 是打洞服务的名称
-	ServiceName = "libp2p.holepunch"
+	ServiceName = "dep2p.holepunch"
 
 	// maxMsgSize 是消息的最大大小,4KB
 	maxMsgSize = 4 * 1024

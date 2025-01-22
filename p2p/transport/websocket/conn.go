@@ -7,10 +7,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/transport"
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/transport"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 
 	ws "github.com/gorilla/websocket"
 )

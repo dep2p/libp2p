@@ -1,4 +1,4 @@
-package libp2ptls
+package dep2ptls
 
 import (
 	"context"
@@ -8,15 +8,15 @@ import (
 	"os"
 	"runtime/debug"
 
-	"github.com/dep2p/libp2p/core/canonicallog"
-	ci "github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/protocol"
-	"github.com/dep2p/libp2p/core/sec"
-	tptu "github.com/dep2p/libp2p/p2p/net/upgrader"
+	"github.com/dep2p/core/canonicallog"
+	ci "github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/protocol"
+	"github.com/dep2p/core/sec"
+	tptu "github.com/dep2p/p2p/net/upgrader"
 
-	manet "github.com/multiformats/go-multiaddr/net"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // ID 是协议标识符(用于多流协议协商)
@@ -99,7 +99,7 @@ func (t *Transport) SecureInbound(ctx context.Context, insecure net.Conn, p peer
 			for _, m := range muxers {
 				if m == proto {
 					// 找到匹配项,选择此多路复用器,因为这是客户端的偏好
-					// 这里不需要添加"libp2p"条目
+					// 这里不需要添加"dep2p"条目
 					config.NextProtos = []string{proto}
 					break alpnLoop
 				}
@@ -181,8 +181,8 @@ func (t *Transport) handshake(ctx context.Context, tlsConn *tls.Conn, keyCh <-ch
 	default:
 	}
 	if remotePubKey == nil {
-		log.Debugf("go-libp2p tls错误: 预期远程公钥已设置")
-		return nil, fmt.Errorf("go-libp2p tls错误: 预期远程公钥已设置")
+		log.Debugf("go-dep2p tls错误: 预期远程公钥已设置")
+		return nil, fmt.Errorf("go-dep2p tls错误: 预期远程公钥已设置")
 	}
 
 	return t.setupConn(tlsConn, remotePubKey)
@@ -204,10 +204,10 @@ func (t *Transport) setupConn(tlsConn *tls.Conn, remotePubKey ci.PubKey) (sec.Se
 	}
 
 	nextProto := tlsConn.ConnectionState().NegotiatedProtocol
-	// 特殊的ALPN扩展值"libp2p"用于不支持早期多路复用器协商的libp2p版本
+	// 特殊的ALPN扩展值"dep2p"用于不支持早期多路复用器协商的dep2p版本
 	// 如果我们看到选择了这个特殊值,这意味着我们正在与不支持早期多路复用器协商的版本进行握手
 	// 在这种情况下返回空nextProto以表示没有选择多路复用器
-	if nextProto == "libp2p" {
+	if nextProto == "dep2p" {
 		nextProto = ""
 	}
 

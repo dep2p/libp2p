@@ -1,4 +1,4 @@
-package libp2pwebtransport
+package dep2pwebtransport
 
 import (
 	"context"
@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/benbjohnson/clock"
-	ic "github.com/dep2p/libp2p/core/crypto"
-	ma "github.com/multiformats/go-multiaddr"
-	"github.com/multiformats/go-multihash"
+	ic "github.com/dep2p/core/crypto"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	"github.com/dep2p/multiformats/multihash"
 )
 
 // 允许一定的时钟偏差。

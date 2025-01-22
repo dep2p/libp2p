@@ -1,9 +1,9 @@
 package autonatv2
 
 import (
-	"github.com/dep2p/libp2p/p2p/metricshelper"
-	"github.com/dep2p/libp2p/p2p/protocol/autonatv2/pb"
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	"github.com/dep2p/p2p/metricshelper"
+	"github.com/dep2p/p2p/protocol/autonatv2/pb"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -16,7 +16,7 @@ type MetricsTracer interface {
 }
 
 // metricNamespace 定义了指标的命名空间
-const metricNamespace = "libp2p_autonatv2"
+const metricNamespace = "dep2p_autonatv2"
 
 var (
 	// requestsCompleted 统计已完成请求的计数器

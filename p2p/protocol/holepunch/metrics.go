@@ -1,14 +1,14 @@
 package holepunch
 
 import (
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/p2p/metricshelper"
-	ma "github.com/multiformats/go-multiaddr"
+	"github.com/dep2p/core/network"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	"github.com/dep2p/p2p/metricshelper"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-// 用于 libp2p 打洞指标的命名空间
-const metricNamespace = "libp2p_holepunch"
+// 用于 dep2p 打洞指标的命名空间
+const metricNamespace = "dep2p_holepunch"
 
 var (
 	// 直接拨号总数指标

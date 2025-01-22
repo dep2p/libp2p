@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/dep2p/libp2p/netroute"
 	"github.com/google/gopacket/routing"
-	"github.com/libp2p/go-netroute"
 	"github.com/quic-go/quic-go"
 )
 

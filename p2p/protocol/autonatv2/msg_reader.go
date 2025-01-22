@@ -3,7 +3,7 @@ package autonatv2
 import (
 	"io"
 
-	"github.com/multiformats/go-varint"
+	"github.com/dep2p/multiformats/varint"
 )
 
 // msgReader 从 R 中读取一个 varint 前缀的消息，不使用任何缓冲

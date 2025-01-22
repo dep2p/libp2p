@@ -8,10 +8,10 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/dep2p/libp2p/core/network"
+	"github.com/dep2p/core/network"
 
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // ActivationThresh 设置一个地址必须被观察到多少次才能被"激活"，并作为本地节点可被联系的地址广播给其他节点

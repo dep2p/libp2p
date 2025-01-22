@@ -4,7 +4,7 @@
 
 package tcp
 
-import manet "github.com/multiformats/go-multiaddr/net"
+import manet "github.com/dep2p/multiformats/multiaddr/net"
 
 // aggregatingCollector 用于收集和聚合连接指标的结构体
 type aggregatingCollector struct{}

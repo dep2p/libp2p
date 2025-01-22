@@ -1,4 +1,4 @@
-package libp2pwebtransport
+package dep2pwebtransport
 
 import (
 	"bytes"
@@ -12,21 +12,21 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/dep2p/libp2p/core/connmgr"
-	ic "github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/pnet"
-	tpt "github.com/dep2p/libp2p/core/transport"
-	"github.com/dep2p/libp2p/p2p/security/noise"
-	"github.com/dep2p/libp2p/p2p/security/noise/pb"
-	"github.com/dep2p/libp2p/p2p/transport/quicreuse"
+	"github.com/dep2p/core/connmgr"
+	ic "github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/pnet"
+	tpt "github.com/dep2p/core/transport"
+	"github.com/dep2p/p2p/security/noise"
+	"github.com/dep2p/p2p/security/noise/pb"
+	"github.com/dep2p/p2p/transport/quicreuse"
 
 	"github.com/benbjohnson/clock"
 	logging "github.com/dep2p/log"
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
-	"github.com/multiformats/go-multihash"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
+	"github.com/dep2p/multiformats/multihash"
 	"github.com/quic-go/quic-go"
 	"github.com/quic-go/quic-go/http3"
 	"github.com/quic-go/webtransport-go"
@@ -36,7 +36,7 @@ import (
 var log = logging.Logger("p2p-transport/webtransport")
 
 // webtransportHTTPEndpoint 是 WebTransport 的 HTTP 端点路径
-const webtransportHTTPEndpoint = "/.well-known/libp2p-webtransport"
+const webtransportHTTPEndpoint = "/.well-known/dep2p-webtransport"
 
 // errorCodeConnectionGating 是连接网关错误码,ASCII 码为 "GATE"
 const errorCodeConnectionGating = 0x47415445

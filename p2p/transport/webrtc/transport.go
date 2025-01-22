@@ -1,5 +1,4 @@
-// Package libp2pwebrtc implements the WebRTC transport for go-libp2p, as described in https://github.com/libp2p/specs/tree/master/webrtc.
-package libp2pwebrtc
+package dep2pwebrtc
 
 import (
 	"context"
@@ -17,21 +16,21 @@ import (
 	mrand "golang.org/x/exp/rand"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/dep2p/libp2p/core/connmgr"
-	ic "github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/pnet"
-	"github.com/dep2p/libp2p/core/sec"
-	tpt "github.com/dep2p/libp2p/core/transport"
-	"github.com/dep2p/libp2p/p2p/security/noise"
-	libp2pquic "github.com/dep2p/libp2p/p2p/transport/quic"
-	"github.com/dep2p/libp2p/p2p/transport/webrtc/pb"
-	"github.com/libp2p/go-msgio"
+	"github.com/dep2p/core/connmgr"
+	ic "github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/pnet"
+	"github.com/dep2p/core/sec"
+	tpt "github.com/dep2p/core/transport"
+	"github.com/dep2p/libp2p/msgio"
+	"github.com/dep2p/p2p/security/noise"
+	dep2pquic "github.com/dep2p/p2p/transport/quic"
+	"github.com/dep2p/p2p/transport/webrtc/pb"
 
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
-	"github.com/multiformats/go-multihash"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
+	"github.com/dep2p/multiformats/multihash"
 
 	"github.com/pion/datachannel"
 	"github.com/pion/webrtc/v4"
@@ -191,7 +190,7 @@ func New(privKey ic.PrivKey, psk pnet.PSK, gater connmgr.ConnectionGater, rcmgr 
 // 返回值:
 //   - int: 监听优先级，比 QUIC 晚 1 以便可能复用相同端口
 func (t *WebRTCTransport) ListenOrder() int {
-	return libp2pquic.ListenOrder + 1 // 我们希望在 QUIC 监听之后监听，这样可以复用相同的端口
+	return dep2pquic.ListenOrder + 1 // 我们希望在 QUIC 监听之后监听，这样可以复用相同的端口
 }
 
 // Protocols 返回支持的协议列表
@@ -229,7 +228,7 @@ func (t *WebRTCTransport) CanDial(addr ma.Multiaddr) bool {
 //
 // 注意:
 //   - addr 的 IP、端口组合必须是独占的，因为 WebRTC 监听器不能与其他基于 UDP 的传输层(如 QUIC 和 WebTransport)复用相同端口
-//   - 详见 https://github.com/dep2p/libp2p/issues/2446
+//   - 详见 https://github.com/dep2p/issues/2446
 func (t *WebRTCTransport) Listen(addr ma.Multiaddr) (tpt.Listener, error) {
 	addr, wrtcComponent := ma.SplitLast(addr)
 	isWebrtc := wrtcComponent.Equal(webrtcComponent)
@@ -515,7 +514,7 @@ func (t *WebRTCTransport) dial(ctx context.Context, scope network.ConnManagement
 func genUfrag() string {
 	const (
 		uFragAlphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
-		uFragPrefix   = "libp2p+webrtc+v1/"
+		uFragPrefix   = "dep2p+webrtc+v1/"
 		uFragIdLength = 32
 		uFragLength   = len(uFragPrefix) + uFragIdLength
 	)
@@ -592,7 +591,7 @@ func (t *WebRTCTransport) generateNoisePrologue(pc *webrtc.PeerConnection, hash 
 		return nil, err
 	}
 
-	result := []byte("libp2p-webrtc-noise:")
+	result := []byte("dep2p-webrtc-noise:")
 	if inbound {
 		result = append(result, remoteEncoded...)
 		result = append(result, localEncoded...)

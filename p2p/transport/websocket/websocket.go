@@ -1,4 +1,4 @@
-// websocket 包实现了基于 websocket 的 go-libp2p 传输层
+// websocket 包实现了基于 websocket 的 go-dep2p 传输层
 package websocket
 
 import (
@@ -8,14 +8,14 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/transport"
-	"github.com/dep2p/libp2p/p2p/transport/tcpreuse"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/transport"
+	"github.com/dep2p/p2p/transport/tcpreuse"
 
-	ma "github.com/multiformats/go-multiaddr"
-	mafmt "github.com/multiformats/go-multiaddr-fmt"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	mafmt "github.com/dep2p/multiformats/multiaddr/fmt"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 
 	ws "github.com/gorilla/websocket"
 )
@@ -99,7 +99,7 @@ func WithTLSConfig(conf *tls.Config) Option {
 	}
 }
 
-// WebsocketTransport 是实际的 go-libp2p 传输层实现
+// WebsocketTransport 是实际的 go-dep2p 传输层实现
 type WebsocketTransport struct {
 	// upgrader 用于升级连接
 	upgrader transport.Upgrader

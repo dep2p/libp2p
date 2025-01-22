@@ -3,9 +3,9 @@ package client
 import (
 	"net"
 
-	"github.com/dep2p/libp2p/core/transport"
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	"github.com/dep2p/core/transport"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // 确保 Listener 实现了 manet.Listener 接口

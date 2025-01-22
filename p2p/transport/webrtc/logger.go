@@ -1,4 +1,4 @@
-package libp2pwebrtc
+package dep2pwebrtc
 
 import (
 	logging "github.com/dep2p/log"

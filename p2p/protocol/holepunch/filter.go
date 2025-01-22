@@ -1,8 +1,8 @@
 package holepunch
 
 import (
-	"github.com/dep2p/libp2p/core/peer"
-	ma "github.com/multiformats/go-multiaddr"
+	"github.com/dep2p/core/peer"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // WithAddrFilter 是一个 Service 选项,用于启用多地址过滤功能

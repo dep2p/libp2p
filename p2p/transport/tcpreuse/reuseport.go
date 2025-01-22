@@ -4,7 +4,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/libp2p/go-reuseport"
+	"github.com/dep2p/libp2p/reuseport"
 )
 
 // envReuseport 是用于关闭端口重用的环境变量名称

@@ -1,4 +1,4 @@
-package libp2pwebrtc
+package dep2pwebrtc
 
 import (
 	"errors"
@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/p2p/transport/webrtc/pb"
-	"github.com/libp2p/go-msgio/pbio"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/libp2p/msgio/pbio"
+	"github.com/dep2p/p2p/transport/webrtc/pb"
 
 	"github.com/pion/datachannel"
 	"github.com/pion/webrtc/v4"

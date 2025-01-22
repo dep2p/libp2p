@@ -17,7 +17,7 @@ import (
 //   - 通常应传入一个长度为0但容量足够的切片作为out参数,以避免内存分配
 //   - 返回的切片长度为密文长度(包含16字节认证标签)
 //   - 如果out切片容量足够,则不会发生内存分配
-//   - noise-libp2p使用poly1305 MAC函数,会增加16字节认证标签开销
+//   - noise-dep2p使用poly1305 MAC函数,会增加16字节认证标签开销
 func (s *secureSession) encrypt(out, plaintext []byte) ([]byte, error) {
 	// 检查加密器是否已初始化
 	if s.enc == nil {

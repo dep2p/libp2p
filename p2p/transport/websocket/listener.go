@@ -12,11 +12,11 @@ import (
 
 	logging "github.com/dep2p/log"
 
-	"github.com/dep2p/libp2p/core/transport"
-	"github.com/dep2p/libp2p/p2p/transport/tcpreuse"
+	"github.com/dep2p/core/transport"
+	"github.com/dep2p/p2p/transport/tcpreuse"
 
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // 使用 zap 日志记录器创建 websocket 传输层的日志记录器

@@ -4,10 +4,10 @@ import (
 	"errors"
 	"io"
 
+	pool "github.com/dep2p/libp2p/buffer/pool"
+	"github.com/dep2p/libp2p/msgio/pbio"
 	logging "github.com/dep2p/log"
-	pool "github.com/libp2p/go-buffer-pool"
-	"github.com/libp2p/go-msgio/pbio"
-	"github.com/multiformats/go-varint"
+	"github.com/dep2p/multiformats/varint"
 	"google.golang.org/protobuf/proto"
 )
 

@@ -1,11 +1,11 @@
-package libp2pwebrtc
+package dep2pwebrtc
 
 import (
 	"io"
 	"time"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/p2p/transport/webrtc/pb"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/p2p/transport/webrtc/pb"
 )
 
 // Read 从流中读取数据到缓冲区

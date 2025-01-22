@@ -1,10 +1,10 @@
-package libp2pwebtransport
+package dep2pwebtransport
 
 import (
 	"errors"
 	"net"
 
-	"github.com/dep2p/libp2p/core/network"
+	"github.com/dep2p/core/network"
 
 	"github.com/quic-go/webtransport-go"
 )

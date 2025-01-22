@@ -4,16 +4,16 @@ import (
 	"context"
 	"net"
 
-	"github.com/dep2p/libp2p/core/canonicallog"
-	"github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/protocol"
-	"github.com/dep2p/libp2p/core/sec"
-	tptu "github.com/dep2p/libp2p/p2p/net/upgrader"
-	"github.com/dep2p/libp2p/p2p/security/noise/pb"
+	"github.com/dep2p/core/canonicallog"
+	"github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/protocol"
+	"github.com/dep2p/core/sec"
 	logging "github.com/dep2p/log"
+	tptu "github.com/dep2p/p2p/net/upgrader"
+	"github.com/dep2p/p2p/security/noise/pb"
 
-	manet "github.com/multiformats/go-multiaddr/net"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 var log = logging.Logger("p2p-security-noise")
@@ -42,7 +42,7 @@ var _ sec.SecureTransport = &Transport{}
 // New 使用给定的私钥创建一个新的 Noise 传输实例
 // 参数:
 //   - id: 协议标识符
-//   - privkey: 用作 libp2p 身份的私钥
+//   - privkey: 用作 dep2p 身份的私钥
 //   - muxers: 支持的多路复用器列表
 //
 // 返回值:

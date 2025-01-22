@@ -1,14 +1,14 @@
-package libp2pwebtransport
+package dep2pwebtransport
 
 import (
 	"errors"
 	"net"
 	"strconv"
 
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
-	"github.com/multiformats/go-multibase"
-	"github.com/multiformats/go-multihash"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
+	"github.com/dep2p/multiformats/multibase"
+	"github.com/dep2p/multiformats/multihash"
 )
 
 // webtransportMA 是 WebTransport 协议的多地址表示

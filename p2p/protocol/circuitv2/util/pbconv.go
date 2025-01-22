@@ -3,10 +3,10 @@ package util
 import (
 	"errors"
 
-	"github.com/dep2p/libp2p/core/peer"
-	pbv2 "github.com/dep2p/libp2p/p2p/protocol/circuitv2/pb"
+	"github.com/dep2p/core/peer"
+	pbv2 "github.com/dep2p/p2p/protocol/circuitv2/pb"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // PeerToPeerInfoV2 将 protobuf 格式的 Peer 转换为 AddrInfo

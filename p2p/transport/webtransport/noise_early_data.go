@@ -1,12 +1,12 @@
-package libp2pwebtransport
+package dep2pwebtransport
 
 import (
 	"context"
 	"net"
 
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/p2p/security/noise"
-	"github.com/dep2p/libp2p/p2p/security/noise/pb"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/p2p/security/noise"
+	"github.com/dep2p/p2p/security/noise/pb"
 )
 
 // earlyDataHandler 处理 Noise 协议的早期数据

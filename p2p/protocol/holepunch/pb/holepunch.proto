@@ -2,9 +2,8 @@ syntax = "proto2";
 
 package holepunch.pb;
 
-option go_package = "github.com/dep2p/libp2p/p2p/protocol/holepunch/pb";
+option go_package = "github.com/dep2p/p2p/protocol/holepunch/pb";
 
-// spec: https://github.com/libp2p/specs/blob/master/relay/DCUtR.md
 message HolePunch {
   enum Type {
     CONNECT = 100;

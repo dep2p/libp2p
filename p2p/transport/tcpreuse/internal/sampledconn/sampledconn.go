@@ -7,7 +7,7 @@ import (
 	"syscall"
 	"time"
 
-	manet "github.com/multiformats/go-multiaddr/net"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // 每次预读取的字节数

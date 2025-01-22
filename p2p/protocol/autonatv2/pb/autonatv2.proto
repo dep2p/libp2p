@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package autonatv2.pb;
 
-option go_package = "github.com/dep2p/libp2p/p2p/protocol/autonatv2/pb";
+option go_package = "github.com/dep2p/p2p/protocol/autonatv2/pb";
 
 message Message {
     oneof msg {

@@ -5,10 +5,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/event"
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/p2p/host/eventbus"
+	"github.com/dep2p/core/event"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/p2p/host/eventbus"
 )
 
 // natEmitter 用于发送 NAT 相关事件的组件

@@ -10,22 +10,22 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/event"
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/peerstore"
-	"github.com/dep2p/libp2p/core/protocol"
-	"github.com/dep2p/libp2p/core/record"
-	"github.com/dep2p/libp2p/p2p/host/eventbus"
-	"github.com/dep2p/libp2p/p2p/protocol/identify/pb"
+	"github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/event"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/peerstore"
+	"github.com/dep2p/core/protocol"
+	"github.com/dep2p/core/record"
+	"github.com/dep2p/p2p/host/eventbus"
+	"github.com/dep2p/p2p/protocol/identify/pb"
 
+	"github.com/dep2p/libp2p/msgio/pbio"
 	logging "github.com/dep2p/log"
-	"github.com/libp2p/go-msgio/pbio"
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
-	msmux "github.com/multiformats/go-multistream"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
+	msmux "github.com/dep2p/multiformats/multistream"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -44,7 +44,7 @@ const (
 	IDPush = "/ipfs/id/push/1.0.0"
 
 	// ServiceName 是 identify 服务的名称
-	ServiceName = "libp2p.identify"
+	ServiceName = "dep2p.identify"
 
 	// legacyIDSize 是旧版 identify 消息的最大大小
 	legacyIDSize = 2 * 1024
@@ -53,7 +53,7 @@ const (
 	signedIDSize = 8 * 1024
 
 	// maxOwnIdentifyMsgSize 是我们自己发送的 identify 消息的最大大小
-	// 比我们接受的小。这里是 4k 以兼容 rust-libp2p
+	// 比我们接受的小。这里是 4k 以兼容 rust-dep2p
 	maxOwnIdentifyMsgSize = 4 * 1024
 
 	// maxMessages 是最大消息数量
@@ -71,7 +71,7 @@ const (
 )
 
 // defaultUserAgent 是默认的用户代理字符串
-var defaultUserAgent = "github.com/dep2p/libp2p"
+var defaultUserAgent = "github.com/dep2p"
 
 // identifySnapshot 保存对等节点的标识信息快照
 type identifySnapshot struct {
@@ -171,11 +171,11 @@ type entry struct {
 // 它是一个简单的服务,向其他对等节点提供一些有用的本地对等节点信息,类似于一个问候
 //
 // idService 发送:
-//   - 我们的 libp2p 协议版本
-//   - 我们的 libp2p 代理版本
+//   - 我们的 dep2p 协议版本
+//   - 我们的 dep2p 代理版本
 //   - 我们的公共监听地址
 type idService struct {
-	// Host 是 libp2p 主机
+	// Host 是 dep2p 主机
 	Host host.Host
 	// UserAgent 是用户代理字符串
 	UserAgent string
@@ -237,7 +237,7 @@ type normalizer interface {
 
 // NewIDService 构造一个新的 *idService 并通过将其流处理程序附加到给定的 host.Host 来激活它
 // 参数:
-//   - h: host.Host libp2p 主机
+//   - h: host.Host dep2p 主机
 //   - opts: ...Option 配置选项
 //
 // 返回值:

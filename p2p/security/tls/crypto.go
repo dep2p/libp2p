@@ -1,4 +1,4 @@
-package libp2ptls
+package dep2ptls
 
 import (
 	"crypto"
@@ -17,20 +17,20 @@ import (
 	"runtime/debug"
 	"time"
 
-	ic "github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/sec"
+	ic "github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/sec"
 	logging "github.com/dep2p/log"
 )
 
 // 证书有效期约100年
 const certValidityPeriod = 100 * 365 * 24 * time.Hour
 
-// libp2p TLS握手证书前缀
-const certificatePrefix = "libp2p-tls-handshake:"
+// dep2p TLS握手证书前缀
+const certificatePrefix = "dep2p-tls-handshake:"
 
 // ALPN协议标识符
-const alpn string = "libp2p"
+const alpn string = "dep2p"
 
 var log = logging.Logger("p2p-security-tls-crypto")
 
@@ -212,7 +212,7 @@ func PubKeyFromCertChain(chain []*x509.Certificate) (ic.PubKey, error) {
 	pool.AddCert(cert)
 	var found bool
 	var keyExt pkix.Extension
-	// 查找libp2p密钥扩展,跳过所有未知扩展
+	// 查找dep2p密钥扩展,跳过所有未知扩展
 	for _, ext := range cert.Extensions {
 		if extensionIDEqual(ext.Id, extensionID) {
 			keyExt = ext
@@ -275,7 +275,7 @@ func PubKeyFromCertChain(chain []*x509.Certificate) (ic.PubKey, error) {
 //   - error 错误信息
 //
 // 注意:
-//   - 此扩展包含在证书中以加密方式将其绑定到libp2p私钥
+//   - 此扩展包含在证书中以加密方式将其绑定到dep2p私钥
 func GenerateSignedExtension(sk ic.PrivKey, pubKey crypto.PublicKey) (pkix.Extension, error) {
 	keyBytes, err := ic.MarshalPublicKey(sk.GetPublic())
 	if err != nil {
@@ -314,7 +314,7 @@ func GenerateSignedExtension(sk ic.PrivKey, pubKey crypto.PublicKey) (pkix.Exten
 //   - error 错误信息
 //
 // 注意:
-//   - 证书包含一个扩展,将其加密绑定到提供的libp2p私钥以验证TLS连接
+//   - 证书包含一个扩展,将其加密绑定到提供的dep2p私钥以验证TLS连接
 func keyToCertificate(sk ic.PrivKey, certTmpl *x509.Certificate) (*tls.Certificate, error) {
 	certKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {

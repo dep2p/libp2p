@@ -1,4 +1,4 @@
-package libp2pwebrtc
+package dep2pwebrtc
 
 // 此文件中的代码改编自 Go 标准库的 hex 包。
 // 源自 https://cs.opensource.google/go/go/+/refs/tags/go1.20.2:src/encoding/hex/hex.go

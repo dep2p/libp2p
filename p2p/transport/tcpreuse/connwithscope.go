@@ -3,9 +3,9 @@ package tcpreuse
 import (
 	"fmt"
 
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/p2p/transport/tcpreuse/internal/sampledconn"
-	manet "github.com/multiformats/go-multiaddr/net"
+	"github.com/dep2p/core/network"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
+	"github.com/dep2p/p2p/transport/tcpreuse/internal/sampledconn"
 )
 
 // connWithScope 包装了TCP连接并添加了作用域管理功能的结构体

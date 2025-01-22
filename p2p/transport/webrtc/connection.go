@@ -1,6 +1,6 @@
 //go:build !js
 
-package libp2pwebrtc
+package dep2pwebrtc
 
 import (
 	"context"
@@ -11,12 +11,12 @@ import (
 	"sync"
 	"sync/atomic"
 
-	ic "github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	tpt "github.com/dep2p/libp2p/core/transport"
+	ic "github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	tpt "github.com/dep2p/core/transport"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 	"github.com/pion/datachannel"
 	"github.com/pion/sctp"
 	"github.com/pion/webrtc/v4"

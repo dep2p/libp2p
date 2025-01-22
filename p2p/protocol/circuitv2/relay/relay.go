@@ -9,24 +9,24 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/record"
-	pbv2 "github.com/dep2p/libp2p/p2p/protocol/circuitv2/pb"
-	"github.com/dep2p/libp2p/p2p/protocol/circuitv2/proto"
-	"github.com/dep2p/libp2p/p2p/protocol/circuitv2/util"
+	"github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/record"
+	pbv2 "github.com/dep2p/p2p/protocol/circuitv2/pb"
+	"github.com/dep2p/p2p/protocol/circuitv2/proto"
+	"github.com/dep2p/p2p/protocol/circuitv2/util"
 
+	pool "github.com/dep2p/libp2p/buffer/pool"
 	logging "github.com/dep2p/log"
-	pool "github.com/libp2p/go-buffer-pool"
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 const (
 	// 服务名称
-	ServiceName = "libp2p.relay/v2"
+	ServiceName = "dep2p.relay/v2"
 
 	// 预约标签权重
 	ReservationTagWeight = 10

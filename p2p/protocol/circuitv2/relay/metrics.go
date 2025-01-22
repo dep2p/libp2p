@@ -3,13 +3,13 @@ package relay
 import (
 	"time"
 
-	"github.com/dep2p/libp2p/p2p/metricshelper"
-	pbv2 "github.com/dep2p/libp2p/p2p/protocol/circuitv2/pb"
+	"github.com/dep2p/p2p/metricshelper"
+	pbv2 "github.com/dep2p/p2p/protocol/circuitv2/pb"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
 // 中继服务的指标命名空间
-const metricNamespace = "libp2p_relaysvc"
+const metricNamespace = "dep2p_relaysvc"
 
 var (
 	// 中继状态指标

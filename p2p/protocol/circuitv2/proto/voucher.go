@@ -3,10 +3,10 @@ package proto
 import (
 	"time"
 
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/record"
-	pbv2 "github.com/dep2p/libp2p/p2p/protocol/circuitv2/pb"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/record"
 	logging "github.com/dep2p/log"
+	pbv2 "github.com/dep2p/p2p/protocol/circuitv2/pb"
 
 	"google.golang.org/protobuf/proto"
 )
@@ -14,7 +14,7 @@ import (
 var log = logging.Logger("p2p-protocol-circuitv2-voucher")
 
 // 中继预约服务的记录域名
-const RecordDomain = "libp2p-relay-rsvp"
+const RecordDomain = "dep2p-relay-rsvp"
 
 // TODO: 在 https://github.com/multiformats/multicodec 的 multicodec 表中注册
 var RecordCodec = []byte{0x03, 0x02}

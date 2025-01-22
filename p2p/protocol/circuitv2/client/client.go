@@ -5,10 +5,10 @@ import (
 	"io"
 	"sync"
 
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/transport"
-	"github.com/dep2p/libp2p/p2p/protocol/circuitv2/proto"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/transport"
+	"github.com/dep2p/p2p/protocol/circuitv2/proto"
 
 	logging "github.com/dep2p/log"
 )

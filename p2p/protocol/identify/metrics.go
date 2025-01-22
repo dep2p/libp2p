@@ -1,15 +1,15 @@
 package identify
 
 import (
-	"github.com/dep2p/libp2p/core/event"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/p2p/metricshelper"
+	"github.com/dep2p/core/event"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/p2p/metricshelper"
 
 	"github.com/prometheus/client_golang/prometheus"
 )
 
 // metricNamespace 是 identify 指标的命名空间
-const metricNamespace = "libp2p_identify"
+const metricNamespace = "dep2p_identify"
 
 var (
 	// pushesTriggered 统计由事件触发的 identify push 次数

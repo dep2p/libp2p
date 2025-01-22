@@ -1,18 +1,18 @@
-package libp2ptls
+package dep2ptls
 
 import (
 	"crypto/tls"
 
-	ci "github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/sec"
+	ci "github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/sec"
 )
 
 // conn 实现了安全连接接口
 // 注意:
 //   - 该结构体实现了 sec.SecureConn 接口
-//   - 用于在 libp2p 网络中提供安全的点对点通信
+//   - 用于在 dep2p 网络中提供安全的点对点通信
 type conn struct {
 	// TLS连接对象,提供底层的加密通信功能
 	*tls.Conn

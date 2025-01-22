@@ -8,24 +8,24 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/event"
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/p2p/protocol/autonatv2/pb"
+	"github.com/dep2p/core/event"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
 	logging "github.com/dep2p/log"
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
+	"github.com/dep2p/p2p/protocol/autonatv2/pb"
 	"golang.org/x/exp/rand"
 )
 
 // ServiceName 是 AutoNAT v2 服务的名称
 const (
-	ServiceName = "libp2p.autonatv2"
+	ServiceName = "dep2p.autonatv2"
 	// DialBackProtocol 是用于回拨的协议标识符
-	DialBackProtocol = "/libp2p/autonat/2/dial-back"
+	DialBackProtocol = "/dep2p/autonat/2/dial-back"
 	// DialProtocol 是用于拨号请求的协议标识符
-	DialProtocol = "/libp2p/autonat/2/dial-request"
+	DialProtocol = "/dep2p/autonat/2/dial-request"
 
 	// maxMsgSize 是消息的最大字节数
 	maxMsgSize = 8192
@@ -84,7 +84,7 @@ type Result struct {
 // 用户可以使用 CheckReachability 方法检查其地址的可达性
 // 服务器提供放大攻击防护和速率限制
 type AutoNAT struct {
-	// host 是 libp2p 主机
+	// host 是 dep2p 主机
 	host host.Host
 
 	// 用于清理关闭
@@ -104,7 +104,7 @@ type AutoNAT struct {
 
 // New 返回一个新的 AutoNAT 实例
 // 参数:
-//   - host: libp2p 主机
+//   - host: dep2p 主机
 //   - dialerHost: 用于拨号的主机
 //   - opts: AutoNAT 选项
 //

@@ -10,18 +10,18 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/peerstore"
-	"github.com/dep2p/libp2p/p2p/protocol/autonatv2/pb"
-	pool "github.com/libp2p/go-buffer-pool"
-	"github.com/libp2p/go-msgio/pbio"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/peerstore"
+	pool "github.com/dep2p/libp2p/buffer/pool"
+	"github.com/dep2p/libp2p/msgio/pbio"
+	"github.com/dep2p/p2p/protocol/autonatv2/pb"
 
 	"math/rand"
 
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 var (

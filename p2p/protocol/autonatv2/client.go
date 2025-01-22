@@ -7,19 +7,19 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/p2p/protocol/autonatv2/pb"
-	"github.com/libp2p/go-msgio/pbio"
-	ma "github.com/multiformats/go-multiaddr"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/libp2p/msgio/pbio"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	"github.com/dep2p/p2p/protocol/autonatv2/pb"
 	"golang.org/x/exp/rand"
 )
 
 // client 实现了 AutoNAT v2 的拨号请求客户端。
 // 它验证拨号是否成功,并提供发送拨号请求数据的选项。
 type client struct {
-	// host 是 libp2p 主机实例
+	// host 是 dep2p 主机实例
 	host host.Host
 	// dialData 是用于拨号请求的数据
 	dialData []byte
@@ -38,7 +38,7 @@ type normalizeMultiaddrer interface {
 
 // newClient 创建一个新的 client 实例
 // 参数:
-//   - h: host.Host libp2p 主机实例
+//   - h: host.Host dep2p 主机实例
 //
 // 返回值:
 //   - *client 新创建的客户端实例

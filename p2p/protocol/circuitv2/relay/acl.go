@@ -1,9 +1,9 @@
 package relay
 
 import (
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/peer"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // ACLFilter 是中继连接的访问控制机制接口

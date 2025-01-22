@@ -9,10 +9,10 @@ import (
 
 	"github.com/flynn/noise"
 
-	"github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/protocol"
+	"github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/protocol"
 )
 
 // secureSession 实现了一个基于 Noise 协议的安全会话
@@ -48,7 +48,7 @@ type secureSession struct {
 	connectionState network.ConnectionState
 }
 
-// newSecureSession 在给定的不安全连接上创建一个 Noise 会话,使用给定 Transport 的 libp2p 身份密钥对
+// newSecureSession 在给定的不安全连接上创建一个 Noise 会话,使用给定 Transport 的 dep2p 身份密钥对
 //
 // 参数:
 //   - tpt: *Transport 传输层对象

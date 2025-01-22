@@ -8,13 +8,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dep2p/libp2p/core/connmgr"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/transport"
-	"github.com/dep2p/libp2p/p2p/net/reuseport"
+	"github.com/dep2p/core/connmgr"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/transport"
 	logging "github.com/dep2p/log"
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
+	"github.com/dep2p/p2p/net/reuseport"
 )
 
 // 并行读取64个连接的3个字节是合理的

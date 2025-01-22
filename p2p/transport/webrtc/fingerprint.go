@@ -1,13 +1,13 @@
-package libp2pwebrtc
+package dep2pwebrtc
 
 import (
 	"crypto"
 	"crypto/x509"
 	"errors"
 
-	ma "github.com/multiformats/go-multiaddr"
-	"github.com/multiformats/go-multibase"
-	mh "github.com/multiformats/go-multihash"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	"github.com/dep2p/multiformats/multibase"
+	mh "github.com/dep2p/multiformats/multihash"
 	"github.com/pion/webrtc/v4"
 )
 

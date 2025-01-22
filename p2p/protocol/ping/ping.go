@@ -10,11 +10,11 @@ import (
 	mrand "math/rand"
 	"time"
 
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	pool "github.com/dep2p/libp2p/buffer/pool"
 	logging "github.com/dep2p/log"
-	pool "github.com/libp2p/go-buffer-pool"
 )
 
 // 用于记录日志的 logger 实例
@@ -32,18 +32,18 @@ const (
 	ID = "/ipfs/ping/1.0.0"
 
 	// ping 服务名称
-	ServiceName = "libp2p.ping"
+	ServiceName = "dep2p.ping"
 )
 
 // PingService ping 服务结构体
 type PingService struct {
-	// libp2p 主机实例
+	// dep2p 主机实例
 	Host host.Host
 }
 
 // NewPingService 创建一个新的 ping 服务
 // 参数:
-//   - h: host.Host libp2p 主机实例
+//   - h: host.Host dep2p 主机实例
 //
 // 返回值:
 //   - *PingService ping 服务实例
@@ -157,7 +157,7 @@ func pingError(err error) chan Result {
 // Ping 持续向远程节点发送 ping 请求直到上下文被取消
 // 参数:
 //   - ctx: context.Context 上下文对象
-//   - h: host.Host libp2p 主机实例
+//   - h: host.Host dep2p 主机实例
 //   - p: peer.ID 目标节点 ID
 //
 // 返回值:

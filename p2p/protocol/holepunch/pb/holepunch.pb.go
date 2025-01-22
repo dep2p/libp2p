@@ -76,7 +76,6 @@ func (HolePunch_Type) EnumDescriptor() ([]byte, []int) {
 	return file_p2p_protocol_holepunch_pb_holepunch_proto_rawDescGZIP(), []int{0, 0}
 }
 
-// spec: https://github.com/libp2p/specs/blob/master/relay/DCUtR.md
 type HolePunch struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Type          *HolePunch_Type        `protobuf:"varint,1,req,name=type,enum=holepunch.pb.HolePunch_Type" json:"type,omitempty"`

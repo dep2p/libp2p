@@ -4,13 +4,13 @@ import (
 	"context"
 	"net"
 
-	"github.com/dep2p/libp2p/core/canonicallog"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/protocol"
-	"github.com/dep2p/libp2p/core/sec"
-	"github.com/dep2p/libp2p/p2p/security/noise/pb"
+	"github.com/dep2p/core/canonicallog"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/protocol"
+	"github.com/dep2p/core/sec"
+	"github.com/dep2p/p2p/security/noise/pb"
 
-	manet "github.com/multiformats/go-multiaddr/net"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // SessionOption 定义了一个函数类型,用于配置 SessionTransport

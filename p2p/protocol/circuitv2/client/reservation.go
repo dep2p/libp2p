@@ -5,15 +5,15 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/peerstore"
-	"github.com/dep2p/libp2p/core/record"
-	pbv2 "github.com/dep2p/libp2p/p2p/protocol/circuitv2/pb"
-	"github.com/dep2p/libp2p/p2p/protocol/circuitv2/proto"
-	"github.com/dep2p/libp2p/p2p/protocol/circuitv2/util"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/peerstore"
+	"github.com/dep2p/core/record"
+	pbv2 "github.com/dep2p/p2p/protocol/circuitv2/pb"
+	"github.com/dep2p/p2p/protocol/circuitv2/proto"
+	"github.com/dep2p/p2p/protocol/circuitv2/util"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // 预留槽位的超时时间为1分钟

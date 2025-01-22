@@ -3,8 +3,8 @@ package tcpreuse
 import (
 	"context"
 
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 )
 
 // DialContext 类似于 Dial 但接收一个上下文参数
