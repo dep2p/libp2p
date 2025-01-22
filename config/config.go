@@ -9,41 +9,41 @@ import (
 	"slices"
 	"time"
 
-	"github.com/dep2p/libp2p/core/connmgr"
-	"github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/event"
-	"github.com/dep2p/libp2p/core/host"
-	"github.com/dep2p/libp2p/core/metrics"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/peerstore"
-	"github.com/dep2p/libp2p/core/pnet"
-	"github.com/dep2p/libp2p/core/protocol"
-	"github.com/dep2p/libp2p/core/routing"
-	"github.com/dep2p/libp2p/core/sec"
-	"github.com/dep2p/libp2p/core/sec/insecure"
-	"github.com/dep2p/libp2p/core/transport"
-	"github.com/dep2p/libp2p/p2p/host/autonat"
-	"github.com/dep2p/libp2p/p2p/host/autorelay"
-	bhost "github.com/dep2p/libp2p/p2p/host/basic"
-	blankhost "github.com/dep2p/libp2p/p2p/host/blank"
-	"github.com/dep2p/libp2p/p2p/host/eventbus"
-	"github.com/dep2p/libp2p/p2p/host/peerstore/pstoremem"
-	rcmgr "github.com/dep2p/libp2p/p2p/host/resource-manager"
-	routed "github.com/dep2p/libp2p/p2p/host/routed"
-	"github.com/dep2p/libp2p/p2p/net/swarm"
-	tptu "github.com/dep2p/libp2p/p2p/net/upgrader"
-	circuitv2 "github.com/dep2p/libp2p/p2p/protocol/circuitv2/client"
-	relayv2 "github.com/dep2p/libp2p/p2p/protocol/circuitv2/relay"
-	"github.com/dep2p/libp2p/p2p/protocol/holepunch"
-	"github.com/dep2p/libp2p/p2p/protocol/identify"
-	"github.com/dep2p/libp2p/p2p/transport/quicreuse"
-	"github.com/dep2p/libp2p/p2p/transport/tcpreuse"
-	libp2pwebrtc "github.com/dep2p/libp2p/p2p/transport/webrtc"
+	"github.com/dep2p/core/connmgr"
+	"github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/event"
+	"github.com/dep2p/core/host"
+	"github.com/dep2p/core/metrics"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/peerstore"
+	"github.com/dep2p/core/pnet"
+	"github.com/dep2p/core/protocol"
+	"github.com/dep2p/core/routing"
+	"github.com/dep2p/core/sec"
+	"github.com/dep2p/core/sec/insecure"
+	"github.com/dep2p/core/transport"
+	"github.com/dep2p/p2p/host/autonat"
+	"github.com/dep2p/p2p/host/autorelay"
+	bhost "github.com/dep2p/p2p/host/basic"
+	blankhost "github.com/dep2p/p2p/host/blank"
+	"github.com/dep2p/p2p/host/eventbus"
+	"github.com/dep2p/p2p/host/peerstore/pstoremem"
+	rcmgr "github.com/dep2p/p2p/host/resource-manager"
+	routed "github.com/dep2p/p2p/host/routed"
+	"github.com/dep2p/p2p/net/swarm"
+	tptu "github.com/dep2p/p2p/net/upgrader"
+	circuitv2 "github.com/dep2p/p2p/protocol/circuitv2/client"
+	relayv2 "github.com/dep2p/p2p/protocol/circuitv2/relay"
+	"github.com/dep2p/p2p/protocol/holepunch"
+	"github.com/dep2p/p2p/protocol/identify"
+	"github.com/dep2p/p2p/transport/quicreuse"
+	"github.com/dep2p/p2p/transport/tcpreuse"
+	dep2pwebrtc "github.com/dep2p/p2p/transport/webrtc"
 	"github.com/prometheus/client_golang/prometheus"
 
-	ma "github.com/multiformats/go-multiaddr"
-	manet "github.com/multiformats/go-multiaddr/net"
+	ma "github.com/dep2p/multiformats/multiaddr"
+	manet "github.com/dep2p/multiformats/multiaddr/net"
 	"github.com/quic-go/quic-go"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxevent"
@@ -74,7 +74,7 @@ type NATManagerC func(network.Network) bhost.NATManager
 //   - error: 如果发生错误，返回错误信息
 type RoutingC func(host.Host) (routing.PeerRouting, error)
 
-// AutoNATConfig 定义了 libp2p host 的 AutoNAT 配置
+// AutoNATConfig 定义了 dep2p host 的 AutoNAT 配置
 type AutoNATConfig struct {
 	ForceReachability   *network.Reachability // 强制设置节点的可达性状态
 	EnableService       bool                  // 是否启用 AutoNAT 服务
@@ -89,7 +89,7 @@ type Security struct {
 	Constructor interface{} // 用于构造安全传输的构造器
 }
 
-// Config 描述了 libp2p 节点的完整配置
+// Config 描述了 dep2p 节点的完整配置
 type Config struct {
 	UserAgent       string // 节点的用户代理标识符
 	ProtocolVersion string // 节点使用的协议版本
@@ -184,8 +184,8 @@ func (cfg *Config) makeSwarm(eventBus event.Bus, enableMetrics bool) (*swarm.Swa
 	// 尽早检查这一点。防止我们在没有验证这一点的情况下就开始。
 	// 检查是否配置了私有网络保护器
 	if pnet.ForcePrivateNetwork && len(cfg.PSK) == 0 {
-		log.Debugf("试图创建一个没有私有网络保护器的 libp2p 节点,但环境强制使用私有网络")
-		// 注意:这也在升级器本身中检查,所以即使你不使用 libp2p 构造函数,它也会被强制执行。
+		log.Debugf("试图创建一个没有私有网络保护器的 dep2p 节点,但环境强制使用私有网络")
+		// 注意:这也在升级器本身中检查,所以即使你不使用 dep2p 构造函数,它也会被强制执行。
 		return nil, pnet.ErrNotInPrivateNetwork
 	}
 
@@ -253,7 +253,7 @@ func (cfg *Config) makeSwarm(eventBus event.Bus, enableMetrics bool) (*swarm.Swa
 	return swarm.NewSwarm(pid, cfg.Peerstore, eventBus, opts...)
 }
 
-// makeAutoNATV2Host 创建并返回一个用于 AutoNAT v2 的 libp2p 主机
+// makeAutoNATV2Host 创建并返回一个用于 AutoNAT v2 的 dep2p 主机
 // 返回:
 //   - host.Host: 创建的主机实例
 //   - error: 创建过程中的错误
@@ -390,7 +390,7 @@ func (cfg *Config) addTransports() ([]fx.Option, error) {
 			return tcpreuse.NewConnMgr(tcpreuse.EnvReuseportVal, gater, rcmgr)
 		}),
 		// 提供 WebRTC UDP 监听函数
-		fx.Provide(func(cm *quicreuse.ConnManager, sw *swarm.Swarm) libp2pwebrtc.ListenUDPFn {
+		fx.Provide(func(cm *quicreuse.ConnManager, sw *swarm.Swarm) dep2pwebrtc.ListenUDPFn {
 			// 检查是否存在指定网络和地址的 QUIC 端口
 			hasQuicAddrPortFor := func(network string, laddr *net.UDPAddr) bool {
 				quicAddrPorts := map[string]struct{}{}
@@ -522,7 +522,7 @@ func (cfg *Config) addTransports() ([]fx.Option, error) {
 	return fxopts, nil
 }
 
-// newBasicHost 创建一个新的基础 libp2p 主机
+// newBasicHost 创建一个新的基础 dep2p 主机
 // 参数:
 //   - swrm: swarm 网络层实例
 //   - eventBus: 事件总线实例
@@ -574,13 +574,13 @@ func (cfg *Config) newBasicHost(swrm *swarm.Swarm, eventBus event.Bus) (*bhost.B
 	return h, nil
 }
 
-// NewNode 从配置构造一个新的 libp2p Host
+// NewNode 从配置构造一个新的 dep2p Host
 //
 // 参数:
 //   - 无
 //
 // 返回:
-//   - host.Host: 创建的 libp2p 主机实例
+//   - host.Host: 创建的 dep2p 主机实例
 //   - error: 创建过程中的错误
 //
 // 注意: 此函数会消耗配置,不要重复使用它
@@ -872,7 +872,7 @@ func (cfg *Config) addAutoNAT(h *bhost.BasicHost) error {
 	return nil
 }
 
-// Option 是一个函数类型,用于配置 libp2p
+// Option 是一个函数类型,用于配置 dep2p
 // 参数:
 //   - cfg: 配置对象指针
 //

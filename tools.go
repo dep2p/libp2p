@@ -1,6 +1,6 @@
 //go:build tools
 
-package libp2p
+package dep2p
 
 import (
 	_ "github.com/golang/mock/mockgen"

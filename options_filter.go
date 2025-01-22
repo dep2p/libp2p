@@ -1,12 +1,12 @@
-package libp2p
+package dep2p
 
 import (
-	"github.com/dep2p/libp2p/core/connmgr"
-	"github.com/dep2p/libp2p/core/control"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
+	"github.com/dep2p/core/connmgr"
+	"github.com/dep2p/core/control"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 )
 
 // filtersConnectionGater 是一个适配器，将 multiaddr.Filter 转换为 connmgr.ConnectionGater

@@ -1,17 +1,17 @@
-package libp2p
+package dep2p
 
 import (
-	"github.com/dep2p/libp2p/core/protocol"
-	"github.com/dep2p/libp2p/p2p/host/autonat"
-	rcmgr "github.com/dep2p/libp2p/p2p/host/resource-manager"
-	circuit "github.com/dep2p/libp2p/p2p/protocol/circuitv2/proto"
-	relayv2 "github.com/dep2p/libp2p/p2p/protocol/circuitv2/relay"
-	"github.com/dep2p/libp2p/p2p/protocol/holepunch"
-	"github.com/dep2p/libp2p/p2p/protocol/identify"
-	"github.com/dep2p/libp2p/p2p/protocol/ping"
+	"github.com/dep2p/core/protocol"
+	"github.com/dep2p/p2p/host/autonat"
+	rcmgr "github.com/dep2p/p2p/host/resource-manager"
+	circuit "github.com/dep2p/p2p/protocol/circuitv2/proto"
+	relayv2 "github.com/dep2p/p2p/protocol/circuitv2/relay"
+	"github.com/dep2p/p2p/protocol/holepunch"
+	"github.com/dep2p/p2p/protocol/identify"
+	"github.com/dep2p/p2p/protocol/ping"
 )
 
-// SetDefaultServiceLimits 为内置的 libp2p 服务设置默认限制
+// SetDefaultServiceLimits 为内置的 dep2p 服务设置默认限制
 // 参数：
 //   - config: *rcmgr.ScalingLimitConfig 资源限制配置对象
 func SetDefaultServiceLimits(config *rcmgr.ScalingLimitConfig) {

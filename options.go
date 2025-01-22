@@ -1,6 +1,6 @@
-package libp2p
+package dep2p
 
-// 此文件包含所有libp2p配置选项(除了默认值,默认值在defaults.go中)
+// 此文件包含所有dep2p配置选项(除了默认值,默认值在defaults.go中)
 
 import (
 	"crypto/rand"
@@ -10,30 +10,30 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/dep2p/libp2p/config"
-	"github.com/dep2p/libp2p/core/connmgr"
-	"github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/core/metrics"
-	"github.com/dep2p/libp2p/core/network"
-	"github.com/dep2p/libp2p/core/peer"
-	"github.com/dep2p/libp2p/core/peerstore"
-	"github.com/dep2p/libp2p/core/pnet"
-	"github.com/dep2p/libp2p/core/protocol"
-	"github.com/dep2p/libp2p/core/transport"
-	"github.com/dep2p/libp2p/p2p/host/autorelay"
-	bhost "github.com/dep2p/libp2p/p2p/host/basic"
-	"github.com/dep2p/libp2p/p2p/net/swarm"
-	tptu "github.com/dep2p/libp2p/p2p/net/upgrader"
-	relayv2 "github.com/dep2p/libp2p/p2p/protocol/circuitv2/relay"
-	"github.com/dep2p/libp2p/p2p/protocol/holepunch"
-	"github.com/dep2p/libp2p/p2p/transport/quicreuse"
+	"github.com/dep2p/config"
+	"github.com/dep2p/core/connmgr"
+	"github.com/dep2p/core/crypto"
+	"github.com/dep2p/core/metrics"
+	"github.com/dep2p/core/network"
+	"github.com/dep2p/core/peer"
+	"github.com/dep2p/core/peerstore"
+	"github.com/dep2p/core/pnet"
+	"github.com/dep2p/core/protocol"
+	"github.com/dep2p/core/transport"
+	"github.com/dep2p/p2p/host/autorelay"
+	bhost "github.com/dep2p/p2p/host/basic"
+	"github.com/dep2p/p2p/net/swarm"
+	tptu "github.com/dep2p/p2p/net/upgrader"
+	relayv2 "github.com/dep2p/p2p/protocol/circuitv2/relay"
+	"github.com/dep2p/p2p/protocol/holepunch"
+	"github.com/dep2p/p2p/transport/quicreuse"
 	"github.com/prometheus/client_golang/prometheus"
 
-	ma "github.com/multiformats/go-multiaddr"
+	ma "github.com/dep2p/multiformats/multiaddr"
 	"go.uber.org/fx"
 )
 
-// ListenAddrStrings 配置libp2p监听给定的(未解析的)地址
+// ListenAddrStrings 配置dep2p监听给定的(未解析的)地址
 // 参数:
 //   - s: 要监听的地址字符串切片
 //
@@ -55,7 +55,7 @@ func ListenAddrStrings(s ...string) Option {
 	}
 }
 
-// ListenAddrs 配置libp2p监听给定的地址
+// ListenAddrs 配置dep2p监听给定的地址
 // 参数:
 //   - addrs: 要监听的multiaddr地址切片
 //
@@ -69,7 +69,7 @@ func ListenAddrs(addrs ...ma.Multiaddr) Option {
 	}
 }
 
-// Security 配置libp2p使用给定的安全传输(或传输构造函数)
+// Security 配置dep2p使用给定的安全传输(或传输构造函数)
 // 参数:
 //   - name: 协议名称
 //   - constructor: 传输构造函数,可以是已构造的security.Transport或一个函数,该函数可以接受以下任意参数:
@@ -86,8 +86,8 @@ func Security(name string, constructor interface{}) Option {
 	return func(cfg *Config) error {
 		// 检查是否启用了不安全模式
 		if cfg.Insecure {
-			log.Debugf("不能在不安全的libp2p配置中使用安全传输")
-			return fmt.Errorf("不能在不安全的libp2p配置中使用安全传输")
+			log.Debugf("不能在不安全的dep2p配置中使用安全传输")
+			return fmt.Errorf("不能在不安全的dep2p配置中使用安全传输")
 		}
 		// 添加安全传输配置
 		cfg.SecurityTransports = append(cfg.SecurityTransports, config.Security{ID: protocol.ID(name), Constructor: constructor})
@@ -99,14 +99,14 @@ func Security(name string, constructor interface{}) Option {
 // 它与所有其他传输安全协议不兼容
 var NoSecurity Option = func(cfg *Config) error {
 	if len(cfg.SecurityTransports) > 0 {
-		log.Debugf("不能在不安全的libp2p配置中使用安全传输")
-		return fmt.Errorf("不能在不安全的libp2p配置中使用安全传输")
+		log.Debugf("不能在不安全的dep2p配置中使用安全传输")
+		return fmt.Errorf("不能在不安全的dep2p配置中使用安全传输")
 	}
 	cfg.Insecure = true
 	return nil
 }
 
-// Muxer 配置libp2p使用给定的流多路复用器
+// Muxer 配置dep2p使用给定的流多路复用器
 // 参数:
 //   - name: 协议名称
 //   - muxer: 多路复用器实现
@@ -157,7 +157,7 @@ func QUICReuse(constructor interface{}, opts ...quicreuse.Option) Option {
 	}
 }
 
-// Transport 配置libp2p使用给定的传输(或传输构造函数)
+// Transport 配置dep2p使用给定的传输(或传输构造函数)
 // 参数:
 //   - constructor: 传输构造函数,可以是已构造的transport.Transport或一个函数,该函数可以接受以下任意参数:
 //   - Transport Upgrader (*tptu.Upgrader)
@@ -231,7 +231,7 @@ func Transport(constructor interface{}, opts ...interface{}) Option {
 	}
 }
 
-// Peerstore 配置libp2p使用给定的peerstore
+// Peerstore 配置dep2p使用给定的peerstore
 // 参数:
 //   - ps: peerstore实现
 //
@@ -249,7 +249,7 @@ func Peerstore(ps peerstore.Peerstore) Option {
 	}
 }
 
-// PrivateNetwork 配置libp2p使用给定的私有网络保护器
+// PrivateNetwork 配置dep2p使用给定的私有网络保护器
 // 参数:
 //   - psk: 预共享密钥
 //
@@ -267,7 +267,7 @@ func PrivateNetwork(psk pnet.PSK) Option {
 	}
 }
 
-// BandwidthReporter 配置libp2p使用给定的带宽报告器
+// BandwidthReporter 配置dep2p使用给定的带宽报告器
 // 参数:
 //   - rep: 带宽报告器实现
 //
@@ -285,7 +285,7 @@ func BandwidthReporter(rep metrics.Reporter) Option {
 	}
 }
 
-// Identity 配置libp2p使用给定的私钥来标识自己
+// Identity 配置dep2p使用给定的私钥来标识自己
 // 参数:
 //   - sk: 私钥
 //
@@ -303,8 +303,8 @@ func Identity(sk crypto.PrivKey) Option {
 	}
 }
 
-// ConnectionManager 配置libp2p使用给定的连接管理器
-// 当前"标准"连接管理器位于github.com/libp2p/go-libp2p-connmgr
+// ConnectionManager 配置dep2p使用给定的连接管理器
+// 当前"标准"连接管理器位于github.com/dep2p/go-dep2p-connmgr
 // 参数:
 //   - connman: 连接管理器实现
 //
@@ -321,7 +321,7 @@ func ConnectionManager(connman connmgr.ConnManager) Option {
 	}
 }
 
-// AddrsFactory 配置libp2p使用给定的地址工厂
+// AddrsFactory 配置dep2p使用给定的地址工厂
 // 参数:
 //   - factory: 地址工厂实现
 //
@@ -338,8 +338,8 @@ func AddrsFactory(factory config.AddrsFactory) Option {
 	}
 }
 
-// EnableRelay 配置libp2p启用中继传输
-// 此选项仅配置libp2p接受来自中继的入站连接,并在远程对等方请求时通过中继进行出站连接
+// EnableRelay 配置dep2p启用中继传输
+// 此选项仅配置dep2p接受来自中继的入站连接,并在远程对等方请求时通过中继进行出站连接
 // 此选项支持circuit v1和v2连接
 // (默认:启用)
 // 返回:
@@ -352,7 +352,7 @@ func EnableRelay() Option {
 	}
 }
 
-// DisableRelay 配置libp2p禁用中继传输
+// DisableRelay 配置dep2p禁用中继传输
 // 返回:
 //   - Option: 配置函数
 func DisableRelay() Option {
@@ -363,7 +363,7 @@ func DisableRelay() Option {
 	}
 }
 
-// EnableRelayService 配置libp2p运行circuit v2中继,如果我们检测到我们是公开可访问的
+// EnableRelayService 配置dep2p运行circuit v2中继,如果我们检测到我们是公开可访问的
 // 参数:
 //   - opts: 中继选项
 //
@@ -377,7 +377,7 @@ func EnableRelayService(opts ...relayv2.Option) Option {
 	}
 }
 
-// EnableAutoRelay 配置libp2p启用AutoRelay子系统
+// EnableAutoRelay 配置dep2p启用AutoRelay子系统
 // 依赖:
 //   - 中继(默认启用)
 //   - 以下之一:
@@ -400,7 +400,7 @@ func EnableAutoRelay(opts ...autorelay.Option) Option {
 	}
 }
 
-// EnableAutoRelayWithStaticRelays 使用提供的中继作为中继候选者配置libp2p启用AutoRelay子系统
+// EnableAutoRelayWithStaticRelays 使用提供的中继作为中继候选者配置dep2p启用AutoRelay子系统
 // 当检测到节点公开不可访问时(例如在NAT后面),此子系统执行自动地址重写以通告中继地址
 // 参数:
 //   - static: 静态中继地址信息列表
@@ -416,7 +416,7 @@ func EnableAutoRelayWithStaticRelays(static []peer.AddrInfo, opts ...autorelay.O
 	}
 }
 
-// EnableAutoRelayWithPeerSource 使用提供的PeerSource回调获取更多中继候选者来配置libp2p启用AutoRelay子系统
+// EnableAutoRelayWithPeerSource 使用提供的PeerSource回调获取更多中继候选者来配置dep2p启用AutoRelay子系统
 // 当检测到节点公开不可访问时(例如在NAT后面),此子系统执行自动地址重写以通告中继地址
 // 参数:
 //   - peerSource: 对等点源回调函数
@@ -454,7 +454,7 @@ func ForceReachabilityPrivate() Option {
 	}
 }
 
-// EnableNATService 配置libp2p为对等点提供确定其可达性状态的服务
+// EnableNATService 配置dep2p为对等点提供确定其可达性状态的服务
 // 启用后,主机将尝试回拨对等点,然后告诉它们是否成功建立此类连接
 // 返回:
 //   - Option: 配置函数
@@ -484,7 +484,7 @@ func AutoNATServiceRateLimit(global, perPeer int, interval time.Duration) Option
 	}
 }
 
-// ConnectionGater 配置libp2p使用给定的ConnectionGater根据连接的生命周期阶段主动拒绝入站/出站连接
+// ConnectionGater 配置dep2p使用给定的ConnectionGater根据连接的生命周期阶段主动拒绝入站/出站连接
 // 参数:
 //   - cg: 连接门控器实现
 //
@@ -501,8 +501,8 @@ func ConnectionGater(cg connmgr.ConnectionGater) Option {
 	}
 }
 
-// ResourceManager 配置libp2p使用给定的ResourceManager
-// 当使用p2p/host/resource-manager实现ResourceManager接口时,建议通过调用SetDefaultServiceLimits为libp2p协议设置限制
+// ResourceManager 配置dep2p使用给定的ResourceManager
+// 当使用p2p/host/resource-manager实现ResourceManager接口时,建议通过调用SetDefaultServiceLimits为dep2p协议设置限制
 // 参数:
 //   - rcmgr: 资源管理器实现
 //
@@ -519,7 +519,7 @@ func ResourceManager(rcmgr network.ResourceManager) Option {
 	}
 }
 
-// NATPortMap 配置libp2p使用默认的NATManager
+// NATPortMap 配置dep2p使用默认的NATManager
 // 默认NATManager将尝试使用UPnP在网络防火墙中打开端口
 // 返回:
 //   - Option: 配置函数
@@ -527,8 +527,8 @@ func NATPortMap() Option {
 	return NATManager(bhost.NewNATManager)
 }
 
-// NATManager 配置libp2p使用请求的NATManager
-// 此函数应传入一个接受libp2p Network的NATManager构造函数
+// NATManager 配置dep2p使用请求的NATManager
+// 此函数应传入一个接受dep2p Network的NATManager构造函数
 // 参数:
 //   - nm: NAT管理器构造函数
 //
@@ -545,7 +545,7 @@ func NATManager(nm config.NATManagerC) Option {
 	}
 }
 
-// Ping 配置libp2p支持ping服务;默认启用
+// Ping 配置dep2p支持ping服务;默认启用
 // 参数:
 //   - enable: 是否启用ping
 //
@@ -558,7 +558,7 @@ func Ping(enable bool) Option {
 	}
 }
 
-// Routing 配置libp2p使用路由
+// Routing 配置dep2p使用路由
 // 参数:
 //   - rt: 路由构造函数
 //
@@ -575,9 +575,9 @@ func Routing(rt config.RoutingC) Option {
 	}
 }
 
-// NoListenAddrs 配置libp2p默认不监听
+// NoListenAddrs 配置dep2p默认不监听
 //
-// 这将清除任何已配置的监听地址并防止libp2p应用默认监听地址选项
+// 这将清除任何已配置的监听地址并防止dep2p应用默认监听地址选项
 // 它还禁用中继,除非用户通过选项显式指定,因为传输会创建一个隐式监听地址,使节点可以通过它连接的任何中继进行拨号
 var NoListenAddrs = func(cfg *Config) error {
 	cfg.ListenAddrs = []ma.Multiaddr{}
@@ -588,15 +588,15 @@ var NoListenAddrs = func(cfg *Config) error {
 	return nil
 }
 
-// NoTransports 配置libp2p不启用任何传输
+// NoTransports 配置dep2p不启用任何传输
 //
-// 这将清除任何已配置的传输(在先前的libp2p选项中指定)并防止libp2p应用默认传输
+// 这将清除任何已配置的传输(在先前的dep2p选项中指定)并防止dep2p应用默认传输
 var NoTransports = func(cfg *Config) error {
 	cfg.Transports = []fx.Option{}
 	return nil
 }
 
-// ProtocolVersion 设置libp2p Identify协议所需的协议版本字符串
+// ProtocolVersion 设置dep2p Identify协议所需的协议版本字符串
 // 参数:
 //   - s: 协议版本字符串
 //
@@ -609,7 +609,7 @@ func ProtocolVersion(s string) Option {
 	}
 }
 
-// UserAgent 设置与identify协议一起发送的libp2p用户代理
+// UserAgent 设置与identify协议一起发送的dep2p用户代理
 // 参数:
 //   - userAgent: 用户代理字符串
 //
@@ -622,7 +622,7 @@ func UserAgent(userAgent string) Option {
 	}
 }
 
-// MultiaddrResolver 设置libp2p dns解析器
+// MultiaddrResolver 设置dep2p dns解析器
 // 参数:
 //   - rslv: multiaddr DNS解析器实现
 //
@@ -688,7 +688,7 @@ func WithDialTimeout(t time.Duration) Option {
 	}
 }
 
-// DisableMetrics 配置libp2p禁用prometheus指标
+// DisableMetrics 配置dep2p禁用prometheus指标
 // 返回:
 //   - Option: 配置函数
 func DisableMetrics() Option {
@@ -698,7 +698,7 @@ func DisableMetrics() Option {
 	}
 }
 
-// PrometheusRegisterer 配置libp2p使用reg作为所有指标子系统的注册器
+// PrometheusRegisterer 配置dep2p使用reg作为所有指标子系统的注册器
 // 参数:
 //   - reg: prometheus注册器
 //
@@ -723,7 +723,7 @@ func PrometheusRegisterer(reg prometheus.Registerer) Option {
 	}
 }
 
-// DialRanker 配置libp2p使用d作为拨号排序器。要启用智能拨号,使用`swarm.DefaultDialRanker`。使用`swarm.NoDelayDialRanker`禁用智能拨号
+// DialRanker 配置dep2p使用d作为拨号排序器。要启用智能拨号,使用`swarm.DefaultDialRanker`。使用`swarm.NoDelayDialRanker`禁用智能拨号
 //
 // 已弃用:使用SwarmOpts(swarm.WithDialRanker(d))代替
 // 参数:
@@ -742,7 +742,7 @@ func DialRanker(d network.DialRanker) Option {
 	}
 }
 
-// SwarmOpts 配置libp2p使用带选项的swarm
+// SwarmOpts 配置dep2p使用带选项的swarm
 // 参数:
 //   - opts: swarm选项
 //
@@ -782,7 +782,7 @@ func EnableAutoNATv2() Option {
 	}
 }
 
-// UDPBlackHoleSuccessCounter 配置libp2p使用f作为UDP地址的黑洞过滤器
+// UDPBlackHoleSuccessCounter 配置dep2p使用f作为UDP地址的黑洞过滤器
 // 参数:
 //   - f: *swarm.BlackHoleSuccessCounter 黑洞成功计数器
 //
@@ -796,7 +796,7 @@ func UDPBlackHoleSuccessCounter(f *swarm.BlackHoleSuccessCounter) Option {
 	}
 }
 
-// IPv6BlackHoleSuccessCounter 配置libp2p使用f作为IPv6地址的黑洞过滤器
+// IPv6BlackHoleSuccessCounter 配置dep2p使用f作为IPv6地址的黑洞过滤器
 // 参数:
 //   - f: *swarm.BlackHoleSuccessCounter 黑洞成功计数器
 //
@@ -810,7 +810,7 @@ func IPv6BlackHoleSuccessCounter(f *swarm.BlackHoleSuccessCounter) Option {
 	}
 }
 
-// WithFxOption 添加用户提供的fx.Option到libp2p构造函数中
+// WithFxOption 添加用户提供的fx.Option到dep2p构造函数中
 // 实验性功能:此选项可能会更改或删除
 // 参数:
 //   - opts: ...fx.Option fx选项列表

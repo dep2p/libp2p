@@ -1,26 +1,26 @@
-package libp2p
+package dep2p
 
 // 此文件包含所有默认配置选项
 
 import (
 	"crypto/rand"
 
-	"github.com/dep2p/libp2p/core/crypto"
-	"github.com/dep2p/libp2p/p2p/host/peerstore/pstoremem"
-	rcmgr "github.com/dep2p/libp2p/p2p/host/resource-manager"
-	"github.com/dep2p/libp2p/p2p/muxer/yamux"
-	"github.com/dep2p/libp2p/p2p/net/connmgr"
-	"github.com/dep2p/libp2p/p2p/net/swarm"
-	"github.com/dep2p/libp2p/p2p/security/noise"
-	tls "github.com/dep2p/libp2p/p2p/security/tls"
-	quic "github.com/dep2p/libp2p/p2p/transport/quic"
-	"github.com/dep2p/libp2p/p2p/transport/tcp"
-	libp2pwebrtc "github.com/dep2p/libp2p/p2p/transport/webrtc"
-	ws "github.com/dep2p/libp2p/p2p/transport/websocket"
-	webtransport "github.com/dep2p/libp2p/p2p/transport/webtransport"
+	"github.com/dep2p/core/crypto"
+	"github.com/dep2p/p2p/host/peerstore/pstoremem"
+	rcmgr "github.com/dep2p/p2p/host/resource-manager"
+	"github.com/dep2p/p2p/muxer/yamux"
+	"github.com/dep2p/p2p/net/connmgr"
+	"github.com/dep2p/p2p/net/swarm"
+	"github.com/dep2p/p2p/security/noise"
+	tls "github.com/dep2p/p2p/security/tls"
+	quic "github.com/dep2p/p2p/transport/quic"
+	"github.com/dep2p/p2p/transport/tcp"
+	dep2pwebrtc "github.com/dep2p/p2p/transport/webrtc"
+	ws "github.com/dep2p/p2p/transport/websocket"
+	webtransport "github.com/dep2p/p2p/transport/webtransport"
 	"github.com/prometheus/client_golang/prometheus"
 
-	"github.com/multiformats/go-multiaddr"
+	"github.com/dep2p/multiformats/multiaddr"
 )
 
 // DefaultSecurity 是默认的安全选项配置
@@ -32,12 +32,12 @@ var DefaultSecurity = ChainOptions(
 	Security(noise.ID, noise.New),
 )
 
-// DefaultMuxers 配置 libp2p 使用流连接多路复用器
-// 当需要扩展而不是替换 libp2p 使用的多路复用器时使用此选项
+// DefaultMuxers 配置 dep2p 使用流连接多路复用器
+// 当需要扩展而不是替换 dep2p 使用的多路复用器时使用此选项
 var DefaultMuxers = Muxer(yamux.ID, yamux.DefaultTransport)
 
-// DefaultTransports 是默认的 libp2p 传输配置
-// 当需要扩展而不是替换 libp2p 使用的传输时使用此选项
+// DefaultTransports 是默认的 dep2p 传输配置
+// 当需要扩展而不是替换 dep2p 使用的传输时使用此选项
 var DefaultTransports = ChainOptions(
 	// 配置 TCP 传输
 	Transport(tcp.NewTCPTransport),
@@ -48,11 +48,11 @@ var DefaultTransports = ChainOptions(
 	// 配置 WebTransport 传输
 	Transport(webtransport.New),
 	// 配置 WebRTC 传输
-	Transport(libp2pwebrtc.New),
+	Transport(dep2pwebrtc.New),
 )
 
-// DefaultPrivateTransports 是提供 PSK 时默认的 libp2p 传输配置
-// 当需要扩展而不是替换 libp2p 使用的传输时使用此选项
+// DefaultPrivateTransports 是提供 PSK 时默认的 dep2p 传输配置
+// 当需要扩展而不是替换 dep2p 使用的传输时使用此选项
 var DefaultPrivateTransports = ChainOptions(
 	// 配置 TCP 传输
 	Transport(tcp.NewTCPTransport),
@@ -60,7 +60,7 @@ var DefaultPrivateTransports = ChainOptions(
 	Transport(ws.New),
 )
 
-// DefaultPeerstore 配置 libp2p 使用默认的对等点存储
+// DefaultPeerstore 配置 dep2p 使用默认的对等点存储
 // 参数:
 //   - cfg: *Config 配置对象
 //
@@ -91,7 +91,7 @@ var RandomIdentity = func(cfg *Config) error {
 	return cfg.Apply(Identity(priv))
 }
 
-// DefaultListenAddrs 配置 libp2p 使用默认的监听地址
+// DefaultListenAddrs 配置 dep2p 使用默认的监听地址
 // 参数:
 //   - cfg: *Config 配置对象
 //
@@ -168,7 +168,7 @@ var DefaultConnectionManager = func(cfg *Config) error {
 	return cfg.Apply(ConnectionManager(mgr))
 }
 
-// DefaultPrometheusRegisterer 配置libp2p使用默认的Prometheus注册器
+// DefaultPrometheusRegisterer 配置dep2p使用默认的Prometheus注册器
 // 参数:
 //   - cfg: *Config 配置对象
 //
@@ -281,7 +281,7 @@ var defaults = []struct {
 	},
 }
 
-// Defaults 配置libp2p使用默认选项
+// Defaults 配置dep2p使用默认选项
 // 可以与其他选项组合以扩展默认选项
 // 参数:
 //   - cfg: *Config 配置对象

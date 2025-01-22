@@ -6,7 +6,7 @@ import (
 
 	"golang.org/x/crypto/hkdf"
 
-	"github.com/dep2p/libp2p/core/crypto"
+	"github.com/dep2p/core/crypto"
 
 	"github.com/quic-go/quic-go"
 )
@@ -14,14 +14,14 @@ import (
 // QUIC 相关的密钥信息常量
 const (
 	// statelessResetKeyInfo 用于生成无状态重置密钥的信息字符串
-	statelessResetKeyInfo = "libp2p quic stateless reset key"
+	statelessResetKeyInfo = "dep2p quic stateless reset key"
 	// tokenGeneratorKeyInfo 用于生成令牌生成器密钥的信息字符串
-	tokenGeneratorKeyInfo = "libp2p quic token generator key"
+	tokenGeneratorKeyInfo = "dep2p quic token generator key"
 )
 
 // PrivKeyToStatelessResetKey 将私钥转换为 QUIC 无状态重置密钥
 // 参数:
-//   - key: libp2p 私钥
+//   - key: dep2p 私钥
 //
 // 返回:
 //   - quic.StatelessResetKey: 生成的无状态重置密钥
@@ -47,7 +47,7 @@ func PrivKeyToStatelessResetKey(key crypto.PrivKey) (quic.StatelessResetKey, err
 
 // PrivKeyToTokenGeneratorKey 将私钥转换为 QUIC 令牌生成器密钥
 // 参数:
-//   - key: libp2p 私钥
+//   - key: dep2p 私钥
 //
 // 返回:
 //   - quic.TokenGeneratorKey: 生成的令牌生成器密钥

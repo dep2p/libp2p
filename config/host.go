@@ -3,8 +3,8 @@ package config
 import (
 	"context"
 
-	basichost "github.com/dep2p/libp2p/p2p/host/basic"
-	routed "github.com/dep2p/libp2p/p2p/host/routed"
+	basichost "github.com/dep2p/p2p/host/basic"
+	routed "github.com/dep2p/p2p/host/routed"
 
 	"go.uber.org/fx"
 )
